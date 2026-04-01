@@ -388,6 +388,87 @@ struct IdentificationResultView: View {
                     .datePickerStyle(.compact)
             }
             .padding(.vertical, 8)
+            
+            // 房间选择
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Image(systemName: "house.fill")
+                        .foregroundColor(.plantGreen)
+                    Text("房间")
+                        .font(.plantBody)
+                    
+                    Spacer()
+                    
+                    // 添加新房间按钮
+                    Button(action: {
+                        showAddRoomDialog = true
+                        newRoomName = ""
+                        showRoomError = false
+                        roomError = nil
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.caption)
+                            Text("添加房间")
+                                .font(.plantCaption)
+                        }
+                        .foregroundColor(.plantGreen)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color.plantGreen.opacity(0.1))
+                        .clipShape(Capsule())
+                    }
+                }
+                
+                if showRoomError, let error = roomError {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.statusUrgent)
+                        Text(error)
+                            .font(.plantCaption)
+                            .foregroundColor(.statusUrgent)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.statusUrgent.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        // 显示所有可用房间（默认+自定义）
+                        ForEach(availableRooms, id: \.self) { room in
+                            RoomFilterButton(
+                                title: room,
+                                isSelected: selectedRoom == room,
+                                action: {
+                                    selectedRoom = room
+                                }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+            .padding(.vertical, 8)
+            .onAppear {
+                loadAvailableRooms()
+            }
+            .alert("添加新房间", isPresented: $showAddRoomDialog) {
+                TextField("输入房间名称", text: $newRoomName)
+                    .textInputAutocapitalization(.words)
+                
+                Button("取消", role: .cancel) {
+                    newRoomName = ""
+                }
+                
+                Button("添加") {
+                    addNewRoom()
+                }
+                .disabled(newRoomName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            } message: {
+                Text("请输入新房间的名称")
+            }
         }
         .padding(Constants.Layout.spacingM)
         .background(Color.backgroundSecondary)
@@ -411,6 +492,23 @@ struct IdentificationResultView: View {
         }
         .buttonStyle(.plain)
     }
+    
+    // MARK: - 房间选择状态
+    @State private var selectedRoom: String = Constants.Room.defaultRooms.first ?? "客厅"
+    @State private var showAddRoomDialog = false
+    @State private var newRoomName = ""
+    @State private var showRoomError = false
+    @State private var roomError: String?
+    @State private var availableRooms: [String] = []
+    
+    // 初始化可用房间列表
+    private func loadAvailableRooms() {
+        availableRooms = RoomManager.shared.getAssignableRooms()
+        // 如果当前选中的房间不在可用房间中，选择第一个可用房间
+        if !availableRooms.contains(selectedRoom) && !availableRooms.isEmpty {
+            selectedRoom = availableRooms.first ?? "客厅"
+        }
+    }
 
     private func addPlantAndSetupReminder() {
         let context = CoreDataManager.shared.context
@@ -424,7 +522,8 @@ struct IdentificationResultView: View {
             pruningInterval: pruningInterval,
             pestControlInterval: pestControlInterval,
             reminderTime: selectedTime,
-            careInstructions: result.careInstructions
+            careInstructions: result.careInstructions,
+            room: selectedRoom
         )
         try? CoreDataManager.shared.save()
         Task {
@@ -533,6 +632,32 @@ struct IdentificationResultView: View {
                 self.showUpdateError = true
                 self.updateError = "更新植物信息失败: \(error.localizedDescription)"
             }
+        }
+    }
+    
+    // MARK: - 房间管理方法
+    
+    private func addNewRoom() {
+        let trimmedName = newRoomName.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmedName.isEmpty else {
+            showRoomError = true
+            roomError = "房间名称不能为空"
+            return
+        }
+        
+        // 使用RoomManager添加新房间
+        if RoomManager.shared.addCustomRoom(trimmedName) {
+            // 添加成功，重新加载房间列表并选中新房间
+            loadAvailableRooms()
+            selectedRoom = trimmedName
+            newRoomName = ""
+            showRoomError = false
+            roomError = nil
+        } else {
+            // 添加失败（可能房间已存在）
+            showRoomError = true
+            roomError = "房间已存在或添加失败"
         }
     }
 }

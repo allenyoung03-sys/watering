@@ -50,6 +50,18 @@ struct SettingsView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    
+                    NavigationLink {
+                        RoomManagementView()
+                    } label: {
+                        HStack {
+                            Text("房间管理")
+                            Spacer()
+                            Text("\(RoomManager.shared.customRooms.count) 个自定义")
+                                .font(.plantCaption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
                 Section("通知") {
                     HStack {

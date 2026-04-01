@@ -10,7 +10,7 @@ struct PlantCard: View {
     let plant: Plant
     let onCareAction: (CareActionType) -> Void
     let onEditPlant: () -> Void
-    let onUpdatePlantInfo: (String, String) -> Void
+    let onUpdatePlantInfo: (String, String, String?) -> Void
     
     @State private var showDescriptionDetail = false
     @State private var showPlantInfoEdit = false

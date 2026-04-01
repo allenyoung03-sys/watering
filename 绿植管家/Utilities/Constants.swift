@@ -37,6 +37,7 @@ enum Constants {
         static let userName = "userName"
         static let userAvatarData = "userAvatarData"
         static let defaultReminderTime = "defaultReminderTime" // 新植物默认提醒时间
+        static let customRooms = "customRooms" // 自定义房间列表
     }
 
     enum Layout {
@@ -47,5 +48,17 @@ enum Constants {
         static let spacingS: CGFloat = 12
         static let spacingM: CGFloat = 16
         static let spacingL: CGFloat = 24
+    }
+    
+    // MARK: - 房间相关常量
+    enum Room {
+        // 默认房间选项（预设3个左右）
+        static let defaultRooms = ["客厅", "卧室", "阳台", "其他"]
+        
+        // 未分配房间的标识
+        static let unassigned = "未分配"
+        
+        // 全部房间的标识
+        static let all = "全部"
     }
 }

@@ -38,7 +38,10 @@ struct PlantDetailView: View {
                     // 养护状态卡片
                     careStatusCards
                     
-                    // 植物名称编辑区域
+                    // 植物信息区域（包含名称、学名、描述）
+                    plantInfoSection
+                    
+                    // 房间信息区域
                     nameEditSection
                     
                     // 养护操作按钮
@@ -89,6 +92,9 @@ struct PlantDetailView: View {
                     onCancel: { showMultiCareReminderSetup = false }
                 )
             }
+            .sheet(isPresented: $showRoomSelection) {
+                roomSelectionSheet
+            }
             .sheet(isPresented: $viewModel.showNoteInput) {
                 noteInputSheet
             }
@@ -97,6 +103,15 @@ struct PlantDetailView: View {
                 set: { if !$0 { viewModel.editingRecord = nil } }
             )) {
                 noteEditSheet
+            }
+            .sheet(isPresented: $showDescriptionDetail) {
+                let description = plant.subtitleDescription
+                if !description.isEmpty {
+                    DescriptionDetailView(
+                        title: "植物描述",
+                        description: description
+                    )
+                }
             }
             .confirmationDialog("删除植物", isPresented: $viewModel.showDeleteConfirm, titleVisibility: .visible) {
                 Button("删除", role: .destructive) {
@@ -152,7 +167,15 @@ struct PlantDetailView: View {
         }
     }
     
-    private var nameEditSection: some View {
+    
+    @State private var showRoomSelection = false
+    @State private var showDescriptionDetail = false
+    @State private var showAddRoomDialog = false
+    @State private var newRoomName = ""
+    @State private var showRoomError = false
+    @State private var roomError: String?
+    
+    private var plantInfoSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center) {
                 Text("植物信息")
@@ -229,6 +252,36 @@ struct PlantDetailView: View {
                 }
             }
             
+            // 植物描述 - 使用subtitleDescription来确保总是有描述显示
+            let description = plant.subtitleDescription
+            if !description.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Divider()
+                    
+                    Text(description)
+                        .font(.plantBody)
+                        .foregroundColor(.primary)
+                        .lineLimit(plant.isDescriptionLongExtended ? 3 : nil)
+                        .lineSpacing(4)
+                    
+                    if plant.isDescriptionLongExtended {
+                        Button(action: {
+                            showDescriptionDetail = true
+                        }) {
+                            HStack(spacing: 4) {
+                                Text("查看更多")
+                                    .font(.plantCaption)
+                                    .foregroundColor(.plantAccent)
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.plantAccent)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            
             if showUpdateError, let error = updateError {
                 HStack(spacing: 6) {
                     Image(systemName: "exclamationmark.triangle.fill")
@@ -241,6 +294,39 @@ struct PlantDetailView: View {
                 .padding(.vertical, 6)
                 .background(Color.statusUrgent.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+        }
+        .padding(Constants.Layout.spacingM)
+        .background(Color.backgroundSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+    }
+    
+    private var nameEditSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("房间")
+                    .font(.plantHeadline)
+                Spacer()
+                
+                Button(action: {
+                    showRoomSelection = true
+                }) {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.plantAccent)
+                }
+                .buttonStyle(.plain)
+            }
+            
+            HStack(spacing: 12) {
+                Image(systemName: "house.fill")
+                    .foregroundColor(.plantGreen)
+                
+                Text(plant.room ?? "未设置")
+                    .font(.plantBody)
+                    .foregroundColor(.primary)
+                
+                Spacer()
             }
         }
         .padding(Constants.Layout.spacingM)
@@ -679,6 +765,185 @@ struct CareActionButton: View {
             return .orange
         case .pestControl:
             return .red
+        }
+    }
+}
+
+// MARK: - 房间选择Sheet
+extension PlantDetailView {
+    private var roomSelectionSheet: some View {
+        return NavigationStack {
+            VStack(spacing: 20) {
+                VStack(spacing: 12) {
+                    Image(systemName: "house.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.plantGreen)
+                    
+                    Text("选择房间")
+                        .font(.plantHeadline)
+                    
+                    Text("为「\(plant.name)」选择一个房间")
+                        .font(.plantBody)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 20)
+                
+                ScrollView {
+                    VStack(spacing: 12) {
+                        // 默认房间
+                        Section {
+                            ForEach(Constants.Room.defaultRooms, id: \.self) { room in
+                                roomOptionButton(room: room)
+                            }
+                        } header: {
+                            HStack {
+                                Text("默认房间")
+                                    .font(.plantCaption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            .padding(.top, 8)
+                        }
+                        
+                        // 自定义房间
+                        let customRooms = RoomManager.shared.customRooms
+                        if !customRooms.isEmpty {
+                            Section {
+                                ForEach(customRooms, id: \.self) { room in
+                                    roomOptionButton(room: room)
+                                }
+                            } header: {
+                                HStack {
+                                    Text("自定义房间")
+                                        .font(.plantCaption)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                }
+                                .padding(.top, 8)
+                            }
+                        }
+                        
+                        // 添加新房间按钮
+                        Button(action: {
+                            showAddRoomDialog = true
+                            newRoomName = ""
+                            showRoomError = false
+                            roomError = nil
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundColor(.plantGreen)
+                                Text("添加新房间")
+                                    .font(.plantBody)
+                                    .foregroundColor(.plantGreen)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .background(Color.plantLightGreen.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("选择房间")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") {
+                        showRoomSelection = false
+                    }
+                }
+            }
+            .alert("添加新房间", isPresented: $showAddRoomDialog) {
+                TextField("输入房间名称", text: $newRoomName)
+                    .textInputAutocapitalization(.words)
+                
+                Button("取消", role: .cancel) {
+                    newRoomName = ""
+                }
+                
+                Button("添加") {
+                    addNewRoom()
+                }
+                .disabled(newRoomName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            } message: {
+                Text("请输入新房间的名称")
+            }
+            .alert("错误", isPresented: $showRoomError) {
+                Button("确定", role: .cancel) {
+                    showRoomError = false
+                    roomError = nil
+                }
+            } message: {
+                Text(roomError ?? "")
+            }
+        }
+        .presentationDetents([.medium])
+    }
+    
+    private func roomOptionButton(room: String) -> some View {
+        Button(action: {
+            updatePlantRoom(room)
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: "house.fill")
+                    .foregroundColor(plant.room == room ? .white : .plantGreen)
+                    .font(.title3)
+                
+                Text(room)
+                    .font(.plantBody)
+                    .foregroundColor(plant.room == room ? .white : .primary)
+                
+                Spacer()
+                
+                if plant.room == room {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.white)
+                        .font(.title3)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(plant.room == room ? Color.plantGreen : Color.backgroundSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
+        }
+        .buttonStyle(.plain)
+    }
+    
+    private func updatePlantRoom(_ room: String) {
+        plant.room = room
+        try? CoreDataManager.shared.save()
+        showRoomSelection = false
+    }
+    
+    private func addNewRoom() {
+        let trimmedName = newRoomName.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmedName.isEmpty else {
+            showRoomError = true
+            roomError = "房间名称不能为空"
+            return
+        }
+        
+        // 使用RoomManager添加新房间
+        if RoomManager.shared.addCustomRoom(trimmedName) {
+            // 添加成功，重新加载房间列表并选中新房间
+            newRoomName = ""
+            showRoomError = false
+            roomError = nil
+            // 自动选择新添加的房间
+            updatePlantRoom(trimmedName)
+        } else {
+            // 添加失败（可能房间已存在）
+            showRoomError = true
+            roomError = "房间已存在或添加失败"
         }
     }
 }

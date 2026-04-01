@@ -11,18 +11,44 @@ class PlantListViewModel: ObservableObject {
     @Published var plants: [Plant] = []
     @Published var todayPlants: [Plant] = []
     @Published var selectedPlant: Plant?
+    @Published var selectedRoom: String = Constants.Room.all
+    @Published var availableRooms: [String] = [Constants.Room.all]
 
     private let dataManager = CoreDataManager.shared
     private let reminderManager = ReminderManager.shared
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
         loadPlants()
+        updateAvailableRooms()
+        setupRoomManagerObserver()
     }
 
     func loadPlants() {
-        plants = dataManager.fetchPlants()
+        let allPlants = dataManager.fetchPlants()
             .sorted { $0.nextWateringDate < $1.nextWateringDate }
+        
+        // 筛选植物
+        if selectedRoom == Constants.Room.all {
+            plants = allPlants
+        } else {
+            plants = allPlants.filter { $0.room == selectedRoom }
+        }
+        
         todayPlants = plants.filter { $0.needsWatering }
+    }
+    
+    /// 更新可用房间列表（显示所有房间，包括空房间）
+    func updateAvailableRooms() {
+        // 使用RoomManager获取所有房间
+        let allRooms = RoomManager.shared.getAllRooms()
+        availableRooms = allRooms
+    }
+    
+    /// 选择房间
+    func selectRoom(_ room: String) {
+        selectedRoom = room
+        loadPlants()
     }
 
     func markAsWatered(_ plant: Plant) async {
@@ -140,11 +166,17 @@ class PlantListViewModel: ObservableObject {
         }
     }
     
-    /// 更新植物信息（名称和描述）
-    func updatePlantInfo(_ plant: Plant, newName: String, newDescription: String) async {
+    /// 更新植物信息（名称、描述和房间）
+    func updatePlantInfo(_ plant: Plant, newName: String, newDescription: String, newRoom: String?) async {
         do {
             plant.name = newName
             plant.careInstructions = newDescription
+            
+            // 更新房间信息（如果提供了新房间）
+            if let newRoom = newRoom, !newRoom.isEmpty {
+                plant.room = newRoom
+            }
+            
             try dataManager.save()
             loadPlants()
         } catch {
@@ -152,8 +184,26 @@ class PlantListViewModel: ObservableObject {
         }
     }
     
+    /// 更新植物信息（名称和描述）- 兼容旧版本
+    func updatePlantInfo(_ plant: Plant, newName: String, newDescription: String) async {
+        await updatePlantInfo(plant, newName: newName, newDescription: newDescription, newRoom: nil)
+    }
+    
     private func handleError(_ error: Error, context: String) {
         print("\(context)时发生错误: \(error.localizedDescription)")
         // 这里可以添加更复杂的错误处理逻辑，比如显示错误提示
+    }
+    
+    /// 设置RoomManager观察者，监听房间变化
+    private func setupRoomManagerObserver() {
+        // 监听RoomManager的objectWillChange发布者
+        RoomManager.shared.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                // 当RoomManager发生变化时，更新房间列表
+                self?.updateAvailableRooms()
+                print("🔄 PlantListViewModel: 房间列表已更新")
+            }
+            .store(in: &cancellables)
     }
 }

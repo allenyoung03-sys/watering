@@ -22,58 +22,12 @@ struct PlantListView: View {
             ScrollView {
                 LazyVStack(spacing: Constants.Layout.spacingM) {
                     headerSection
+                    roomFilterSection
                     if !viewModel.todayPlants.isEmpty {
                         TodayWateringBanner(count: viewModel.todayPlants.count)
                     }
                     sectionHeader
-                    ForEach(viewModel.plants, id: \.id) { plant in
-                        PlantCard(
-                            plant: plant,
-                            onCareAction: { actionType in
-                                Task {
-                                    await viewModel.markAsCared(plant, actionType: actionType)
-                                }
-                            },
-                            onEditPlant: { viewModel.selectedPlant = plant },
-                            onUpdatePlantInfo: { newName, newDescription in
-                                Task {
-                                    await viewModel.updatePlantInfo(plant, newName: newName, newDescription: newDescription)
-                                }
-                            }
-                        )
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                print("🔄 [PlantListView] 滑动删除按钮被点击，植物: \(plant.name)")
-                                print("🔄 [PlantListView] 设置plantToDelete = \(plant.name)")
-                                plantToDelete = plant
-                                print("🔄 [PlantListView] 设置showDeleteConfirmation = true")
-                                showDeleteConfirmation = true
-                            } label: {
-                                Label("删除", systemImage: "trash")
-                            }
-                        }
-                        .onAppear {
-                            print("🔄 [PlantListView] PlantCard出现，植物: \(plant.name)")
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            print("🔄 [PlantListView] 植物卡片被点击，植物: \(plant.name)")
-                            selectedPlantForDetail = plant
-                        }
-                        .background(
-                            NavigationLink(
-                                destination: PlantDetailView(
-                                    plant: plant,
-                                    onDismiss: { viewModel.loadPlants() }
-                                ),
-                                tag: plant,
-                                selection: $selectedPlantForDetail
-                            ) {
-                                EmptyView()
-                            }
-                            .opacity(0)
-                        )
-                    }
+                    plantsList
                 }
                 .padding(Constants.Layout.spacingM)
             }
@@ -121,9 +75,66 @@ struct PlantListView: View {
             }
             .onAppear {
                 viewModel.loadPlants()
+                // 确保房间列表是最新的
+                viewModel.updateAvailableRooms()
             }
         }
         .navigationViewStyle(.stack)
+    }
+    
+    private var plantsList: some View {
+        ForEach(viewModel.plants, id: \.id) { plant in
+            plantCardView(for: plant)
+        }
+    }
+    
+    private func plantCardView(for plant: Plant) -> some View {
+        PlantCard(
+            plant: plant,
+            onCareAction: { actionType in
+                Task {
+                    await viewModel.markAsCared(plant, actionType: actionType)
+                }
+            },
+            onEditPlant: { viewModel.selectedPlant = plant },
+            onUpdatePlantInfo: { newName, newDescription, newRoom in
+                Task {
+                    await viewModel.updatePlantInfo(plant, newName: newName, newDescription: newDescription, newRoom: newRoom)
+                }
+            }
+        )
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                print("🔄 [PlantListView] 滑动删除按钮被点击，植物: \(plant.name)")
+                print("🔄 [PlantListView] 设置plantToDelete = \(plant.name)")
+                plantToDelete = plant
+                print("🔄 [PlantListView] 设置showDeleteConfirmation = true")
+                showDeleteConfirmation = true
+            } label: {
+                Label("删除", systemImage: "trash")
+            }
+        }
+        .onAppear {
+            print("🔄 [PlantListView] PlantCard出现，植物: \(plant.name)")
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            print("🔄 [PlantListView] 植物卡片被点击，植物: \(plant.name)")
+            selectedPlantForDetail = plant
+        }
+        .background(
+            NavigationLink(
+                destination: PlantDetailView(
+                    plant: plant,
+                    onDismiss: { viewModel.loadPlants() }
+                ),
+                tag: plant,
+                selection: $selectedPlantForDetail
+            ) {
+                EmptyView()
+            }
+            .opacity(0)
+        )
     }
     
     /// 执行删除植物的操作
@@ -169,6 +180,30 @@ struct PlantListView: View {
             .padding(.horizontal, 4)
         }
         .buttonStyle(.plain)
+    }
+    
+    private var roomFilterSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("房间")
+                .font(.plantCaption)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 4)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(viewModel.availableRooms, id: \.self) { room in
+                        RoomFilterButton(
+                            title: room,
+                            isSelected: viewModel.selectedRoom == room,
+                            action: {
+                                viewModel.selectRoom(room)
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
+        }
     }
 
     @ViewBuilder

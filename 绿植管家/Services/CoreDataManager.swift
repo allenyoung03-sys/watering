@@ -25,6 +25,9 @@ class CoreDataManager {
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        
+        // 迁移现有植物的房间数据
+        migrateExistingPlantsRoomData()
     }
 
     private static func createManagedObjectModel() -> NSManagedObjectModel {
@@ -115,13 +118,18 @@ class CoreDataManager {
         notesAttr.name = "notes"
         notesAttr.attributeType = .stringAttributeType
         notesAttr.isOptional = true
+        
+        let roomAttr = NSAttributeDescription()
+        roomAttr.name = "room"
+        roomAttr.attributeType = .stringAttributeType
+        roomAttr.isOptional = true
 
         plantEntity.properties = [
             idAttr, nameAttr, scientificNameAttr, imageDataAttr,
             wateringIntervalAttr, fertilizingIntervalAttr, pruningIntervalAttr, pestControlIntervalAttr,
             reminderTimeAttr, lastWateredDateAttr, lastFertilizedDateAttr, lastPrunedDateAttr, lastPestControlDateAttr,
             nextWateringDateAttr, nextFertilizingDateAttr, nextPruningDateAttr, nextPestControlDateAttr,
-            careInstructionsAttr, dateAddedAttr, notesAttr
+            careInstructionsAttr, dateAddedAttr, notesAttr, roomAttr
         ]
 
         // 创建CareRecordEntity实体
@@ -216,5 +224,29 @@ class CoreDataManager {
     func delete(_ plant: Plant) {
         context.delete(plant)
         try? save()
+    }
+    
+    // MARK: - 数据迁移
+    
+    /// 迁移现有植物的房间数据
+    private func migrateExistingPlantsRoomData() {
+        let plants = fetchPlants()
+        var needsSave = false
+        
+        for plant in plants {
+            if plant.room == nil {
+                plant.room = Constants.Room.defaultRooms.first
+                needsSave = true
+            }
+        }
+        
+        if needsSave {
+            do {
+                try save()
+                print("成功迁移 \(plants.count) 个植物的房间数据")
+            } catch {
+                print("迁移植物房间数据失败: \(error)")
+            }
+        }
     }
 }

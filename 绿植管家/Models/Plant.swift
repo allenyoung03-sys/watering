@@ -29,6 +29,7 @@ public class Plant: NSManagedObject, Identifiable {
     @NSManaged public var careInstructions: String?
     @NSManaged public var dateAdded: Date
     @NSManaged public var notes: String?
+    @NSManaged public var room: String?
     @NSManaged public var careRecords: NSSet?
 }
 
@@ -43,7 +44,8 @@ extension Plant {
         pruningInterval: Int = 90,
         pestControlInterval: Int = 14,
         reminderTime: Date = Date(),
-        careInstructions: String? = nil
+        careInstructions: String? = nil,
+        room: String? = nil
     ) -> Plant {
         let plant = Plant(context: context)
         plant.id = UUID()
@@ -67,6 +69,9 @@ extension Plant {
         plant.pestControlInterval = Int16(pestControlInterval)
         plant.reminderTime = reminderTime
         plant.dateAdded = Date()
+        
+        // 设置房间信息
+        plant.room = room ?? Constants.Room.defaultRooms.first
         
         let now = Date()
         plant.lastWateredDate = now
