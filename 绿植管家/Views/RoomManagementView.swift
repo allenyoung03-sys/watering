@@ -187,10 +187,20 @@ struct RoomManagementView: View {
     }
     
     private func deleteRoom(_ room: String) {
-        if roomManager.deleteCustomRoom(room) {
-            // 删除成功，不需要额外操作
+        // 先检查房间中的植物数量
+        let plantCount = roomManager.getPlantCount(for: room)
+        
+        if plantCount > 0 {
+            // 房间中有植物，提供更详细的错误信息
+            showError(message: "房间\"\(room)\"中有 \(plantCount) 株植物，请先将植物移动到其他房间后再删除。")
         } else {
-            showError(message: "房间中有植物，无法删除")
+            // 房间中没有植物，尝试删除
+            if roomManager.deleteCustomRoom(room) {
+                // 删除成功，不需要额外操作
+                print("✅ 成功删除房间: \(room)")
+            } else {
+                showError(message: "删除房间失败，请重试")
+            }
         }
     }
     
@@ -239,14 +249,22 @@ struct RoomRow: View {
             
             // 操作按钮（仅限自定义房间）
             if !isDefault {
-                HStack(spacing: 8) {
+                HStack(spacing: 12) {
                     // 编辑按钮
                     Button(action: {
                         onEdit?()
                     }) {
-                        Image(systemName: "pencil.circle.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(.plantGreen)
+                        HStack(spacing: 4) {
+                            Image(systemName: "pencil.circle.fill")
+                                .font(.system(size: 16))
+                            Text("编辑")
+                                .font(.plantCaption)
+                        }
+                        .foregroundColor(.plantGreen)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.plantGreen.opacity(0.1))
+                        .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
                     
@@ -254,9 +272,17 @@ struct RoomRow: View {
                     Button(action: {
                         showDeleteConfirmation = true
                     }) {
-                        Image(systemName: "trash.circle.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(.statusUrgent)
+                        HStack(spacing: 4) {
+                            Image(systemName: "trash.circle.fill")
+                                .font(.system(size: 16))
+                            Text("删除")
+                                .font(.plantCaption)
+                        }
+                        .foregroundColor(.statusUrgent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.statusUrgent.opacity(0.1))
+                        .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
                     .confirmationDialog("删除房间", isPresented: $showDeleteConfirmation) {
@@ -265,7 +291,11 @@ struct RoomRow: View {
                         }
                         Button("取消", role: .cancel) {}
                     } message: {
-                        Text("确定要删除房间\"\(room)\"吗？")
+                        if plantCount > 0 {
+                            Text("房间\"\(room)\"中有 \(plantCount) 株植物。删除房间前请先将植物移动到其他房间。")
+                        } else {
+                            Text("确定要删除房间\"\(room)\"吗？")
+                        }
                     }
                 }
             }

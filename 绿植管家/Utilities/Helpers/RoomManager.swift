@@ -20,10 +20,20 @@ class RoomManager: ObservableObject {
         loadCustomRooms()
     }
     
-    /// 获取所有房间（默认房间 + 自定义房间）
+    /// 获取所有房间（默认房间 + 自定义房间 + 植物实际使用的房间）
     func getAllRooms() -> [String] {
         let defaultRooms = Constants.Room.defaultRooms
-        return [Constants.Room.all] + defaultRooms + customRooms
+        
+        // 从CoreData获取植物实际使用的房间
+        let plants = CoreDataManager.shared.fetchPlants()
+        let plantRooms = plants.compactMap { $0.room }
+            .filter { !$0.isEmpty }
+            .filter { !defaultRooms.contains($0) && !customRooms.contains($0) }
+        
+        // 去重并排序
+        let uniquePlantRooms = Array(Set(plantRooms)).sorted()
+        
+        return [Constants.Room.all] + defaultRooms + customRooms + uniquePlantRooms
     }
     
     /// 获取所有可分配的房间（不包括"全部"）

@@ -21,7 +21,7 @@ struct MainTabView: View {
                     Label("识别", systemImage: "camera")
                 }
                 .tag(1)
-            CalendarPlaceholderView()
+            TimewallView()
                 .tabItem {
                     Label("时光墙", systemImage: "calendar")
                 }
@@ -77,23 +77,6 @@ struct IdentifyTabView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.backgroundPrimary)
             .navigationTitle("识别")
-        }
-    }
-}
-
-struct CalendarPlaceholderView: View {
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                Image(systemName: "calendar")
-                    .font(.system(size: 60))
-                    .foregroundColor(.plantGreen)
-                Text("功能即将推出")
-                    .font(.plantHeadline)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.backgroundPrimary)
-            .navigationTitle("时光墙")
         }
     }
 }

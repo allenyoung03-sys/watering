@@ -231,11 +231,6 @@ struct PlantListView: View {
             Text("我的植物")
                 .font(.plantHeadline)
             Spacer()
-            Button("查看全部 →") {
-                showAddPlant = true
-            }
-            .font(.plantCaption)
-            .foregroundColor(.plantGreen)
         }
         .padding(.horizontal, 4)
     }

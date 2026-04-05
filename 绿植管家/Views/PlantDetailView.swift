@@ -921,6 +921,13 @@ extension PlantDetailView {
         plant.room = room
         try? CoreDataManager.shared.save()
         showRoomSelection = false
+        
+        // 发送房间更新通知，让PlantListViewModel知道房间已更改
+        NotificationCenter.default.post(
+            name: NSNotification.Name("PlantRoomUpdated"),
+            object: nil,
+            userInfo: ["plantId": plant.id]
+        )
     }
     
     private func addNewRoom() {

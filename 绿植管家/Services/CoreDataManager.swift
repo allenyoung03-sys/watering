@@ -220,6 +220,19 @@ class CoreDataManager {
             return []
         }
     }
+    
+    func fetchAllCareRecords() -> [CareRecordEntity] {
+        let request = NSFetchRequest<CareRecordEntity>(entityName: "CareRecordEntity")
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \CareRecordEntity.date, ascending: false)
+        ]
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("获取养护记录失败: \(error)")
+            return []
+        }
+    }
 
     func delete(_ plant: Plant) {
         context.delete(plant)

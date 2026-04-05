@@ -169,4 +169,26 @@ extension CareRecordEntity {
         imageData = nil
         imageUrl = nil
     }
+    
+    /// 模拟数据（用于预览）
+    static var mockRecord: CareRecordEntity {
+        let context = CoreDataManager.shared.context
+        
+        // 创建模拟植物
+        let plant = Plant(context: context)
+        plant.id = UUID()
+        plant.name = "测试植物"
+        plant.room = "客厅"
+        
+        // 创建模拟记录
+        let record = CareRecordEntity(context: context)
+        record.id = UUID()
+        record.plantId = plant.id
+        record.plant = plant
+        record.actionType = CareActionType.watering.rawValue
+        record.date = Date()
+        record.note = "今天给植物浇了水，长势很好！"
+        
+        return record
+    }
 }

@@ -22,6 +22,7 @@ class PlantListViewModel: ObservableObject {
         loadPlants()
         updateAvailableRooms()
         setupRoomManagerObserver()
+        setupNotificationObservers()
     }
 
     func loadPlants() {
@@ -205,5 +206,19 @@ class PlantListViewModel: ObservableObject {
                 print("🔄 PlantListViewModel: 房间列表已更新")
             }
             .store(in: &cancellables)
+    }
+    
+    /// 设置通知观察者，监听植物房间更新
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("PlantRoomUpdated"),
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            print("📢 PlantListViewModel: 收到植物房间更新通知")
+            // 当植物房间更新时，重新加载植物和更新房间列表
+            self?.loadPlants()
+            self?.updateAvailableRooms()
+        }
     }
 }
