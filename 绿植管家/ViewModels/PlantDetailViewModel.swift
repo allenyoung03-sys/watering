@@ -20,6 +20,8 @@ class PlantDetailViewModel: ObservableObject {
     @Published var editingRecord: CareRecordEntity?
     @Published var editingNote = ""
     @Published var selectedImage: UIImage?
+    @Published var pendingImage: UIImage?  // 待确认的照片
+    @Published var showPhotoConfirmation = false
     @Published var isSelectingImage = false
     @Published var imageSelectionError: String?
 
@@ -65,8 +67,9 @@ class PlantDetailViewModel: ObservableObject {
                     // 对于浇水操作，通过ReminderManager来创建日历事件
                     // 这样可以避免重复创建，因为ReminderManager.markAsWatered会处理日历事件
                     try await reminderManager.markAsWatered(plant)
-                } else {
+                } else if actionType != .observation {
                     // 对于其他养护操作（施肥、修剪、除虫），直接创建日历事件
+                    // 观察记录不需要创建日历事件
                     // 获取提醒时间
                     let reminderTime = plant.reminderTime
                     let calendar = Calendar.current
@@ -92,6 +95,8 @@ class PlantDetailViewModel: ObservableObject {
                     )
                     
                     print("✅ [PlantDetailViewModel] \(actionType.displayName)日历事件创建成功")
+                } else {
+                    print("ℹ️ [PlantDetailViewModel] 观察记录不需要创建日历事件")
                 }
                 
                 // 保存所有更改
@@ -152,15 +157,49 @@ class PlantDetailViewModel: ObservableObject {
     
     // MARK: - 照片处理方法
     
-    /// 选择照片
+    /// 选择照片（直接选择，不经过确认）
     func selectImage(_ image: UIImage?) {
         selectedImage = image
         imageSelectionError = nil
     }
     
+    /// 设置待确认的照片
+    func setPendingImage(_ image: UIImage?) {
+        pendingImage = image
+        if image != nil {
+            showPhotoConfirmation = true
+        }
+    }
+    
+    /// 确认使用照片
+    func confirmImage() {
+        selectedImage = pendingImage
+        pendingImage = nil
+        showPhotoConfirmation = false
+        imageSelectionError = nil
+    }
+    
+    /// 取消照片选择
+    func cancelImageSelection() {
+        pendingImage = nil
+        selectedImage = nil
+        showPhotoConfirmation = false
+        imageSelectionError = nil
+    }
+    
+    /// 重新选择照片
+    func retakeImage() {
+        pendingImage = nil
+        showPhotoConfirmation = false
+        // 重新打开照片选择器
+        isSelectingImage = true
+    }
+    
     /// 清除选择的照片
     func clearSelectedImage() {
         selectedImage = nil
+        pendingImage = nil
+        showPhotoConfirmation = false
         imageSelectionError = nil
     }
     

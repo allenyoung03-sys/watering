@@ -344,7 +344,7 @@ struct PlantDetailView: View {
                 .foregroundColor(.secondary)
             
             HStack(spacing: 12) {
-                ForEach(CareActionType.allCases, id: \.self) { actionType in
+                ForEach(careActionTypes, id: \.self) { actionType in
                     ImprovedCareActionButton(
                         actionType: actionType,
                         plant: plant,
@@ -392,6 +392,10 @@ struct PlantDetailView: View {
                 }
             }
         )
+    }
+    
+    private var careActionTypes: [CareActionType] {
+        CareActionType.allCases.filter { $0 != .observation }
     }
     
     private var careRecordsTabs: some View {
@@ -591,10 +595,33 @@ struct PlantDetailView: View {
         }
         .presentationDetents([.medium])
         .sheet(isPresented: $viewModel.isSelectingImage) {
-            ImageSourcePicker(selectedImage: $viewModel.selectedImage)
-                .onDisappear {
-                    viewModel.completeImageSelection()
+            ImageSourcePicker(
+                selectedImages: .constant([]),
+                selectedImage: $viewModel.selectedImage,
+                onImageSelected: { image in
+                    // 当用户选择照片时，设置待确认的照片
+                    viewModel.setPendingImage(image)
                 }
+            )
+            .onDisappear {
+                viewModel.completeImageSelection()
+            }
+        }
+        .sheet(isPresented: $viewModel.showPhotoConfirmation) {
+            if let image = viewModel.pendingImage {
+                PhotoConfirmationView(
+                    image: image,
+                    onConfirm: {
+                        viewModel.confirmImage()
+                    },
+                    onRetake: {
+                        viewModel.retakeImage()
+                    },
+                    onCancel: {
+                        viewModel.cancelImageSelection()
+                    }
+                )
+            }
         }
     }
     
@@ -765,6 +792,8 @@ struct CareActionButton: View {
             return .orange
         case .pestControl:
             return .red
+        case .observation:
+            return .purple
         }
     }
 }
@@ -1079,7 +1108,7 @@ struct ImprovedCareActionButton: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                 
-                Text("已\(actionType.displayName)")
+                Text(buttonText)
                     .font(.plantCaption)
                     .foregroundColor(.white)
             }
@@ -1087,6 +1116,15 @@ struct ImprovedCareActionButton: View {
             .padding(.vertical, 16)
             .background(buttonColor)
             .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
+        }
+    }
+    
+    private var buttonText: String {
+        switch actionType {
+        case .observation:
+            return "记录瞬间"
+        default:
+            return "已\(actionType.displayName)"
         }
     }
     
@@ -1100,6 +1138,8 @@ struct ImprovedCareActionButton: View {
             return .orange
         case .pestControl:
             return .red
+        case .observation:
+            return .purple
         }
     }
 }
@@ -1148,6 +1188,8 @@ struct SuccessOverlay: View {
             return .orange
         case .pestControl:
             return .red
+        case .observation:
+            return .purple
         }
     }
 }

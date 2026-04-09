@@ -54,12 +54,21 @@ struct TimelineNodeView: View {
             HStack {
                 // 植物名称和养护类型
                 HStack(spacing: Constants.Layout.spacingXS) {
-                    Text(record.plant?.name ?? "未知植物")
-                        .font(.plantHeadline)
-                        .foregroundColor(.plantGreen)
-                    
-                    Text("·")
-                        .foregroundColor(.secondary)
+                    if let plantName = record.plant?.name, !plantName.isEmpty {
+                        Text(plantName)
+                            .font(.plantHeadline)
+                            .foregroundColor(.plantGreen)
+                        
+                        Text("·")
+                            .foregroundColor(.secondary)
+                    } else if record.actionType == CareActionType.observation.rawValue {
+                        Text("观察记录")
+                            .font(.plantHeadline)
+                            .foregroundColor(.observationPurple)
+                        
+                        Text("·")
+                            .foregroundColor(.secondary)
+                    }
                     
                     Label(record.actionTypeDisplayName, systemImage: record.actionTypeIconName)
                         .font(.plantCaption)
@@ -126,6 +135,8 @@ struct TimelineNodeView: View {
             return .pruningOrange
         case .pestControl:
             return .pestControlPurple
+        case .observation:
+            return .observationPurple
         }
     }
 }
@@ -160,6 +171,7 @@ extension Color {
     static let fertilizerBrown = Color(red: 0.6, green: 0.4, blue: 0.2)
     static let pruningOrange = Color(red: 0.9, green: 0.5, blue: 0.2)
     static let pestControlPurple = Color(red: 0.6, green: 0.2, blue: 0.8)
+    static let observationPurple = Color(red: 0.7, green: 0.3, blue: 0.9)
 }
 
 // MARK: - 预览

@@ -274,6 +274,8 @@ class CalendarManager {
             icon = "✂️"
         case .pestControl:
             icon = "🐛"
+        case .observation:
+            icon = "👁️"
         }
         
         event.title = "\(icon) \(actionType.displayName)：\(plantName)"

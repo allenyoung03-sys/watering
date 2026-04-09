@@ -11,6 +11,7 @@ enum CareActionType: String, CaseIterable, Codable {
     case fertilizing = "fertilizing" // 施肥
     case pruning = "pruning"        // 修剪
     case pestControl = "pestControl" // 除虫
+    case observation = "observation" // 观察记录
     
     /// 获取操作类型的中文名称
     var displayName: String {
@@ -23,6 +24,8 @@ enum CareActionType: String, CaseIterable, Codable {
             return "修剪"
         case .pestControl:
             return "除虫"
+        case .observation:
+            return "观察记录"
         }
     }
     
@@ -37,6 +40,8 @@ enum CareActionType: String, CaseIterable, Codable {
             return "scissors"
         case .pestControl:
             return "ladybug.fill"
+        case .observation:
+            return "eye.fill"
         }
     }
     
@@ -51,6 +56,8 @@ enum CareActionType: String, CaseIterable, Codable {
             return "orange"
         case .pestControl:
             return "red"
+        case .observation:
+            return "purple"
         }
     }
     
@@ -65,6 +72,8 @@ enum CareActionType: String, CaseIterable, Codable {
             return 90
         case .pestControl:
             return 14
+        case .observation:
+            return 0  // 观察记录没有默认间隔
         }
     }
     
@@ -79,6 +88,8 @@ enum CareActionType: String, CaseIterable, Codable {
             return "修剪植物的枝叶"
         case .pestControl:
             return "防治植物病虫害"
+        case .observation:
+            return "记录植物成长的瞬间"
         }
     }
 }

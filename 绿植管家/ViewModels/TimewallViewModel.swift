@@ -17,7 +17,7 @@ class TimewallViewModel: ObservableObject {
     @Published var isLoading = false
     
     // MARK: - 筛选状态
-    @Published var selectedTimeFilter: TimeFilter = .last30Days
+    @Published var selectedTimeFilter: TimeFilter = .allTime
     @Published var selectedPlantId: UUID? = nil
     @Published var selectedActionType: CareActionType? = nil
     @Published var selectedRoom: String? = nil
@@ -168,14 +168,6 @@ class TimewallViewModel: ObservableObject {
             let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now) ?? now
             return records.filter { $0.date >= thirtyDaysAgo }
             
-        case .thisMonth:
-            let components = calendar.dateComponents([.year, .month], from: now)
-            let startOfMonth = calendar.date(from: components) ?? now
-            let startOfNextMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) ?? now
-            return records.filter { record in
-                record.date >= startOfMonth && record.date < startOfNextMonth
-            }
-            
         case .custom:
             let startOfDay = calendar.startOfDay(for: customStartDate)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: customEndDate)) ?? customEndDate
@@ -237,6 +229,51 @@ class TimewallViewModel: ObservableObject {
         allPlants.first { $0.id == record.plantId }
     }
     
+    // MARK: - 创建观察记录
+    func createObservationRecord(
+        plantId: UUID? = nil,
+        note: String? = nil,
+        images: [UIImage] = [],
+        date: Date = Date()
+    ) async throws {
+        let context = dataManager.context
+        
+        // 创建观察记录
+        let record = CareRecordEntity(context: context)
+        record.id = UUID()
+        record.plantId = plantId ?? UUID() // 如果没有指定植物ID，创建一个临时的
+        record.actionType = CareActionType.observation.rawValue
+        record.date = date
+        record.note = note
+        
+        // 处理多张照片
+        if !images.isEmpty {
+            // 将多张照片转换为Data数组
+            var imageDataArray: [Data] = []
+            for image in images {
+                if let imageData = image.jpegData(compressionQuality: 0.7) {
+                    imageDataArray.append(imageData)
+                }
+            }
+            
+            // 存储照片数据
+            if !imageDataArray.isEmpty {
+                // 这里可以扩展CareRecordEntity来支持多张照片
+                // 暂时先存储第一张照片
+                record.imageData = imageDataArray.first
+                
+                // TODO: 未来可以扩展为支持多张照片存储
+                // record.imageDataArray = imageDataArray as NSArray
+            }
+        }
+        
+        // 保存记录
+        try dataManager.save()
+        
+        // 重新加载数据以更新UI
+        await refreshData()
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -248,7 +285,6 @@ enum TimeFilter: String, CaseIterable {
     case today = "today"
     case last7Days = "last7"
     case last30Days = "last30"
-    case thisMonth = "thisMonth"
     case custom = "custom"
     
     var displayName: String {
@@ -258,11 +294,9 @@ enum TimeFilter: String, CaseIterable {
         case .today:
             return "今天"
         case .last7Days:
-            return "最近7天"
+            return "一周内"
         case .last30Days:
-            return "最近30天"
-        case .thisMonth:
-            return "本月"
+            return "一月内"
         case .custom:
             return "自定义"
         }

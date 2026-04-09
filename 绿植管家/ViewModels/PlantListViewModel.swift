@@ -146,6 +146,9 @@ class PlantListViewModel: ObservableObject {
                     reminderTime: plant.reminderTime
                 )
                 print("✅ 除虫记录已创建，日历事件已更新")
+            case .observation:
+                // 观察记录不需要更新日历事件，只记录
+                print("✅ 观察记录已创建")
             }
             
             // 保存所有更改

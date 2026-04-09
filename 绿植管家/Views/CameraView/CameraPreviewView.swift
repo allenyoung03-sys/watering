@@ -8,6 +8,7 @@ import AVFoundation
 
 struct CameraPreviewView: UIViewControllerRepresentable {
     let session: AVCaptureSession
+    var onPreviewLayerReady: ((AVCaptureVideoPreviewLayer) -> Void)?
 
     func makeUIViewController(context: Context) -> UIViewController {
         let vc = UIViewController()
@@ -17,6 +18,12 @@ struct CameraPreviewView: UIViewControllerRepresentable {
         previewLayer.videoGravity = .resizeAspectFill
         vc.view.layer.addSublayer(previewLayer)
         context.coordinator.previewLayer = previewLayer
+        
+        // 通知预览层已准备好
+        DispatchQueue.main.async {
+            self.onPreviewLayerReady?(previewLayer)
+        }
+        
         return vc
     }
 

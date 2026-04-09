@@ -85,6 +85,8 @@ extension CareRecordEntity {
             return .orange
         case .pestControl:
             return .red
+        case .observation:
+            return .purple
         case .none:
             return .gray
         }

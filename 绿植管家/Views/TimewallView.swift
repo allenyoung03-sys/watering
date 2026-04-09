@@ -9,6 +9,7 @@ struct TimewallView: View {
     @StateObject private var viewModel = TimewallViewModel()
     @State private var selectedTab: TimewallTab = .timeline
     @State private var showingFilterSheet = false
+    @State private var showingObservationForm = false
     
     var body: some View {
         NavigationStack {
@@ -22,12 +23,19 @@ struct TimewallView: View {
             .navigationTitle("时光墙")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    addObservationButton
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     filterButton
                 }
             }
             .sheet(isPresented: $showingFilterSheet) {
                 FilterSheetView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showingObservationForm) {
+                ObservationFormView(viewModel: viewModel)
             }
             .background(Color.backgroundPrimary)
         }
@@ -55,6 +63,16 @@ struct TimewallView: View {
             AlbumView(viewModel: viewModel)
         case .stats:
             StatsView(viewModel: viewModel)
+        }
+    }
+    
+    private var addObservationButton: some View {
+        Button(action: {
+            showingObservationForm = true
+        }) {
+            Image(systemName: "plus.circle.fill")
+                .font(.title3)
+                .foregroundColor(.plantGreen)
         }
     }
     
@@ -383,6 +401,233 @@ extension Date {
         formatter.dateFormat = "yyyy年MM月dd日"
         formatter.locale = Locale(identifier: "zh_CN")
         return formatter.string(from: self)
+    }
+}
+
+// MARK: - 观察记录表单的模态界面类型
+enum ObservationModalType: Equatable {
+    case none
+    case imageSourcePicker
+    case photoConfirmation(UIImage)
+    
+    var isPresented: Bool {
+        self != .none
+    }
+}
+
+// MARK: - 观察记录表单
+struct ObservationFormView: View {
+    @ObservedObject var viewModel: TimewallViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var selectedPlantId: UUID? = nil
+    @State private var note: String = ""
+    @State private var selectedImages: [UIImage] = []
+    @State private var currentModal: ObservationModalType = .none
+    @State private var isSaving = false
+    @State private var showSuccess = false
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                // 植物选择
+                Section("选择植物（可选）") {
+                    Picker("植物", selection: $selectedPlantId) {
+                        Text("不关联植物")
+                            .tag(nil as UUID?)
+                        
+                        ForEach(viewModel.allPlants, id: \.id) { plant in
+                            Text(plant.name)
+                                .tag(plant.id as UUID?)
+                        }
+                    }
+                }
+                
+                // 备注
+                Section("备注") {
+                    TextEditor(text: $note)
+                        .frame(minHeight: 100)
+                        .overlay(
+                            Text("记录植物成长的瞬间...")
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 8)
+                                .allowsHitTesting(false)
+                                .opacity(note.isEmpty ? 1 : 0),
+                            alignment: .topLeading
+                        )
+                }
+                
+                // 照片
+                Section("照片（可选）") {
+                    // 使用增强版照片选择按钮
+                    EnhancedImageSelectButton(
+                        hasImage: !selectedImages.isEmpty,
+                        onTap: {
+                            print("📷 用户点击添加照片按钮")
+                            currentModal = .imageSourcePicker
+                        }
+                    )
+                    
+                    // 显示已选择的照片
+                    if !selectedImages.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: Constants.Layout.spacingS) {
+                                ForEach(0..<selectedImages.count, id: \.self) { index in
+                                    Image(uiImage: selectedImages[index])
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 80, height: 80)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .overlay(
+                                            Button(action: {
+                                                print("🗑️ 删除照片索引: \(index)")
+                                                selectedImages.remove(at: index)
+                                            }) {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .foregroundColor(.white)
+                                                    .background(Color.black.opacity(0.6))
+                                                    .clipShape(Circle())
+                                            }
+                                            .padding(4),
+                                            alignment: .topTrailing
+                                        )
+                                }
+                                
+                                // 添加更多照片按钮
+                                Button(action: {
+                                    print("➕ 用户点击添加更多照片按钮")
+                                    currentModal = .imageSourcePicker
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title)
+                                        .foregroundColor(.plantGreen)
+                                        .frame(width: 80, height: 80)
+                                        .background(Color.plantLightGreen.opacity(0.1))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                            }
+                            .padding(.vertical, Constants.Layout.spacingS)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("记录观察")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") {
+                        print("❌ 用户取消观察记录")
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存") {
+                        print("💾 用户点击保存按钮")
+                        saveObservation()
+                    }
+                    .disabled(isSaving || (note.isEmpty && selectedImages.isEmpty))
+                }
+            }
+            .sheet(isPresented: .constant(currentModal.isPresented), onDismiss: {
+                print("📱 观察记录表单模态界面关闭，当前状态: \(currentModal)")
+                // 当模态界面关闭时，重置状态
+                currentModal = .none
+            }) {
+                switch currentModal {
+                case .imageSourcePicker:
+                    ImageSourcePicker(
+                        selectedImages: $selectedImages,
+                        selectedImage: .constant(nil),
+                        onImageSelected: { image in
+                            print("📸 ObservationFormView: 照片已选择，立即显示确认界面")
+                            // 直接设置当前模态为照片确认界面
+                            // ImageSourcePicker会自动关闭，然后显示PhotoConfirmationView
+                            currentModal = .photoConfirmation(image)
+                        }
+                    )
+                    
+                case .photoConfirmation(let image):
+                    PhotoConfirmationView(
+                        image: image,
+                        onConfirm: {
+                            print("✅ ObservationFormView: 用户确认使用照片")
+                            print("📸 当前已选择照片数量: \(selectedImages.count)")
+                            print("📸 正在添加新照片到数组")
+                            // 确认使用照片
+                            selectedImages.append(image)
+                            print("📸 添加后照片数量: \(selectedImages.count)")
+                            // 立即重置模态状态
+                            currentModal = .none
+                            print("📸 已重置 currentModal 为 .none")
+                        },
+                        onRetake: {
+                            print("🔄 ObservationFormView: 用户选择重新拍摄/选择")
+                            // 重新选择 - 直接打开照片来源选择器
+                            currentModal = .imageSourcePicker
+                            print("📸 已设置 currentModal 为 .imageSourcePicker")
+                        },
+                        onCancel: {
+                            print("❌ ObservationFormView: 用户取消照片选择")
+                            // 取消选择
+                            currentModal = .none
+                            print("📸 已重置 currentModal 为 .none")
+                        }
+                    )
+                    
+                case .none:
+                    EmptyView()
+                }
+            }
+            .overlay(
+                Group {
+                    if isSaving {
+                        ProgressView("保存中...")
+                            .padding()
+                            .background(Color.backgroundSecondary)
+                            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+                    }
+                }
+            )
+            .alert("记录已保存", isPresented: $showSuccess) {
+                Button("确定") {
+                    dismiss()
+                }
+            } message: {
+                Text("观察记录已成功保存到时光墙")
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSaving)
+            .animation(.easeInOut(duration: 0.3), value: selectedImages)
+        }
+        .presentationDetents([.medium, .large])
+    }
+    
+    private func saveObservation() {
+        guard !isSaving else { return }
+        
+        isSaving = true
+        
+        Task {
+            do {
+                try await viewModel.createObservationRecord(
+                    plantId: selectedPlantId,
+                    note: note.isEmpty ? nil : note,
+                    images: selectedImages
+                )
+                
+                await MainActor.run {
+                    isSaving = false
+                    showSuccess = true
+                }
+            } catch {
+                await MainActor.run {
+                    isSaving = false
+                    // TODO: 显示错误提示
+                    print("保存失败: \(error)")
+                }
+            }
+        }
     }
 }
 

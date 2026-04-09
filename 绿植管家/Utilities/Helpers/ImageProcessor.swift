@@ -70,6 +70,43 @@ class ImageProcessor {
         return jpegData
     }
     
+    /// 处理相机图片，确保尺寸与取景框匹配
+    /// - Parameters:
+    ///   - image: 相机拍摄的原始图片
+    ///   - targetAspectRatio: 目标宽高比（默认4:3）
+    /// - Returns: 处理后的图片
+    func processCameraImage(_ image: UIImage, targetAspectRatio: CGFloat = 3.0/4.0) -> UIImage {
+        let originalSize = image.size
+        let originalAspectRatio = originalSize.width / originalSize.height
+        
+        // 如果原始宽高比与目标宽高比接近（误差在5%内），直接返回
+        if abs(originalAspectRatio - targetAspectRatio) < 0.05 {
+            return resizeImage(image, maxDimension: maxImageDimension)
+        }
+        
+        // 否则，裁剪到目标宽高比
+        let cropRect: CGRect
+        if originalAspectRatio > targetAspectRatio {
+            // 图片太宽，需要裁剪宽度
+            let targetWidth = originalSize.height * targetAspectRatio
+            let xOffset = (originalSize.width - targetWidth) / 2.0
+            cropRect = CGRect(x: xOffset, y: 0, width: targetWidth, height: originalSize.height)
+        } else {
+            // 图片太高，需要裁剪高度
+            let targetHeight = originalSize.width / targetAspectRatio
+            let yOffset = (originalSize.height - targetHeight) / 2.0
+            cropRect = CGRect(x: 0, y: yOffset, width: originalSize.width, height: targetHeight)
+        }
+        
+        // 裁剪图片
+        guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+            return resizeImage(image, maxDimension: maxImageDimension)
+        }
+        
+        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+        return resizeImage(croppedImage, maxDimension: maxImageDimension)
+    }
+    
     /// 调整图片尺寸
     func resizeImage(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
         let originalSize = image.size

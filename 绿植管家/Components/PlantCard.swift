@@ -426,6 +426,8 @@ struct CareSuccessOverlay: View {
             return .orange
         case .pestControl:
             return .red
+        case .observation:
+            return .purple
         }
     }
 }
@@ -443,6 +445,8 @@ extension CareActionType {
             return "修剪"
         case .pestControl:
             return "除虫"
+        case .observation:
+            return "观察"
         }
     }
 }

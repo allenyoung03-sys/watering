@@ -222,6 +222,9 @@ extension Plant {
                 value: Int(self.pestControlInterval),
                 to: now
             ) ?? now
+        case .observation:
+            // 观察记录不更新任何养护日期
+            break
         }
         
         return record
@@ -248,6 +251,9 @@ extension Plant {
             return nextPruningDate ?? Date()
         case .pestControl:
             return nextPestControlDate ?? Date()
+        case .observation:
+            // 观察记录没有下次养护日期
+            return Date()
         }
     }
     
@@ -262,6 +268,9 @@ extension Plant {
             return lastPrunedDate ?? Date()
         case .pestControl:
             return lastPestControlDate ?? Date()
+        case .observation:
+            // 观察记录没有上次养护日期
+            return Date()
         }
     }
     
@@ -276,6 +285,9 @@ extension Plant {
             return Int(pruningInterval)
         case .pestControl:
             return Int(pestControlInterval)
+        case .observation:
+            // 观察记录没有养护间隔
+            return 0
         }
     }
     
@@ -290,23 +302,38 @@ extension Plant {
             pruningInterval = Int16(interval)
         case .pestControl:
             pestControlInterval = Int16(interval)
+        case .observation:
+            // 观察记录不需要设置养护间隔
+            break
         }
     }
     
     /// 检查是否需要养护
     func needsCare(for actionType: CareActionType) -> Bool {
+        if actionType == .observation {
+            // 观察记录永远不需要养护
+            return false
+        }
         let nextDate = nextCareDate(for: actionType)
         return DateCalculator.shared.needsWatering(nextWateringDate: nextDate)
     }
     
     /// 检查是否即将需要养护
     func careSoon(for actionType: CareActionType) -> Bool {
+        if actionType == .observation {
+            // 观察记录永远不会即将需要养护
+            return false
+        }
         let nextDate = nextCareDate(for: actionType)
         return DateCalculator.shared.wateringSoon(nextWateringDate: nextDate)
     }
     
     /// 获取养护进度
     func careProgress(for actionType: CareActionType) -> Double {
+        if actionType == .observation {
+            // 观察记录没有养护进度
+            return 0
+        }
         let lastDate = lastCareDate(for: actionType)
         let nextDate = nextCareDate(for: actionType)
         return DateCalculator.shared.wateringProgress(
@@ -324,6 +351,10 @@ extension Plant {
     
     /// 获取距离下次养护的天数
     func daysUntilNextCare(for actionType: CareActionType) -> Int {
+        if actionType == .observation {
+            // 观察记录没有下次养护
+            return 0
+        }
         let nextDate = nextCareDate(for: actionType)
         return max(0, DateCalculator.shared.daysBetween(Date(), and: nextDate))
     }
