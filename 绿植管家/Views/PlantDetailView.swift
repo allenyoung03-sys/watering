@@ -542,87 +542,85 @@ struct PlantDetailView: View {
                     .padding(.horizontal)
                 }
                 
-                // 照片选择按钮 - 使用新的EnhancedImageSelectButton
-                EnhancedImageSelectButton(
-                    hasImage: viewModel.hasSelectedImage,
-                    onTap: {
-                        viewModel.startImageSelection()
-                    }
-                )
-                .padding(.horizontal)
-                
-                // 备注输入
-                TextField("添加备注（可选）", text: $viewModel.noteText, axis: .vertical)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .lineLimit(3...6)
-                    .padding(.horizontal)
-                
-                // 错误提示
-                if let error = viewModel.imageSelectionError {
-                    HStack(spacing: 6) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.statusUrgent)
-                        Text(error)
-                            .font(.plantCaption)
-                            .foregroundColor(.statusUrgent)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.statusUrgent.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .padding(.horizontal)
-                }
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("添加记录")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
-                        viewModel.showNoteInput = false
-                        viewModel.noteText = ""
-                        viewModel.clearSelectedImage()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
-                        viewModel.completeAddCareRecord()
-                    }
-                }
-            }
-        }
-        .presentationDetents([.medium])
-        .sheet(isPresented: $viewModel.isSelectingImage) {
-            ImageSourcePicker(
-                selectedImages: .constant([]),
-                selectedImage: $viewModel.selectedImage,
-                onImageSelected: { image in
-                    // 当用户选择照片时，设置待确认的照片
-                    viewModel.setPendingImage(image)
+            // 照片选择按钮 - 使用新的EnhancedImageSelectButton
+            EnhancedImageSelectButton(
+                hasImage: viewModel.hasSelectedImage,
+                onTap: {
+                    viewModel.startImageSelection()
                 }
             )
-            .onDisappear {
-                viewModel.completeImageSelection()
+            .padding(.horizontal)
+            
+            // 备注输入
+            TextField("添加备注（可选）", text: $viewModel.noteText, axis: .vertical)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .lineLimit(3...6)
+                .padding(.horizontal)
+            
+            // 错误提示
+            if let error = viewModel.imageSelectionError {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.statusUrgent)
+                    Text(error)
+                        .font(.plantCaption)
+                        .foregroundColor(.statusUrgent)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.statusUrgent.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding(.horizontal)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .navigationTitle("添加记录")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("取消") {
+                    viewModel.showNoteInput = false
+                    viewModel.noteText = ""
+                    viewModel.clearSelectedImage()
+                }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("完成") {
+                    viewModel.completeAddCareRecord()
+                }
             }
         }
-        .sheet(isPresented: $viewModel.showPhotoConfirmation) {
-            if let image = viewModel.pendingImage {
-                PhotoConfirmationView(
-                    image: image,
-                    onConfirm: {
-                        viewModel.confirmImage()
-                    },
-                    onRetake: {
-                        viewModel.retakeImage()
-                    },
-                    onCancel: {
-                        viewModel.cancelImageSelection()
-                    }
-                )
+    }
+    .presentationDetents([.medium])
+    .sheet(isPresented: $viewModel.isSelectingImage) {
+        ImageSourcePicker(
+            selectedImages: .constant([]),
+            selectedImage: $viewModel.selectedImage,
+            onImageSelected: { image in
+                // 当用户选择照片时，设置待确认的照片
+                // 注意：这里不调用completeImageSelection()，因为setPendingImage会处理状态
+                viewModel.setPendingImage(image)
             }
+        )
+    }
+    .sheet(isPresented: $viewModel.showPhotoConfirmation) {
+        if let image = viewModel.pendingImage {
+            PhotoConfirmationView(
+                image: image,
+                onConfirm: {
+                    viewModel.confirmImage()
+                },
+                onRetake: {
+                    viewModel.retakeImage()
+                },
+                onCancel: {
+                    viewModel.cancelImageSelection()
+                }
+            )
         }
+    }
     }
     
     private var noteEditSheet: some View {

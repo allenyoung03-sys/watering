@@ -168,6 +168,7 @@ class PlantDetailViewModel: ObservableObject {
         pendingImage = image
         if image != nil {
             showPhotoConfirmation = true
+            isSelectingImage = false  // 关闭照片选择器，显示确认界面
         }
     }
     
