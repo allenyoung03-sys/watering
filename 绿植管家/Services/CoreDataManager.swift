@@ -167,10 +167,16 @@ class CoreDataManager {
         imageUrlAttr.name = "imageUrl"
         imageUrlAttr.attributeType = .stringAttributeType
         imageUrlAttr.isOptional = true
+        
+        let imageDataArrayAttr = NSAttributeDescription()
+        imageDataArrayAttr.name = "imageDataArray"
+        imageDataArrayAttr.attributeType = .transformableAttributeType
+        imageDataArrayAttr.isOptional = true
+        imageDataArrayAttr.valueTransformerName = NSValueTransformerName.secureUnarchiveFromDataTransformerName.rawValue
 
         careRecordEntity.properties = [
             recordIdAttr, plantIdAttr, actionTypeAttr, dateAttr, noteAttr,
-            careRecordImageDataAttr, imageUrlAttr
+            careRecordImageDataAttr, imageUrlAttr, imageDataArrayAttr
         ]
 
         // 创建Plant和CareRecordEntity之间的关系
@@ -236,6 +242,14 @@ class CoreDataManager {
 
     func delete(_ plant: Plant) {
         context.delete(plant)
+        try? save()
+    }
+    
+    /// 删除养护记录
+    func deleteCareRecord(_ record: CareRecordEntity) {
+        // 清理照片文件
+        record.clearAllImages()
+        context.delete(record)
         try? save()
     }
     

@@ -7,6 +7,9 @@ import SwiftUI
 
 struct TimelineNodeView: View {
     let record: CareRecordEntity
+    @StateObject private var viewModel = TimewallViewModel()
+    @State private var showingDeleteConfirmation = false
+    @State private var isDeleting = false
     
     var body: some View {
         HStack(alignment: .top, spacing: Constants.Layout.spacingM) {
@@ -26,6 +29,50 @@ struct TimelineNodeView: View {
         .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
         .padding(.horizontal, Constants.Layout.spacingM)
         .padding(.vertical, Constants.Layout.spacingXS)
+        .contextMenu {
+            Button(role: .destructive) {
+                showingDeleteConfirmation = true
+            } label: {
+                Label("删除记录", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                showingDeleteConfirmation = true
+            } label: {
+                Label("删除", systemImage: "trash")
+            }
+        }
+        .alert("删除记录", isPresented: $showingDeleteConfirmation) {
+            Button("取消", role: .cancel) { }
+            Button("删除", role: .destructive) {
+                deleteRecord()
+            }
+        } message: {
+            Text("确定要删除这条记录吗？此操作无法撤销。")
+        }
+        .overlay {
+            if isDeleting {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .clipShape(Circle())
+            }
+        }
+    }
+    
+    private func deleteRecord() {
+        Task {
+            isDeleting = true
+            do {
+                try await viewModel.deleteRecord(record)
+            } catch {
+                print("删除记录失败: \(error)")
+                // 这里可以添加错误提示
+            }
+            isDeleting = false
+        }
     }
     
     private var timelineNode: some View {
@@ -93,15 +140,17 @@ struct TimelineNodeView: View {
             }
             
             // 照片预览（如果有）
-            if let imageData = record.imageData,
-               let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 120)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
-                    .padding(.top, Constants.Layout.spacingS)
+            let images = record.images
+            if !images.isEmpty {
+                PhotoGalleryView(
+                    images: images,
+                    maxHeight: 160,
+                    onImageTapped: { index in
+                        // 这里可以添加额外的点击处理逻辑
+                        print("照片被点击: \(index)")
+                    }
+                )
+                .padding(.top, Constants.Layout.spacingS)
             }
             
             // 房间信息（如果有）

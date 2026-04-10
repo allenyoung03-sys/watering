@@ -5,12 +5,12 @@
 
 import SwiftUI
 import PhotosUI
+import UIKit
 
 struct AddPlantView: View {
     var onDismiss: (() -> Void)?
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = AddPlantViewModel()
-    @State private var showCamera = false
     @State private var showManualSearch = false
 
     var body: some View {
@@ -26,29 +26,50 @@ struct AddPlantView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                     manualSearchField
-                    HStack(spacing: 20) {
-                        PhotosPicker(
-                            selection: $viewModel.selectedItem,
-                            matching: .images,
-                            photoLibrary: .shared()
-                        ) {
-                        optionButton(
-                            icon: "photo.on.rectangle.angled",
-                            title: "相册"
-                        )
+                    
+                    // 照片预览区域
+                    if viewModel.hasSelectedImage {
+                        VStack(spacing: 8) {
+                            if let thumbnail = viewModel.imageThumbnail {
+                                Image(uiImage: thumbnail)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.plantLightGreen, lineWidth: 2)
+                                    )
+                            }
+                            
+                            Button(action: {
+                                viewModel.clearSelectedImage()
+                            }) {
+                                Label("移除照片", systemImage: "trash")
+                                    .font(.plantCaption)
+                                    .foregroundColor(.statusUrgent)
+                            }
                         }
-                        .onChange(of: viewModel.selectedItem) { _ in
-                            Task { await viewModel.loadImage(from: viewModel.selectedItem) }
-                        }
-                        cameraButton
-                        Button {
-                            showManualSearch = true
-                        } label: {
-                            optionButton(icon: "pencil", title: "手动")
-                        }
-                        .buttonStyle(.plain)
+                        .padding(.horizontal)
                     }
-                    .padding(.top, 8)
+                    
+                    // 照片选择按钮 - 使用EnhancedImageSelectButton
+                    EnhancedImageSelectButton(
+                        hasImage: viewModel.hasSelectedImage,
+                        onTap: {
+                            viewModel.startImageSelection()
+                        }
+                    )
+                    .padding(.horizontal)
+                    
+                    // 手动搜索按钮
+                    Button {
+                        showManualSearch = true
+                    } label: {
+                        optionButton(icon: "pencil", title: "手动搜索")
+                    }
+                    .buttonStyle(.plain)
+                    
                     Text("AI 智能识别")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(.secondary)
@@ -65,21 +86,40 @@ struct AddPlantView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showCamera) {
-                CameraView(
-                    onImageCaptured: { image in
-                        showCamera = false
-                        viewModel.selectedImage = image
-                        viewModel.identificationResult = nil
-                        Task { await viewModel.identifyFromImage() }
-                    },
-                    onDismiss: { showCamera = false }
+            // 照片选择器sheet
+            .sheet(isPresented: $viewModel.isSelectingImage) {
+                ImageSourcePicker(
+                    selectedImages: .constant([]),
+                    selectedImage: $viewModel.selectedImage,
+                    onImageSelected: { image in
+                        // 当用户选择照片时，设置待确认的照片
+                        viewModel.setPendingImage(image)
+                    }
                 )
             }
-            .onChange(of: viewModel.selectedImage) { newImage in
-                if newImage != nil && viewModel.identificationResult == nil {
-                    Task { await viewModel.identifyFromImage() }
+            // 照片确认sheet
+            .sheet(isPresented: $viewModel.showPhotoConfirmation) {
+                if let image = viewModel.pendingImage {
+                    PhotoConfirmationView(
+                        image: image,
+                        onConfirm: {
+                            viewModel.confirmImage()
+                            // 确认照片后开始识别
+                            Task { await viewModel.identifyFromImage() }
+                        },
+                        onRetake: {
+                            viewModel.retakeImage()
+                        },
+                        onCancel: {
+                            viewModel.cancelImageSelection()
+                        }
+                    )
                 }
+            }
+            .onChange(of: viewModel.selectedImage) { newImage in
+                // 注意：现在这个逻辑已经通过照片确认流程处理
+                // 当用户确认照片后，selectedImage会被设置，然后开始识别
+                // 这里不需要额外的处理
             }
             .sheet(isPresented: $viewModel.showResult) {
                 if let result = viewModel.identificationResult,
@@ -161,20 +201,6 @@ struct AddPlantView: View {
         .background(Color.backgroundSecondary)
         .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
         .shadow(color: .black.opacity(0.05), radius: 4)
-    }
-
-    private var cameraButton: some View {
-        Button {
-            showCamera = true
-        } label: {
-            Image(systemName: "camera.fill")
-                .font(.title)
-                .foregroundColor(.white)
-                .frame(width: 64, height: 64)
-                .background(Color.plantGreen)
-                .clipShape(Circle())
-        }
-        .buttonStyle(.plain)
     }
 }
 

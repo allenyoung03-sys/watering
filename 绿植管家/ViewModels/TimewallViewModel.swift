@@ -248,27 +248,30 @@ class TimewallViewModel: ObservableObject {
         
         // 处理多张照片
         if !images.isEmpty {
-            // 将多张照片转换为Data数组
-            var imageDataArray: [Data] = []
-            for image in images {
-                if let imageData = image.jpegData(compressionQuality: 0.7) {
-                    imageDataArray.append(imageData)
+            do {
+                // 使用新的setImages方法存储所有照片
+                try record.setImages(images)
+            } catch {
+                print("保存照片时出错: \(error)")
+                // 如果出错，尝试只保存第一张照片（向后兼容）
+                if let firstImage = images.first,
+                   let imageData = firstImage.jpegData(compressionQuality: 0.7) {
+                    record.imageData = imageData
                 }
-            }
-            
-            // 存储照片数据
-            if !imageDataArray.isEmpty {
-                // 这里可以扩展CareRecordEntity来支持多张照片
-                // 暂时先存储第一张照片
-                record.imageData = imageDataArray.first
-                
-                // TODO: 未来可以扩展为支持多张照片存储
-                // record.imageDataArray = imageDataArray as NSArray
             }
         }
         
         // 保存记录
         try dataManager.save()
+        
+        // 重新加载数据以更新UI
+        await refreshData()
+    }
+    
+    // MARK: - 删除记录
+    func deleteRecord(_ record: CareRecordEntity) async throws {
+        // 删除记录
+        dataManager.deleteCareRecord(record)
         
         // 重新加载数据以更新UI
         await refreshData()

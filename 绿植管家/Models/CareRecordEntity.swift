@@ -15,6 +15,7 @@ public class CareRecordEntity: NSManagedObject, Identifiable {
     @NSManaged public var note: String?
     @NSManaged public var imageData: Data?
     @NSManaged public var imageUrl: String?
+    @NSManaged public var imageDataArray: NSArray? // Transformable类型，存储[Data]数组
     
     @NSManaged public var plant: Plant?
 }
@@ -107,7 +108,27 @@ extension CareRecordEntity {
     
     /// 检查是否有照片
     var hasImage: Bool {
-        imageData != nil || (imageUrl != nil && !imageUrl!.isEmpty)
+        imageData != nil || (imageUrl != nil && !imageUrl!.isEmpty) || !imageDataArrayData.isEmpty
+    }
+    
+    /// 获取所有照片数据数组
+    var imageDataArrayData: [Data] {
+        get {
+            (imageDataArray as? [Data]) ?? []
+        }
+        set {
+            imageDataArray = newValue as NSArray
+        }
+    }
+    
+    /// 获取照片数量
+    var imageCount: Int {
+        imageDataArrayData.count
+    }
+    
+    /// 检查是否有多个照片
+    var hasMultipleImages: Bool {
+        imageDataArrayData.count > 1
     }
     
     /// 获取照片（优先使用imageData，其次尝试从imageUrl加载）
@@ -119,8 +140,47 @@ extension CareRecordEntity {
             if let data = try? Data(contentsOf: url) {
                 return UIImage(data: data)
             }
+        } else if let firstData = imageDataArrayData.first {
+            return UIImage(data: firstData)
         }
         return nil
+    }
+    
+    /// 获取所有照片
+    var images: [UIImage] {
+        // 优先使用imageDataArray中的照片（支持多张照片）
+        if !imageDataArrayData.isEmpty {
+            var result: [UIImage] = []
+            for data in imageDataArrayData {
+                if let image = UIImage(data: data) {
+                    result.append(image)
+                }
+            }
+            return result
+        }
+        
+        // 如果没有imageDataArray，尝试从imageData加载（向后兼容单张照片）
+        if let data = imageData, let image = UIImage(data: data) {
+            return [image]
+        }
+        
+        // 如果还没有照片，尝试从imageUrl加载
+        if let urlString = imageUrl, let url = URL(string: urlString) {
+            if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                return [image]
+            }
+        }
+        
+        // 没有照片
+        return []
+    }
+    
+    /// 获取指定索引的照片
+    func image(at index: Int) -> UIImage? {
+        guard index >= 0 && index < imageDataArrayData.count else {
+            return nil
+        }
+        return UIImage(data: imageDataArrayData[index])
     }
     
     /// 获取缩略图（用于列表显示）
@@ -137,11 +197,12 @@ extension CareRecordEntity {
         return thumbnailImage
     }
     
-    /// 设置照片
+    /// 设置单张照片（向后兼容）
     func setImage(_ image: UIImage?, maxDimension: CGFloat = 800, quality: CGFloat = 0.7) throws {
         guard let image = image else {
             self.imageData = nil
             self.imageUrl = nil
+            self.imageDataArray = nil
             return
         }
         
@@ -161,15 +222,106 @@ extension CareRecordEntity {
         // 存储数据
         self.imageData = compressedData
         self.imageUrl = fileName
+        self.imageDataArray = [compressedData] as NSArray
     }
     
-    /// 清除照片
-    func clearImage() {
+    /// 设置多张照片
+    func setImages(_ images: [UIImage], maxDimension: CGFloat = 800, quality: CGFloat = 0.7) throws {
+        guard !images.isEmpty else {
+            self.imageData = nil
+            self.imageUrl = nil
+            self.imageDataArray = nil
+            return
+        }
+        
+        var compressedDataArray: [Data] = []
+        
+        for (index, image) in images.enumerated() {
+            // 压缩图片
+            let compressedData = try ImageProcessor.shared.compressImage(
+                image,
+                maxDimension: maxDimension,
+                quality: quality
+            )
+            
+            compressedDataArray.append(compressedData)
+            
+            // 如果是第一张照片，也存储到imageData（向后兼容）
+            if index == 0 {
+                self.imageData = compressedData
+                
+                // 生成唯一的文件名
+                let fileName = "care_record_\(id.uuidString).jpg"
+                self.imageUrl = fileName
+                
+                // 保存到缓存
+                try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
+            }
+        }
+        
+        // 存储所有照片数据
+        self.imageDataArray = compressedDataArray as NSArray
+    }
+    
+    /// 添加照片
+    func addImage(_ image: UIImage, maxDimension: CGFloat = 800, quality: CGFloat = 0.7) throws {
+        // 压缩图片
+        let compressedData = try ImageProcessor.shared.compressImage(
+            image,
+            maxDimension: maxDimension,
+            quality: quality
+        )
+        
+        var currentArray = imageDataArrayData
+        currentArray.append(compressedData)
+        self.imageDataArray = currentArray as NSArray
+        
+        // 如果这是第一张照片，也更新imageData（向后兼容）
+        if currentArray.count == 1 {
+            self.imageData = compressedData
+            
+            // 生成唯一的文件名
+            let fileName = "care_record_\(id.uuidString).jpg"
+            self.imageUrl = fileName
+            
+            // 保存到缓存
+            try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
+        }
+    }
+    
+    /// 移除指定索引的照片
+    func removeImage(at index: Int) {
+        guard index >= 0 && index < imageDataArrayData.count else {
+            return
+        }
+        
+        var currentArray = imageDataArrayData
+        currentArray.remove(at: index)
+        self.imageDataArray = currentArray as NSArray
+        
+        // 如果数组为空，清除所有照片数据
+        if currentArray.isEmpty {
+            self.imageData = nil
+            self.imageUrl = nil
+        } else if index == 0 {
+            // 如果移除了第一张照片，更新imageData为新的第一张
+            self.imageData = currentArray.first
+        }
+    }
+    
+    /// 清除所有照片
+    func clearAllImages() {
         if let urlString = imageUrl {
             ImageProcessor.shared.removeCachedImage(for: urlString)
         }
         imageData = nil
         imageUrl = nil
+        imageDataArray = nil
+    }
+    
+    /// 清除照片（向后兼容）
+    func clearImage() {
+        clearAllImages()
     }
     
     /// 模拟数据（用于预览）
