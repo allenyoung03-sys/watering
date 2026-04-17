@@ -140,7 +140,7 @@ struct TimelineView: View {
             .padding(.vertical, Constants.Layout.spacingM)
         }
         .refreshable {
-            await viewModel.refreshData()
+            viewModel.refreshData()
         }
     }
     

@@ -100,7 +100,7 @@ class TimewallViewModel: ObservableObject {
         isLoading = false
     }
     
-    func refreshData() async {
+    func refreshData() {
         print("🔄 [TimewallViewModel] 开始刷新数据")
         
         // 直接调用 loadData()，因为整个类已经是 @MainActor
@@ -273,51 +273,9 @@ class TimewallViewModel: ObservableObject {
         try dataManager.save()
         
         // 重新加载数据以更新UI
-        await refreshData()
+        refreshData()
     }
     
-    // MARK: - 删除记录
-    func deleteRecord(_ record: CareRecordEntity) async throws {
-        print("🗑️ [TimewallViewModel] 开始删除记录: \(record.id) (\(record.actionTypeDisplayName))")
-        print("🗑️ [TimewallViewModel] 记录类型: \(record.actionType), 是否有照片: \(record.hasImage)")
-        
-        // 记录当前线程信息
-        print("🗑️ [TimewallViewModel] 当前线程: \(Thread.isMainThread ? "主线程" : "后台线程")")
-        
-        do {
-            // 注意：不再在这里清理照片，因为 CoreDataManager.deleteCareRecord 中的 syncClearAllImages 会处理
-            // 这样可以避免重复清理和竞态条件
-            print("🗑️ [TimewallViewModel] 正在执行CoreData删除操作...")
-            print("🗑️ [TimewallViewModel] 删除前检查: 记录ID = \(record.id), 植物ID = \(record.plantId)")
-            
-            // 执行CoreData删除（确保在主线程）
-            try await MainActor.run {
-                try dataManager.deleteCareRecord(record)
-            }
-            print("✅ [TimewallViewModel] CoreData删除操作完成")
-            
-            print("🗑️ [TimewallViewModel] 开始刷新数据...")
-            // 重新加载数据以更新UI
-            await refreshData()
-            print("✅ [TimewallViewModel] 数据刷新完成")
-            
-        } catch {
-            print("❌ [TimewallViewModel] 删除记录失败: \(error)")
-            print("❌ [TimewallViewModel] 错误类型: \(type(of: error))")
-            print("❌ [TimewallViewModel] 错误详情: \(error.localizedDescription)")
-            
-            // 如果是文件操作错误，记录更多信息
-            if let nsError = error as? NSError {
-                print("❌ [TimewallViewModel] NSError域: \(nsError.domain)")
-                print("❌ [TimewallViewModel] NSError代码: \(nsError.code)")
-                print("❌ [TimewallViewModel] NSError用户信息: \(nsError.userInfo)")
-            }
-            
-            throw error
-        }
-        
-        print("✅ [TimewallViewModel] 删除记录流程完成")
-    }
     
     deinit {
         cleanupObservers()
