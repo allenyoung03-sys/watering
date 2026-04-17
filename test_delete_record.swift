@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-@testable import 浇水吧
+@testable import 绿植管家
 
 // 测试 CoreDataManager 中的删除功能
 func testDeleteRecord() {

@@ -24,6 +24,8 @@ class PlantDetailViewModel: ObservableObject {
     @Published var showPhotoConfirmation = false
     @Published var isSelectingImage = false
     @Published var imageSelectionError: String?
+    @Published var isDeletingRecord = false
+    @Published var deleteError: String?
 
     private let dataManager = CoreDataManager.shared
     private let reminderManager = ReminderManager.shared
@@ -235,13 +237,48 @@ class PlantDetailViewModel: ObservableObject {
     
     /// 删除养护记录
     func deleteCareRecord(_ record: CareRecordEntity) {
-        Task {
+        print("🗑️ [PlantDetailViewModel] 开始删除养护记录: \(record.id) (\(record.actionDisplayName))")
+        
+        // 重置错误状态
+        deleteError = nil
+        
+        Task { @MainActor in
             do {
+                // 设置删除状态
+                isDeletingRecord = true
+                print("🗑️ [PlantDetailViewModel] 正在删除记录...")
+                
+                // 如果是观察记录，需要特殊处理照片缓存
+                if record.careActionType == .observation {
+                    print("🗑️ [PlantDetailViewModel] 这是观察记录，清理照片缓存...")
+                    await record.clearAllImages()
+                }
+                
+                // 从CoreData删除记录
                 dataManager.context.delete(record)
+                
+                // 保存更改
                 try dataManager.save()
+                
+                print("✅ [PlantDetailViewModel] 养护记录删除成功: \(record.id)")
+                
+                // 删除完成后，发送通知让UI刷新
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("CareRecordDeleted"),
+                    object: nil,
+                    userInfo: ["recordId": record.id]
+                )
+                
             } catch {
-                print("删除养护记录失败: \(error)")
+                print("❌ [PlantDetailViewModel] 删除养护记录失败: \(error)")
+                print("❌ [PlantDetailViewModel] 错误详情: \(error.localizedDescription)")
+                
+                // 设置错误信息
+                deleteError = "删除失败: \(error.localizedDescription)"
             }
+            
+            // 无论成功还是失败，都要结束删除状态
+            isDeletingRecord = false
         }
     }
 

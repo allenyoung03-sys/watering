@@ -221,7 +221,7 @@ struct TimelineView: View {
             // 时间线
             ForEach(Array(viewModel.groupedRecords.keys.sorted(by: >)), id: \.self) { date in
                 if let records = viewModel.groupedRecords[date] {
-                    TimelineDaySection(date: date, records: records)
+                    TimelineDaySection(date: date, records: records, viewModel: viewModel)
                 }
             }
         }
@@ -232,6 +232,7 @@ struct TimelineView: View {
 struct TimelineDaySection: View {
     let date: Date
     let records: [CareRecordEntity]
+    @ObservedObject var viewModel: TimewallViewModel
     
     var body: some View {
         VStack(spacing: 0) {
@@ -253,7 +254,7 @@ struct TimelineDaySection: View {
             
             // 时间线记录
             ForEach(records) { record in
-                TimelineNodeView(record: record)
+                TimelineNodeView(record: record, viewModel: viewModel)
             }
         }
         .padding(.bottom, Constants.Layout.spacingL)

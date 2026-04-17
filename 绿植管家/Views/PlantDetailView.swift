@@ -442,10 +442,27 @@ struct PlantDetailView: View {
                 viewModel.allCareRecords : 
                 viewModel.careRecords(for: selectedTab)
             
-            if records.isEmpty {
+            if viewModel.isDeletingRecord {
+                deletingLoadingView
+            } else if records.isEmpty {
                 emptyRecordsView
             } else {
                 recordsListView(records)
+            }
+            
+            // 显示删除错误信息
+            if let deleteError = viewModel.deleteError {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.statusUrgent)
+                    Text(deleteError)
+                        .font(.plantCaption)
+                        .foregroundColor(.statusUrgent)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.statusUrgent.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
         .padding(Constants.Layout.spacingM)
@@ -470,6 +487,22 @@ struct PlantDetailView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
+        .background(Color.backgroundPrimary)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+    }
+    
+    private var deletingLoadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.2)
+                .tint(.plantGreen)
+            
+            Text("正在删除记录...")
+                .font(.plantBody)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 32)
         .background(Color.backgroundPrimary)
         .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
     }

@@ -166,6 +166,52 @@ class ImageProcessor {
         try? fileManager.removeItem(at: fileURL)
     }
     
+    /// 安全地删除缓存图片（带错误处理，不会抛出异常）
+    func safeRemoveCachedImage(for key: String) {
+        let fileURL = cacheDirectory.appendingPathComponent("\(key).jpg")
+        
+        // 检查文件是否存在
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            print("⚠️ [ImageProcessor] 缓存文件不存在: \(key)")
+            return // 文件不存在，不需要删除
+        }
+        
+        do {
+            // 检查文件权限
+            let attributes = try fileManager.attributesOfItem(atPath: fileURL.path)
+            print("🗑️ [ImageProcessor] 删除缓存文件: \(key), 大小: \(attributes[.size] ?? "未知") 字节")
+            
+            // 删除文件
+            try fileManager.removeItem(at: fileURL)
+            print("✅ [ImageProcessor] 成功删除缓存文件: \(key)")
+        } catch {
+            print("❌ [ImageProcessor] 删除缓存文件失败: \(error)")
+            print("❌ [ImageProcessor] 文件路径: \(fileURL.path)")
+            print("❌ [ImageProcessor] 错误详情: \(error.localizedDescription)")
+            
+            // 如果是权限错误，尝试修复权限
+            if (error as NSError).domain == NSCocoaErrorDomain &&
+               (error as NSError).code == NSFileWriteNoPermissionError {
+                print("⚠️ [ImageProcessor] 尝试修复文件权限...")
+                try? fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: fileURL.path)
+                
+                // 再次尝试删除
+                do {
+                    try fileManager.removeItem(at: fileURL)
+                    print("✅ [ImageProcessor] 修复权限后成功删除文件")
+                } catch {
+                    // 即使修复权限后仍然失败，记录错误但不抛出异常
+                    print("⚠️ [ImageProcessor] 修复权限后仍然无法删除文件，跳过此文件")
+                    // 不抛出异常，避免应用崩溃
+                }
+            } else {
+                // 对于其他错误，记录但不抛出异常，避免应用崩溃
+                print("⚠️ [ImageProcessor] 文件删除失败，跳过此文件以避免应用崩溃")
+                // 不抛出异常
+            }
+        }
+    }
+    
     /// 清理过期缓存
     private func cleanupOldCache() {
         DispatchQueue.global(qos: .background).async {
