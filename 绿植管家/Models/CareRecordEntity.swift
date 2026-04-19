@@ -309,9 +309,9 @@ extension CareRecordEntity {
         }
     }
     
-    /// 清除所有照片
-    func clearAllImages() async {
-        print("🗑️ [CareRecordEntity] 开始清理照片缓存: \(id) (\(actionDisplayName))")
+    /// 清除所有照片（同步版本）
+    func clearAllImages() {
+        print("🗑️ [CareRecordEntity] 开始同步清理照片缓存: \(id) (\(actionDisplayName))")
         
         // 记录当前线程信息
         print("🗑️ [CareRecordEntity] 当前线程: \(Thread.isMainThread ? "主线程" : "后台线程")")
@@ -341,9 +341,7 @@ extension CareRecordEntity {
     
     /// 清除照片（向后兼容）
     func clearImage() {
-        Task {
-            await clearAllImages()
-        }
+        clearAllImages()
     }
     
     /// 模拟数据（用于预览）

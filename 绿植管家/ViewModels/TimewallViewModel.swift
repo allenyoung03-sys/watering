@@ -276,6 +276,49 @@ class TimewallViewModel: ObservableObject {
         refreshData()
     }
     
+    // MARK: - 删除记录（异步优化版本）
+    func deleteRecord(_ record: CareRecordEntity) async throws {
+        print("🗑️ [TimewallViewModel] 开始异步删除记录: \(record.id) (\(record.actionDisplayName))")
+        
+        // 立即从UI中移除记录，给用户即时反馈
+        await MainActor.run {
+            allRecords.removeAll { $0.id == record.id }
+            applyFilters()
+        }
+        
+        // 在后台线程执行实际的删除操作
+        try await Task.detached(priority: .userInitiated) {
+            print("🗑️ [TimewallViewModel] 在后台线程执行删除操作")
+            
+            do {
+                // 异步清理照片缓存（不阻塞主线程）
+                await self.asyncClearImages(for: record)
+                
+                // 在主线程执行CoreData删除（CoreData要求在主线程）
+                try await MainActor.run {
+                    try self.dataManager.deleteCareRecord(record)
+                }
+                
+                print("✅ [TimewallViewModel] 成功删除记录: \(record.id)")
+            } catch {
+                print("❌ [TimewallViewModel] 删除记录失败: \(error)")
+                throw error
+            }
+        }.value
+    }
+    
+    /// 异步清理照片缓存
+    private func asyncClearImages(for record: CareRecordEntity) async {
+        print("🗑️ [TimewallViewModel] 开始异步清理照片缓存")
+        
+        // 在后台线程清理照片
+        await Task.detached(priority: .utility) {
+            record.clearAllImages()
+        }.value
+        
+        print("✅ [TimewallViewModel] 照片缓存清理完成")
+    }
+    
     
     deinit {
         cleanupObservers()

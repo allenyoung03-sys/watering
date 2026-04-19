@@ -245,8 +245,36 @@ class CoreDataManager {
         try? save()
     }
     
-    /// 删除养护记录
+    /// 删除养护记录 - 优化版本（更高效，减少日志）
     func deleteCareRecord(_ record: CareRecordEntity) throws {
+        // 确保在主线程执行
+        guard Thread.isMainThread else {
+            throw NSError(domain: "CoreDataManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "必须在主线程执行删除操作"])
+        }
+        
+        // 简化日志，只记录关键信息
+        print("🗑️ 删除记录: \(record.id)")
+        
+        do {
+            // 快速清理照片缓存（不阻塞主线程）
+            // 注意：这里不等待清理完成，因为照片清理已经在TimewallViewModel中异步处理了
+            // 我们只需要确保CoreData操作正确执行
+            
+            // 删除记录
+            context.delete(record)
+            
+            // 保存更改
+            try save()
+            
+            print("✅ 删除成功")
+        } catch {
+            print("❌ 删除失败: \(error)")
+            throw error
+        }
+    }
+    
+    /// 删除养护记录（旧版本，保持兼容性）
+    func deleteCareRecordOld(_ record: CareRecordEntity) throws {
         print("🗑️ [CoreDataManager] 开始删除养护记录: \(record.id) (\(record.actionDisplayName))")
         
         // 确保在主线程执行
@@ -259,7 +287,7 @@ class CoreDataManager {
         do {
             // 同步清理照片文件（避免异步操作导致记录被删除后仍在清理）
             print("🗑️ [CoreDataManager] 同步清理照片缓存...")
-            syncClearAllImages(for: record)
+            record.clearAllImages() // 直接调用同步方法
             print("✅ [CoreDataManager] 照片缓存清理完成")
             
             // 删除记录
@@ -278,29 +306,10 @@ class CoreDataManager {
         }
     }
     
-    /// 同步清理所有照片（避免异步操作问题）
+    /// 同步清理所有照片（避免异步操作问题）- 已弃用，使用record.clearAllImages()代替
     private func syncClearAllImages(for record: CareRecordEntity) {
-        print("🗑️ [CoreDataManager] 同步清理照片缓存: \(record.id)")
-        
-        // 安全地清理缓存图片
-        if let urlString = record.imageUrl, !urlString.isEmpty {
-            print("🗑️ [CoreDataManager] 清理缓存文件: \(urlString)")
-            
-            // 使用安全的文件清理方法（不抛出异常）
-            ImageProcessor.shared.safeRemoveCachedImage(for: urlString)
-            print("✅ [CoreDataManager] 缓存文件清理完成: \(urlString)")
-        }
-        
-        // 清理imageDataArray中的所有照片
-        let imageCount = record.imageDataArrayData.count
-        if imageCount > 0 {
-            print("🗑️ [CoreDataManager] 清理 \(imageCount) 张照片数据")
-        }
-        
-        // 同步重置所有照片相关属性
-        record.imageData = nil
-        record.imageUrl = nil
-        record.imageDataArray = nil
+        print("⚠️ [CoreDataManager] syncClearAllImages已弃用，使用record.clearAllImages()代替")
+        record.clearAllImages()
     }
     
     // MARK: - 数据迁移

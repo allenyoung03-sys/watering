@@ -9,6 +9,10 @@ import CoreData
 struct TimelineNodeView: View {
     let record: CareRecordEntity
     @ObservedObject var viewModel: TimewallViewModel
+    @State private var showingDeleteConfirmation = false
+    @State private var isDeleting = false
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     
     var body: some View {
         HStack(alignment: .top, spacing: Constants.Layout.spacingM) {
@@ -17,6 +21,9 @@ struct TimelineNodeView: View {
             
             // 记录内容
             recordContent
+            
+            // 删除按钮
+            deleteButton
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
@@ -28,6 +35,34 @@ struct TimelineNodeView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
+        .alert("删除记录", isPresented: $showingDeleteConfirmation) {
+            Button("取消", role: .cancel) {
+                showingDeleteConfirmation = false
+            }
+            Button("删除", role: .destructive) {
+                Task {
+                    await deleteRecord()
+                }
+            }
+        } message: {
+            Text("确定要删除这条记录吗？此操作无法撤销。")
+        }
+        .alert("删除失败", isPresented: $showErrorAlert) {
+            Button("确定", role: .cancel) {
+                showErrorAlert = false
+            }
+        } message: {
+            Text(errorMessage)
+        }
+        .overlay {
+            if isDeleting {
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .padding(20)
+                    .background(Color.black.opacity(0.1))
+                    .clipShape(Circle())
+            }
+        }
     }
     
     
@@ -143,6 +178,46 @@ struct TimelineNodeView: View {
         case .observation:
             return .observationPurple
         }
+    }
+    
+    private var deleteButton: some View {
+        Button(action: {
+            showingDeleteConfirmation = true
+        }) {
+            if isDeleting {
+                ProgressView()
+                    .scaleEffect(0.8)
+                    .frame(width: 24, height: 24)
+            } else {
+                Image(systemName: "trash")
+                    .font(.system(size: 14))
+                    .foregroundColor(.red)
+                    .padding(6)
+                    .background(Color.red.opacity(0.1))
+                    .clipShape(Circle())
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(isDeleting)
+    }
+    
+    private func deleteRecord() async {
+        guard !isDeleting else { return }
+        
+        isDeleting = true
+        showingDeleteConfirmation = false
+        
+        do {
+            // 调用ViewModel的异步删除方法
+            try await viewModel.deleteRecord(record)
+            print("✅ [TimelineNodeView] 成功删除记录: \(record.id)")
+        } catch {
+            print("❌ [TimelineNodeView] 删除记录失败: \(error)")
+            errorMessage = "删除失败: \(error.localizedDescription)"
+            showErrorAlert = true
+        }
+        
+        isDeleting = false
     }
 }
 
