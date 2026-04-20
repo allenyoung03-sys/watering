@@ -276,47 +276,42 @@ class TimewallViewModel: ObservableObject {
         refreshData()
     }
     
-    // MARK: - 删除记录（异步优化版本）
-    func deleteRecord(_ record: CareRecordEntity) async throws {
-        print("🗑️ [TimewallViewModel] 开始异步删除记录: \(record.id) (\(record.actionDisplayName))")
+    // MARK: - 删除记录（修复版本 - 解决崩溃和卡住问题）
+    /// 通过ID删除记录（不直接访问记录对象，避免访问已删除对象）
+    func deleteRecord(by recordId: UUID) async throws {
+        print("🗑️ [TimewallViewModel] 开始删除记录: \(recordId)")
         
-        // 立即从UI中移除记录，给用户即时反馈
-        await MainActor.run {
-            allRecords.removeAll { $0.id == record.id }
-            applyFilters()
-        }
-        
-        // 在后台线程执行实际的删除操作
-        try await Task.detached(priority: .userInitiated) {
-            print("🗑️ [TimewallViewModel] 在后台线程执行删除操作")
-            
-            do {
-                // 异步清理照片缓存（不阻塞主线程）
-                await self.asyncClearImages(for: record)
-                
-                // 在主线程执行CoreData删除（CoreData要求在主线程）
-                try await MainActor.run {
-                    try self.dataManager.deleteCareRecord(record)
-                }
-                
-                print("✅ [TimewallViewModel] 成功删除记录: \(record.id)")
-            } catch {
-                print("❌ [TimewallViewModel] 删除记录失败: \(error)")
-                throw error
+        do {
+            // 1. 首先找到记录
+            guard let record = allRecords.first(where: { $0.id == recordId }) else {
+                print("⚠️ [TimewallViewModel] 记录不存在: \(recordId)")
+                return
             }
-        }.value
-    }
-    
-    /// 异步清理照片缓存
-    private func asyncClearImages(for record: CareRecordEntity) async {
-        print("🗑️ [TimewallViewModel] 开始异步清理照片缓存")
-        
-        // 在后台线程清理照片
-        await Task.detached(priority: .utility) {
+            
+            // 2. 清理照片缓存（同步操作）
+            print("🗑️ [TimewallViewModel] 清理照片缓存...")
             record.clearAllImages()
-        }.value
-        
-        print("✅ [TimewallViewModel] 照片缓存清理完成")
+            
+            // 3. 从UI中移除记录（在CoreData删除之前）
+            print("🗑️ [TimewallViewModel] 从UI中移除记录...")
+            allRecords.removeAll { $0.id == recordId }
+            applyFilters()
+            
+            // 4. 执行CoreData删除操作
+            print("🗑️ [TimewallViewModel] 执行CoreData删除...")
+            
+            // 直接调用CoreDataManager的删除方法
+            try CoreDataManager.shared.deleteCareRecord(record)
+            
+            print("✅ [TimewallViewModel] 成功删除记录: \(recordId)")
+        } catch {
+            print("❌ [TimewallViewModel] 删除记录失败: \(error)")
+            
+            // 如果删除失败，重新加载数据以恢复UI状态
+            refreshData()
+            
+            throw error
+        }
     }
     
     

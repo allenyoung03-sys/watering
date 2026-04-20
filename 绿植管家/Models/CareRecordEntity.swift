@@ -108,7 +108,7 @@ extension CareRecordEntity {
     
     /// 检查是否有照片
     var hasImage: Bool {
-        imageData != nil || (imageUrl != nil && !imageUrl!.isEmpty) || !imageDataArrayData.isEmpty
+        imageData != nil || (imageUrl?.isEmpty == false) || !imageDataArrayData.isEmpty
     }
     
     /// 获取所有照片数据数组
@@ -309,26 +309,15 @@ extension CareRecordEntity {
         }
     }
     
-    /// 清除所有照片（同步版本）
+    /// 清除所有照片（同步版本）- 优化版本（减少日志，提高性能）
     func clearAllImages() {
-        print("🗑️ [CareRecordEntity] 开始同步清理照片缓存: \(id) (\(actionDisplayName))")
-        
-        // 记录当前线程信息
-        print("🗑️ [CareRecordEntity] 当前线程: \(Thread.isMainThread ? "主线程" : "后台线程")")
+        // 简化日志，只记录关键信息
+        print("🗑️ 清理照片: \(id)")
         
         // 安全地清理缓存图片
         if let urlString = imageUrl, !urlString.isEmpty {
-            print("🗑️ [CareRecordEntity] 清理缓存文件: \(urlString)")
-            
             // 直接调用文件清理方法，不需要在主线程执行
             ImageProcessor.shared.safeRemoveCachedImage(for: urlString)
-            print("✅ [CareRecordEntity] 缓存文件清理完成: \(urlString)")
-        }
-        
-        // 清理imageDataArray中的所有照片
-        let imageCount = imageDataArrayData.count
-        if imageCount > 0 {
-            print("🗑️ [CareRecordEntity] 清理 \(imageCount) 张照片数据")
         }
         
         // 重置所有照片相关属性
@@ -336,7 +325,7 @@ extension CareRecordEntity {
         imageUrl = nil
         imageDataArray = nil
         
-        print("✅ [CareRecordEntity] 照片缓存清理完成")
+        print("✅ 照片清理完成")
     }
     
     /// 清除照片（向后兼容）

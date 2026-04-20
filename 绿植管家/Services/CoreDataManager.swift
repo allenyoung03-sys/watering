@@ -239,36 +239,64 @@ class CoreDataManager {
             return []
         }
     }
+    
+    /// 通过ID获取养护记录
+    func fetchCareRecord(by id: UUID) -> CareRecordEntity? {
+        let request = NSFetchRequest<CareRecordEntity>(entityName: "CareRecordEntity")
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        
+        do {
+            return try context.fetch(request).first
+        } catch {
+            print("通过ID获取养护记录失败: \(error)")
+            return nil
+        }
+    }
 
     func delete(_ plant: Plant) {
         context.delete(plant)
         try? save()
     }
     
-    /// 删除养护记录 - 优化版本（更高效，减少日志）
+    /// 删除养护记录 - 安全增强版本（防止EXC_BREAKPOINT崩溃）
     func deleteCareRecord(_ record: CareRecordEntity) throws {
         // 确保在主线程执行
         guard Thread.isMainThread else {
             throw NSError(domain: "CoreDataManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "必须在主线程执行删除操作"])
         }
         
-        // 简化日志，只记录关键信息
-        print("🗑️ 删除记录: \(record.id)")
+        // 安全检查：确保记录仍然有效
+        guard !record.isFault && !record.isDeleted else {
+            print("⚠️ [CoreDataManager] 记录已失效或已被删除，跳过删除操作")
+            return
+        }
+        
+        let recordId = record.id
+        print("🗑️ [CoreDataManager] 开始安全删除记录: \(recordId)")
         
         do {
-            // 快速清理照片缓存（不阻塞主线程）
-            // 注意：这里不等待清理完成，因为照片清理已经在TimewallViewModel中异步处理了
-            // 我们只需要确保CoreData操作正确执行
+            // 1. 在删除前获取所有必要信息
+            let recordId = record.id
+            let actionType = record.actionDisplayName
             
-            // 删除记录
+            // 2. 执行删除操作
             context.delete(record)
             
-            // 保存更改
+            // 3. 立即保存更改，避免记录处于悬空状态
             try save()
             
-            print("✅ 删除成功")
+            // 4. 删除后，确保不再访问记录对象
+            print("✅ [CoreDataManager] 安全删除成功: \(recordId) (\(actionType))")
         } catch {
-            print("❌ 删除失败: \(error)")
+            print("❌ [CoreDataManager] 删除失败: \(error)")
+            
+            // 如果保存失败，尝试回滚
+            if context.hasChanges {
+                context.rollback()
+                print("⚠️ [CoreDataManager] 已回滚更改")
+            }
+            
             throw error
         }
     }
