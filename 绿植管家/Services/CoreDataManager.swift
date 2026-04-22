@@ -276,17 +276,22 @@ class CoreDataManager {
         print("🗑️ [CoreDataManager] 开始安全删除记录: \(recordId)")
         
         do {
-            // 1. 在删除前获取所有必要信息
+            // 1. 在删除前获取所有必要信息（避免删除后访问对象属性）
             let recordId = record.id
             let actionType = record.actionDisplayName
             
-            // 2. 执行删除操作
+            // 2. 同步清理照片文件（避免异步操作导致记录被删除后仍在清理）
+            print("🗑️ [CoreDataManager] 同步清理照片缓存...")
+            record.clearAllImages() // 直接调用同步方法
+            print("✅ [CoreDataManager] 照片缓存清理完成")
+            
+            // 3. 执行删除操作
             context.delete(record)
             
-            // 3. 立即保存更改，避免记录处于悬空状态
+            // 4. 立即保存更改，避免记录处于悬空状态
             try save()
             
-            // 4. 删除后，确保不再访问记录对象
+            // 5. 删除后，确保不再访问记录对象
             print("✅ [CoreDataManager] 安全删除成功: \(recordId) (\(actionType))")
         } catch {
             print("❌ [CoreDataManager] 删除失败: \(error)")

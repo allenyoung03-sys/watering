@@ -221,7 +221,8 @@ struct TimelineView: View {
             // 时间线
             ForEach(Array(viewModel.groupedRecords.keys.sorted(by: >)), id: \.self) { date in
                 if let records = viewModel.groupedRecords[date] {
-                    TimelineDaySection(date: date, records: records, viewModel: viewModel)
+                    TimelineDaySection(date: date, records: records)
+                        .environmentObject(viewModel)
                 }
             }
         }
@@ -231,8 +232,8 @@ struct TimelineView: View {
 // MARK: - 时间线日期分组
 struct TimelineDaySection: View {
     let date: Date
-    let records: [CareRecordEntity]
-    @ObservedObject var viewModel: TimewallViewModel
+    let records: [RecordData]
+    @EnvironmentObject var viewModel: TimewallViewModel
     
     var body: some View {
         VStack(spacing: 0) {
@@ -252,9 +253,9 @@ struct TimelineDaySection: View {
             .padding(.vertical, Constants.Layout.spacingS)
             .background(Color.backgroundSecondary)
             
-            // 时间线记录
+            // 时间线记录 - 使用值类型数据，避免访问已删除的CoreData对象
             ForEach(records) { record in
-                TimelineNodeView(record: record, viewModel: viewModel)
+                TimelineNodeView(recordData: record, viewModel: viewModel)
             }
         }
         .padding(.bottom, Constants.Layout.spacingL)
