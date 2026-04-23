@@ -16,6 +16,14 @@ class TimewallViewModel: ObservableObject {
     @Published var allPlants: [Plant] = []
     @Published var isLoading = false
     
+    // MARK: - 分页加载相关
+    @Published var hasMoreRecords = false
+    @Published var isLoadingMore = false
+    private var currentBatchSize = 50
+    private let initialBatchSize = 50
+    private let batchSizeIncrement = 50
+    private let maxBatchSize = 300
+    
     // 原始CoreData记录（用于内部操作，不直接暴露给UI）
     private var rawRecords: [CareRecordEntity] = []
     
@@ -85,27 +93,94 @@ class TimewallViewModel: ObservableObject {
         setupObservers()
     }
     
-    // MARK: - 数据加载
+    // MARK: - 数据加载（分页版本）
     func loadData() {
         isLoading = true
+        
+        // 重置分页状态
+        resetPagination()
         
         // 加载所有植物
         allPlants = dataManager.fetchPlants()
             .sorted { $0.name < $1.name }
         
-        // 加载所有养护记录
-        let records = dataManager.fetchAllCareRecords()
-            .sorted { $0.date > $1.date }
-        
-        // 转换为值类型
-        rawRecords = records
-        allRecords = convertToRecordData(records: records)
-        applyFilters()
+        // 分批加载养护记录
+        loadInitialRecords()
         
         isLoading = false
     }
     
-    /// 将CoreData记录转换为值类型
+    /// 加载初始批次记录（使用 CoreData 分页查询，避免全量加载）
+    private func loadInitialRecords() {
+        // 直接通过 fetchLimit + fetchOffset 获取第一批数据
+        let batchRecords = dataManager.fetchCareRecords(limit: currentBatchSize, offset: 0)
+        
+        // 缓存完整的 rawRecords（不排序，减少重复查询）
+        rawRecords = batchRecords
+        
+        allRecords = convertToRecordData(records: batchRecords)
+        applyFilters()
+        
+        // 通过 count 判断是否还有更多记录
+        let totalCount = dataManager.careRecordsCount()
+        hasMoreRecords = totalCount > currentBatchSize
+        print("📊 [TimewallViewModel] 初始加载: \(batchRecords.count) 条记录，总数: \(totalCount)，还有更多: \(hasMoreRecords)")
+    }
+    
+    /// 加载更多记录（使用 CoreData 分页查询）
+    func loadMoreRecords() async {
+        guard !isLoadingMore, hasMoreRecords else { return }
+        
+        isLoadingMore = true
+        print("📊 [TimewallViewModel] 开始加载更多记录...")
+        
+        let offset = currentBatchSize
+        let limit = batchSizeIncrement
+        
+        // 使用分页查询获取下一批记录
+        let nextBatch = await MainActor.run {
+            dataManager.fetchCareRecords(limit: limit, offset: offset)
+        }
+        
+        await MainActor.run {
+            if nextBatch.isEmpty {
+                hasMoreRecords = false
+                isLoadingMore = false
+                print("⚠️ [TimewallViewModel] 没有更多记录了")
+                return
+            }
+            
+            // 将新记录追加到 existing 数组
+            let newRecordData = self.convertToRecordData(records: nextBatch)
+            self.allRecords.append(contentsOf: newRecordData)
+            
+            // 同步 rawRecords
+            self.rawRecords.append(contentsOf: nextBatch)
+            
+            // 更新当前批次大小
+            self.currentBatchSize += batchSizeIncrement
+            
+            // 判断是否还有更多记录
+            let totalCount = self.dataManager.careRecordsCount()
+            self.hasMoreRecords = self.currentBatchSize < totalCount
+            
+            // 重新应用筛选
+            self.applyFilters()
+            
+            print("✅ [TimewallViewModel] 成功加载更多 \(nextBatch.count) 条记录，总计: \(self.allRecords.count)，总数: \(totalCount)")
+            
+            self.isLoadingMore = false
+        }
+    }
+    
+    /// 重置分页状态
+    private func resetPagination() {
+        currentBatchSize = initialBatchSize
+        hasMoreRecords = false
+        isLoadingMore = false
+    }
+    
+    /// 将CoreData记录转换为值类型（优化版本：只存储照片Data，不立即解码）
     private func convertToRecordData(records: [CareRecordEntity]) -> [RecordData] {
         return records.compactMap { entity -> RecordData? in
             // 安全地提取数据，避免访问已删除的对象
@@ -114,7 +189,8 @@ class TimewallViewModel: ObservableObject {
             let actionType = entity.actionType
             let date = entity.date
             let note = entity.note
-            let images = entity.images
+            // 只存储照片Data数组，不立即解码为UIImage，避免阻塞主线程
+            let imageDataArray = entity.imageDataArrayData
             
             // 获取植物信息
             let plantName = allPlants.first { $0.id == plantId }?.name ?? "未知植物"
@@ -126,7 +202,7 @@ class TimewallViewModel: ObservableObject {
                 actionType: actionType,
                 date: date,
                 note: note,
-                images: images,
+                imageDataArray: imageDataArray,
                 plantName: plantName,
                 room: room
             )
@@ -170,6 +246,7 @@ class TimewallViewModel: ObservableObject {
         selectedPlantId = nil
         selectedActionType = nil
         selectedRoom = nil
+        resetPagination()
         applyFilters()
     }
     
@@ -305,63 +382,62 @@ class TimewallViewModel: ObservableObject {
         }
         
         // 保存记录
-        try dataManager.save()
+        try await dataManager.save()
         
         // 重新加载数据以更新UI
         refreshData()
     }
     
-    // MARK: - 删除记录（修复版本 - 解决崩溃和卡住问题）
-    /// 通过ID删除记录（不直接访问记录对象，避免访问已删除对象）
+    // MARK: - 删除记录（最终修复版本 - 完全避免 EXC_BREAKPOINT）
+    /// 通过ID删除记录（只操作值类型，CoreData 删除后会自动刷新）
     func deleteRecord(by recordId: UUID) async throws {
-        print("️ [TimewallViewModel] 开始删除记录: \(recordId)")
-        
+        print("🗑️ [TimewallViewModel] 开始删除记录: \(recordId)")
+
         // 设置删除标志，防止在删除过程中触发不必要的UI刷新
         isPerformingDeletion = true
-        
+
         do {
-            // 1. 在删除前从值类型副本获取记录信息
-            let recordCopy = allRecords.first { $0.id == recordId }
-            let actionType = recordCopy?.actionType
-            
-            // 2. 从UI中移除记录（从值类型数组中移除）
-            print("🗑️ [TimewallViewModel] 从UI中移除记录...")
+            // 1. 从值类型 allRecords 中立即移除 - 这绝对不会崩溃
+            let actionType = allRecords.first { $0.id == recordId }?.actionType
+            print("🗑️ [TimewallViewModel] 从 UI 数组中移除记录...")
             allRecords.removeAll { $0.id == recordId }
             applyFilters()
-            
-            // 3. 从 rawRecords 中移除（在 CoreData 删除之前，避免访问已删除对象）
-            print("🗑️ [TimewallViewModel] 从原始记录中移除...")
-            rawRecords.removeAll { $0.id == recordId }
-            
-            // 4. 执行CoreData删除操作
-            print("🗑️ [TimewallViewModel] 执行CoreData删除...")
-            
-            // 通过ID查找CoreData中的记录进行删除
+
+            // 2. 直接通过 CoreDataManager 删除，不访问 rawRecords
+            // CoreDataManager 内部会处理所有安全检查
+            print("🗑️ [TimewallViewModel] 执行 CoreData 删除...")
             if let recordToDelete = CoreDataManager.shared.fetchCareRecord(by: recordId) {
-                // 在删除前清理照片缓存
-                print("️ [TimewallViewModel] 清理照片缓存...")
+                print("🗑️ [TimewallViewModel] 清理照片缓存...")
                 recordToDelete.clearAllImages()
-                
-                // 执行删除操作
-                try CoreDataManager.shared.deleteCareRecord(recordToDelete)
+
+                print("🗑️ [TimewallViewModel] 从 CoreData 删除记录...")
+                do {
+                    try await CoreDataManager.shared.deleteCareRecord(recordToDelete)
+                    print("✅ [TimewallViewModel] CoreData 删除成功")
+                } catch {
+                    print("❌ [TimewallViewModel] 删除记录失败: \(error)")
+                    throw error
+                }
             } else {
                 print("⚠️ [TimewallViewModel] 无法找到要删除的记录: \(recordId)")
             }
-            
+
             if let actionType = actionType {
                 print("✅ [TimewallViewModel] 成功删除记录: \(recordId) (\(actionType))")
             } else {
                 print("✅ [TimewallViewModel] 成功删除记录: \(recordId)")
             }
+
+            // 3. 清空 rawRecords，让下次 loadData 时重新加载
+            rawRecords.removeAll()
+
         } catch {
             print("❌ [TimewallViewModel] 删除记录失败: \(error)")
-            
-            // 如果删除失败，重新加载数据以恢复UI状态
-            refreshData()
-            
             throw error
         }
-        // 无论成功还是失败，都要重置删除标志
+
+        // 延迟重置删除标志，确保 CoreData 保存完成
+        try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
         isPerformingDeletion = false
     }
     
@@ -372,15 +448,62 @@ class TimewallViewModel: ObservableObject {
 }
 
 // MARK: - 记录数据（值类型，避免访问已删除的CoreData对象）
+/// 优化版本：使用Data存储照片，按需异步解码为UIImage，避免首次加载时同步解码所有照片导致卡顿
 struct RecordData: Identifiable {
     let id: UUID
     let plantId: UUID
     let actionType: String
     let date: Date
     let note: String?
-    let images: [UIImage]
+    let imageDataArray: [Data]  // 存储原始Data，不立即解码为UIImage
     let plantName: String
     let room: String?
+    
+    /// 照片数量
+    var imageCount: Int {
+        imageDataArray.count
+    }
+    
+    /// 是否有照片
+    var hasImages: Bool {
+        !imageDataArray.isEmpty
+    }
+    
+    /// 同步获取第一张照片的缩略图（用于快速显示）
+    var thumbnail: UIImage? {
+        imageDataArray.first.flatMap { UIImage(data: $0) }
+    }
+    
+    /// 异步加载所有照片（在UI需要时调用）
+    func loadImages() async -> [UIImage] {
+        // 在后台线程解码照片，避免阻塞主线程
+        return await withTaskGroup(of: (Int, UIImage)?.self) { group in
+            for (index, data) in imageDataArray.enumerated() {
+                group.addTask {
+                    if let image = UIImage(data: data) {
+                        return (index, image)
+                    }
+                    return nil
+                }
+            }
+            
+            var results: [(Int, UIImage)] = []
+            for await result in group {
+                if let result = result {
+                    results.append(result)
+                }
+            }
+            
+            // 按原始顺序排序
+            return results.sorted { $0.0 < $1.0 }.map { $0.1 }
+        }
+    }
+    
+    /// 同步加载所有照片（用于不需要异步的场景，向后兼容）
+    /// 注意：此方法会阻塞当前线程，建议优先使用loadImages()
+    func loadImagesSync() -> [UIImage] {
+        imageDataArray.compactMap { UIImage(data: $0) }
+    }
 }
 
 // MARK: - 时间筛选枚举

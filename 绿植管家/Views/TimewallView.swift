@@ -216,16 +216,119 @@ struct TimelineView: View {
         .padding(.horizontal, Constants.Layout.spacingM)
     }
     
+    // MARK: - 滚动位置跟踪
+    @State private var prevRecordCount: Int = 0
+    @State private var lastLoadMoreTimestamp: Date = Date.distantPast
+    @State private var needsReloadPagination = false
+    
     private var timelineContentView: some View {
-        LazyVStack(spacing: 0) {
-            // 时间线
-            ForEach(Array(viewModel.groupedRecords.keys.sorted(by: >)), id: \.self) { date in
-                if let records = viewModel.groupedRecords[date] {
-                    TimelineDaySection(date: date, records: records)
-                        .environmentObject(viewModel)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                // 当前筛选状态
+                if viewModel.hasActiveFilters {
+                    filterStatusView
+                }
+                
+                // 时间线
+                ForEach(Array(viewModel.groupedRecords.keys.sorted(by: >)), id: \.self) { date in
+                    if let records = viewModel.groupedRecords[date] {
+                        TimelineDaySection(date: date, records: records)
+                            .environmentObject(viewModel)
+                    }
+                }
+                
+                // 加载中的占位符
+                if viewModel.isLoadingMore {
+                    loadingMoreView
+                }
+                
+                // 没有更多记录的提示
+                if !viewModel.isLoadingMore && !viewModel.hasMoreRecords && !viewModel.filteredRecords.isEmpty {
+                    noMoreRecordsView
+                }
+            }
+            .padding(.vertical, Constants.Layout.spacingM)
+        }
+        .refreshable {
+            viewModel.refreshData()
+        }
+        .onChange(of: viewModel.filteredRecords.count) { newCount in
+            // 防止在加载中重复触发
+            guard newCount != prevRecordCount else { return }
+            
+            // 仅当记录数增加且有更多记录时才触发自动加载
+            if newCount > prevRecordCount && prevRecordCount > 0 && viewModel.hasMoreRecords && !viewModel.isLoadingMore {
+                let now = Date()
+                // 节流：间隔少于 1 秒不触发
+                guard now.timeIntervalSince(lastLoadMoreTimestamp) > 1.0 || prevRecordCount <= 50 else { return }
+                
+                lastLoadMoreTimestamp = now
+                Task {
+                    await viewModel.loadMoreRecords()
+                }
+            }
+            
+            // 初始加载后或记录清空后再填充时，首次触发加载更多
+            if (newCount > 0 && prevRecordCount == 0) || (needsReloadPagination && newCount > 0) {
+                needsReloadPagination = false
+                let now = Date()
+                if now.timeIntervalSince(lastLoadMoreTimestamp) > 1.0 {
+                    lastLoadMoreTimestamp = now
+                    Task {
+                        await viewModel.loadMoreRecords()
+                    }
+                }
+            }
+            
+            prevRecordCount = newCount
+        }
+        .onChange(of: viewModel.isLoadingMore) { isLoadingMore in
+            // 加载更多完成后，延迟重置分页状态
+            if !isLoadingMore {
+                Task {
+                    try? await Task.sleep(nanoseconds: 300_000_000) // 0.3秒
+                    await MainActor.run {
+                        needsReloadPagination = false
+                    }
                 }
             }
         }
+    }
+    
+    /// 加载新记录后重置分页状态
+    private func resetPaginationForNewRecords() {
+        // 此方法用于在记录数量变化时，确保分页状态正确
+        // 由 ViewModel 的 loadMoreRecords 处理实际的数据加载
+    }
+    
+    /// 加载更多视图
+    private var loadingMoreView: some View {
+        VStack(spacing: Constants.Layout.spacingS) {
+            ProgressView()
+            Text("加载更多记录...")
+                .font(.plantCaption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Constants.Layout.spacingM)
+    }
+    
+    /// 没有更多记录视图
+    private var noMoreRecordsView: some View {
+        HStack {
+            Rectangle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 1)
+            
+            Text("已全部加载")
+                .font(.plantCaption)
+                .foregroundColor(.secondary)
+            
+            Rectangle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 1)
+        }
+        .padding(.vertical, Constants.Layout.spacingS)
     }
 }
 
@@ -630,6 +733,14 @@ struct ObservationFormView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - 滚动偏移偏好设置键
+private struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
 

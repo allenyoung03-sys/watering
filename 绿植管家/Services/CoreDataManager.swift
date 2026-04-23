@@ -240,6 +240,33 @@ class CoreDataManager {
         }
     }
     
+    /// 分页获取养护记录（使用 fetchLimit 和 fetchOffset 直接限制查询结果）
+    func fetchCareRecords(limit: Int, offset: Int) -> [CareRecordEntity] {
+        let request = NSFetchRequest<CareRecordEntity>(entityName: "CareRecordEntity")
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \CareRecordEntity.date, ascending: false)
+        ]
+        request.fetchLimit = limit
+        request.fetchOffset = offset
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("获取养护记录失败（分页）: \(error)")
+            return []
+        }
+    }
+    
+    /// 获取养护记录总数
+    func careRecordsCount() -> Int {
+        let request = NSFetchRequest<CareRecordEntity>(entityName: "CareRecordEntity")
+        do {
+            return try context.count(for: request)
+        } catch {
+            print("获取记录数量失败: \(error)")
+            return 0
+        }
+    }
+    
     /// 通过ID获取养护记录
     func fetchCareRecord(by id: UUID) -> CareRecordEntity? {
         let request = NSFetchRequest<CareRecordEntity>(entityName: "CareRecordEntity")

@@ -6,6 +6,7 @@
 import SwiftUI
 import CoreData
 
+/// 优化版本：支持照片异步加载，避免首次加载时阻塞主线程
 struct TimelineNodeView: View {
     // MARK: - 使用值类型存储记录数据，完全消除对CoreData对象的生命周期依赖
     let recordId: UUID
@@ -15,24 +16,33 @@ struct TimelineNodeView: View {
     let timeString: String
     let room: String?
     let note: String?
-    let images: [UIImage]
+    let hasImages: Bool
+    let imageCount: Int
     
     // viewModel作为普通属性传入，不使用@propertyWrapper
     private let viewModel: TimewallViewModel
+    private let recordData: RecordData
     
     @State private var showingDeleteConfirmation = false
     @State private var isDeleting = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
+    // 照片异步加载状态
+    @State private var images: [UIImage] = []
+    @State private var imagesLoaded = false
+    @State private var isLoadingImages = false
+    
     /// 使用RecordData初始化，完全基于值类型，不访问CoreData对象
     init(recordData: RecordData, viewModel: TimewallViewModel) {
+        self.recordData = recordData
         self.recordId = recordData.id
         self.plantName = recordData.plantName
         self.actionType = recordData.actionType
         self.room = recordData.room
         self.note = recordData.note
-        self.images = recordData.images
+        self.hasImages = recordData.hasImages
+        self.imageCount = recordData.imageCount
         self.viewModel = viewModel
         
         // 计算值类型属性
@@ -93,6 +103,26 @@ struct TimelineNodeView: View {
                     .clipShape(Circle())
             }
         }
+        // 异步加载照片
+        .task {
+            await loadImagesIfNeeded()
+        }
+    }
+    
+    // MARK: - 异步加载照片
+    
+    private func loadImagesIfNeeded() async {
+        guard hasImages && !imagesLoaded && !isLoadingImages else { return }
+        
+        isLoadingImages = true
+        
+        // 在后台线程异步加载照片
+        let loadedImages = await recordData.loadImages()
+        
+        // 更新UI状态（自动在主线程）
+        images = loadedImages
+        imagesLoaded = true
+        isLoadingImages = false
     }
     
     // MARK: - Time line node
@@ -175,8 +205,19 @@ struct TimelineNodeView: View {
                     .padding(.top, 4)
             }
             
-            // 照片预览
-            if !images.isEmpty {
+            // 照片预览（支持异步加载）
+            photoSection
+        }
+        .padding(.vertical, 8)
+    }
+    
+    // MARK: - Photo section with async loading
+    
+    @ViewBuilder
+    private var photoSection: some View {
+        if hasImages {
+            if imagesLoaded && !images.isEmpty {
+                // 照片已加载，显示照片画廊
                 PhotoGalleryView(
                     images: images,
                     maxHeight: 100,
@@ -185,9 +226,92 @@ struct TimelineNodeView: View {
                     }
                 )
                 .padding(.top, 8)
+            } else if isLoadingImages {
+                // 正在加载照片，显示加载占位符
+                photoLoadingPlaceholder
+                    .padding(.top, 8)
+            } else {
+                // 显示缩略图占位符
+                photoThumbnailPlaceholder
+                    .padding(.top, 8)
             }
         }
-        .padding(.vertical, 8)
+    }
+    
+    private var photoLoadingPlaceholder: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius)
+                .fill(Color.plantLightGreen.opacity(0.1))
+                .frame(maxWidth: .infinity)
+                .frame(height: 100)
+            
+            HStack(spacing: 8) {
+                ProgressView()
+                    .scaleEffect(0.8)
+                Text("加载照片中...")
+                    .font(.system(size: 13))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius)
+                .stroke(Color.plantLightGreen.opacity(0.2), lineWidth: 1)
+        )
+    }
+    
+    private var photoThumbnailPlaceholder: some View {
+        Group {
+            if let thumbnail = recordData.thumbnail {
+                // 有缩略图，显示缩略图
+                Image(uiImage: thumbnail)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+                    .overlay(
+                        ZStack(alignment: .bottomTrailing) {
+                            RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius)
+                                .stroke(Color.plantLightGreen.opacity(0.2), lineWidth: 1)
+                            
+                            if imageCount > 1 {
+                                Text("\(imageCount)张")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 3)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Capsule())
+                                    .padding(8)
+                            }
+                        }
+                    )
+            } else {
+                // 无缩略图，显示占位符
+                ZStack {
+                    RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius)
+                        .fill(Color.plantLightGreen.opacity(0.1))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 100)
+                    
+                    VStack(spacing: 4) {
+                        Image(systemName: "photo")
+                            .font(.system(size: 24))
+                            .foregroundColor(.plantGreen.opacity(0.5))
+                        
+                        if imageCount > 0 {
+                            Text("\(imageCount)张照片")
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius)
+                        .stroke(Color.plantLightGreen.opacity(0.2), lineWidth: 1)
+                )
+            }
+        }
     }
     
     // MARK: - Node color
