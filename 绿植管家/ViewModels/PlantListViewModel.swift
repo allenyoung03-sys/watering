@@ -16,6 +16,7 @@ class PlantListViewModel: ObservableObject {
 
     private let dataManager = CoreDataManager.shared
     private let reminderManager = ReminderManager.shared
+    private let careService = PlantCareService.shared
     private var cancellables = Set<AnyCancellable>()
 
     init() {
@@ -36,7 +37,7 @@ class PlantListViewModel: ObservableObject {
             plants = allPlants.filter { $0.room == selectedRoom }
         }
         
-        todayPlants = plants.filter { $0.needsWatering }
+        todayPlants = plants.filter { careService.needsWatering($0) }
     }
     
     /// 更新可用房间列表（显示所有房间，包括空房间）
@@ -55,7 +56,7 @@ class PlantListViewModel: ObservableObject {
     func markAsWatered(_ plant: Plant) async {
         do {
             // 创建浇水记录
-            _ = plant.addCareRecord(context: dataManager.context, actionType: .watering)
+            _ = careService.addCareRecord(context: dataManager.context, plant: plant, actionType: .watering)
             
             // 更新浇水日期和提醒
             try await reminderManager.markAsWatered(plant)
@@ -110,7 +111,7 @@ class PlantListViewModel: ObservableObject {
     func markAsCared(_ plant: Plant, actionType: CareActionType) async {
         do {
             // 创建养护记录
-            _ = plant.addCareRecord(context: dataManager.context, actionType: actionType)
+            _ = careService.addCareRecord(context: dataManager.context, plant: plant, actionType: actionType)
             
             // 根据操作类型更新提醒和日历事件
             switch actionType {
@@ -159,7 +160,8 @@ class PlantListViewModel: ObservableObject {
         }
     }
     
-    /// 更新植物描述
+    /// 更新植物描述（已弃用，请直接使用 dataManager.save()）
+    @available(*, deprecated, message: "请直接修改 plant.careInstructions 后调用 dataManager.save()")
     func updatePlantDescription(_ plant: Plant, newDescription: String) async {
         do {
             plant.careInstructions = newDescription

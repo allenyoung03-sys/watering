@@ -30,6 +30,7 @@ class PlantDetailViewModel: ObservableObject {
     private let dataManager = CoreDataManager.shared
     private let reminderManager = ReminderManager.shared
     private let plantIdentificationService = PlantIdentificationService.shared
+    private let careService = PlantCareService.shared
 
     init(plant: Plant) {
         self.plant = plant
@@ -37,17 +38,17 @@ class PlantDetailViewModel: ObservableObject {
     
     /// 获取所有养护记录（按日期倒序）
     var allCareRecords: [CareRecordEntity] {
-        plant.careRecordsArray
+        careService.careRecordsArray(plant)
     }
     
     /// 获取特定类型的养护记录
     func careRecords(for actionType: CareActionType) -> [CareRecordEntity] {
-        plant.careRecords(for: actionType)
+        careService.careRecords(for: actionType, in: plant)
     }
     
     /// 获取养护记录数量
     func careRecordCount(for actionType: CareActionType) -> Int {
-        plant.careRecordCount(for: actionType)
+        careService.careRecordCount(for: actionType, in: plant)
     }
     
     /// 标记养护操作完成
@@ -57,7 +58,7 @@ class PlantDetailViewModel: ObservableObject {
                 print("🌱 [PlantDetailViewModel] 开始标记 \(actionType.displayName) 完成")
                 
                 // 创建养护记录
-                let record = plant.addCareRecord(context: dataManager.context, actionType: actionType, note: note)
+                let record = careService.addCareRecord(context: dataManager.context, plant: plant, actionType: actionType, note: note)
                 
                 // 如果有照片，处理照片
                 if let image = image {
@@ -80,7 +81,7 @@ class PlantDetailViewModel: ObservableObject {
                     let reminderTimeOfDay = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: Date()) ?? Date()
                     
                     // 获取下次养护日期
-                    let nextDate = plant.nextCareDate(for: actionType)
+                    let nextDate = careService.nextCareDate(plant, for: actionType)
                     
                     print("📅 [PlantDetailViewModel] 创建\(actionType.displayName)日历事件:")
                     print("   - 植物: \(plant.name)")
@@ -351,7 +352,7 @@ class PlantDetailViewModel: ObservableObject {
     
     /// 更新养护间隔
     func updateCareInterval(for actionType: CareActionType, interval: Int) {
-        plant.setCareInterval(for: actionType, interval: interval)
+        careService.setCareInterval(plant, for: actionType, interval: interval)
         try? dataManager.save()
     }
     

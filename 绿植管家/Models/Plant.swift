@@ -109,348 +109,141 @@ extension Plant {
     }
 }
 
+// MARK: - 业务逻辑委托（迁移至 PlantCareService）
+// ⚠️ 注意：以下属性/方法通过 PlantCareService 实现，直接调用 Plant 实例将标记为弃用。
+// 请逐步迁移到 PlantCareService.shared 的对应方法。
+
 extension Plant {
-    var daysUntilWatering: Int {
-        max(0, DateCalculator.shared.daysBetween(Date(), and: nextWateringDate))
-    }
+    
+    private var careService: PlantCareService { PlantCareService.shared }
+    
+    // MARK: 浇水相关（弃用，请使用 PlantCareService）
+    
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.daysUntilWatering()")
+    var daysUntilWatering: Int { careService.daysUntilWatering(self) }
 
-    var needsWatering: Bool {
-        DateCalculator.shared.needsWatering(nextWateringDate: nextWateringDate)
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.needsWatering()")
+    var needsWatering: Bool { careService.needsWatering(self) }
 
-    var wateringSoon: Bool {
-        DateCalculator.shared.wateringSoon(nextWateringDate: nextWateringDate)
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.wateringSoon()")
+    var wateringSoon: Bool { careService.wateringSoon(self) }
 
-    var statusColor: Color {
-        if needsWatering { return .statusUrgent }
-        if wateringSoon { return .plantAccent }
-        return .plantGreen
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.statusColor()")
+    var statusColor: Color { careService.statusColor(self) }
 
-    var wateringProgress: Double {
-        DateCalculator.shared.wateringProgress(
-            lastWateredDate: lastWateredDate,
-            nextWateringDate: nextWateringDate
-        )
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.wateringProgress()")
+    var wateringProgress: Double { careService.wateringProgress(self) }
 
-    var subtitleDescription: String {
-        careInstructions?.isEmpty == false ? careInstructions! : (scientificName ?? "绿植")
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.subtitleDescription()")
+    var subtitleDescription: String { careService.subtitleDescription(self) }
     
-    /// 格式化浇水日期
-    var formattedWateringDate: String {
-        DateCalculator.shared.formatWateringDate(nextWateringDate)
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.formattedWateringDate()")
+    var formattedWateringDate: String { careService.formattedWateringDate(self) }
     
-    /// 相对时间描述
-    var relativeWateringTime: String {
-        nextWateringDate.relativeTimeString
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.relativeWateringTime()")
+    var relativeWateringTime: String { careService.relativeWateringTime(self) }
     
-    /// 截断后的描述，用于卡片显示
-    var truncatedDescription: String {
-        let fullDescription = subtitleDescription
-        let maxLength = 80 // 最大显示字符数
-        
-        if fullDescription.count <= maxLength {
-            return fullDescription
-        }
-        
-        let index = fullDescription.index(fullDescription.startIndex, offsetBy: maxLength)
-        return String(fullDescription[..<index]) + "..."
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.truncatedDescription()")
+    var truncatedDescription: String { careService.truncatedDescription(self) }
     
-    /// 判断描述是否需要截断
-    var isDescriptionLong: Bool {
-        subtitleDescription.count > 80
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.isDescriptionLong()")
+    var isDescriptionLong: Bool { careService.isDescriptionLong(self) }
     
-    /// 获取养护记录数组（按日期倒序排列）
-    var careRecordsArray: [CareRecordEntity] {
-        let set = careRecords as? Set<CareRecordEntity> ?? []
-        return set.sorted { $0.date > $1.date }
-    }
+    // MARK: 养护记录相关（弃用，请使用 PlantCareService）
     
-    /// 最近一次养护记录
-    var latestCareRecord: CareRecordEntity? {
-        careRecordsArray.first
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careRecordsArray()")
+    var careRecordsArray: [CareRecordEntity] { careService.careRecordsArray(self) }
     
-    /// 养护记录数量
-    var careRecordCount: Int {
-        careRecordsArray.count
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.latestCareRecord()")
+    var latestCareRecord: CareRecordEntity? { careService.latestCareRecord(self) }
     
-    /// 添加养护记录
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careRecordCount()")
+    var careRecordCount: Int { careService.careRecordCount(self) }
+    
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.addCareRecord()")
     func addCareRecord(context: NSManagedObjectContext, actionType: CareActionType, note: String? = nil) -> CareRecordEntity {
-        let record = CareRecordEntity.create(context: context, plant: self, actionType: actionType, note: note)
-        let mutableSet = self.mutableSetValue(forKey: "careRecords")
-        mutableSet.add(record)
-        
-        // 更新对应操作的最后日期和下次日期
-        let now = Date()
-        let calendar = Calendar.current
-        
-        switch actionType {
-        case .watering:
-            self.lastWateredDate = now
-            self.nextWateringDate = calendar.date(
-                byAdding: .day,
-                value: Int(self.wateringInterval),
-                to: now
-            ) ?? now
-        case .fertilizing:
-            self.lastFertilizedDate = now
-            self.nextFertilizingDate = calendar.date(
-                byAdding: .day,
-                value: Int(self.fertilizingInterval),
-                to: now
-            ) ?? now
-        case .pruning:
-            self.lastPrunedDate = now
-            self.nextPruningDate = calendar.date(
-                byAdding: .day,
-                value: Int(self.pruningInterval),
-                to: now
-            ) ?? now
-        case .pestControl:
-            self.lastPestControlDate = now
-            self.nextPestControlDate = calendar.date(
-                byAdding: .day,
-                value: Int(self.pestControlInterval),
-                to: now
-            ) ?? now
-        case .observation:
-            // 观察记录不更新任何养护日期
-            break
-        }
-        
-        return record
+        careService.addCareRecord(context: context, plant: self, actionType: actionType, note: note)
     }
     
-    /// 获取特定类型的养护记录
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careRecords(for:in:)")
     func careRecords(for actionType: CareActionType) -> [CareRecordEntity] {
-        return careRecordsArray.filter { $0.actionType == actionType.rawValue }
+        careService.careRecords(for: actionType, in: self)
     }
     
-    /// 获取特定类型的养护记录数量
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careRecordCount(for:in:)")
     func careRecordCount(for actionType: CareActionType) -> Int {
-        return careRecords(for: actionType).count
+        careService.careRecordCount(for: actionType, in: self)
     }
     
-    /// 获取下次养护日期（如果为nil则返回当前日期）
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.nextCareDate(for:in:)")
     func nextCareDate(for actionType: CareActionType) -> Date {
-        switch actionType {
-        case .watering:
-            return nextWateringDate
-        case .fertilizing:
-            return nextFertilizingDate ?? Date()
-        case .pruning:
-            return nextPruningDate ?? Date()
-        case .pestControl:
-            return nextPestControlDate ?? Date()
-        case .observation:
-            // 观察记录没有下次养护日期
-            return Date()
-        }
+        careService.nextCareDate(self, for: actionType)
     }
     
-    /// 获取上次养护日期（如果为nil则返回当前日期）
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.lastCareDate()")
     func lastCareDate(for actionType: CareActionType) -> Date {
-        switch actionType {
-        case .watering:
-            return lastWateredDate
-        case .fertilizing:
-            return lastFertilizedDate ?? Date()
-        case .pruning:
-            return lastPrunedDate ?? Date()
-        case .pestControl:
-            return lastPestControlDate ?? Date()
-        case .observation:
-            // 观察记录没有上次养护日期
-            return Date()
-        }
+        careService.lastCareDate(self, for: actionType)
     }
     
-    /// 获取养护间隔
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careInterval()")
     func careInterval(for actionType: CareActionType) -> Int {
-        switch actionType {
-        case .watering:
-            return Int(wateringInterval)
-        case .fertilizing:
-            return Int(fertilizingInterval)
-        case .pruning:
-            return Int(pruningInterval)
-        case .pestControl:
-            return Int(pestControlInterval)
-        case .observation:
-            // 观察记录没有养护间隔
-            return 0
-        }
+        careService.careInterval(self, for: actionType)
     }
     
-    /// 设置养护间隔
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.setCareInterval()")
     func setCareInterval(for actionType: CareActionType, interval: Int) {
-        switch actionType {
-        case .watering:
-            wateringInterval = Int16(interval)
-        case .fertilizing:
-            fertilizingInterval = Int16(interval)
-        case .pruning:
-            pruningInterval = Int16(interval)
-        case .pestControl:
-            pestControlInterval = Int16(interval)
-        case .observation:
-            // 观察记录不需要设置养护间隔
-            break
-        }
+        careService.setCareInterval(self, for: actionType, interval: interval)
     }
     
-    /// 检查是否需要养护
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.needsCare()")
     func needsCare(for actionType: CareActionType) -> Bool {
-        if actionType == .observation {
-            // 观察记录永远不需要养护
-            return false
-        }
-        let nextDate = nextCareDate(for: actionType)
-        return DateCalculator.shared.needsWatering(nextWateringDate: nextDate)
+        careService.needsCare(self, for: actionType)
     }
     
-    /// 检查是否即将需要养护
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careSoon()")
     func careSoon(for actionType: CareActionType) -> Bool {
-        if actionType == .observation {
-            // 观察记录永远不会即将需要养护
-            return false
-        }
-        let nextDate = nextCareDate(for: actionType)
-        return DateCalculator.shared.wateringSoon(nextWateringDate: nextDate)
+        careService.careSoon(self, for: actionType)
     }
     
-    /// 获取养护进度
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careProgress()")
     func careProgress(for actionType: CareActionType) -> Double {
-        if actionType == .observation {
-            // 观察记录没有养护进度
-            return 0
-        }
-        let lastDate = lastCareDate(for: actionType)
-        let nextDate = nextCareDate(for: actionType)
-        return DateCalculator.shared.wateringProgress(
-            lastWateredDate: lastDate,
-            nextWateringDate: nextDate
-        )
+        careService.careProgress(self, for: actionType)
     }
     
-    /// 获取养护状态颜色
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.careStatusColor()")
     func careStatusColor(for actionType: CareActionType) -> Color {
-        if needsCare(for: actionType) { return .statusUrgent }
-        if careSoon(for: actionType) { return .plantAccent }
-        return .plantGreen
+        careService.careStatusColor(self, for: actionType)
     }
     
-    /// 获取距离下次养护的天数
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.daysUntilNextCare()")
     func daysUntilNextCare(for actionType: CareActionType) -> Int {
-        if actionType == .observation {
-            // 观察记录没有下次养护
-            return 0
-        }
-        let nextDate = nextCareDate(for: actionType)
-        return max(0, DateCalculator.shared.daysBetween(Date(), and: nextDate))
+        careService.daysUntilNextCare(self, for: actionType)
     }
     
-    // MARK: - 最近养护时间计算方法
+    // MARK: 最近养护（弃用，请使用 PlantCareService）
     
-    /// 获取最近的下次养护日期（四种操作中最早的）
-    var nextClosestCareDate: Date {
-        // 收集所有有效的日期
-        var validDates: [Date] = [nextWateringDate]
-        
-        // 只添加非nil的日期
-        if let fertilizingDate = nextFertilizingDate {
-            validDates.append(fertilizingDate)
-        }
-        
-        if let pruningDate = nextPruningDate {
-            validDates.append(pruningDate)
-        }
-        
-        if let pestControlDate = nextPestControlDate {
-            validDates.append(pestControlDate)
-        }
-        
-        // 返回最早的日期
-        return validDates.min() ?? Date()
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.nextClosestCareDate()")
+    var nextClosestCareDate: Date { careService.nextClosestCareDate(self) }
     
-    /// 获取最近需要养护的操作类型
-    var closestCareActionType: CareActionType {
-        // 收集所有有效的日期和类型
-        var validDatesWithTypes: [(Date, CareActionType)] = []
-        
-        // 浇水日期总是有效的
-        validDatesWithTypes.append((nextWateringDate, .watering))
-        
-        // 只添加非nil的日期
-        if let fertilizingDate = nextFertilizingDate {
-            validDatesWithTypes.append((fertilizingDate, .fertilizing))
-        }
-        
-        if let pruningDate = nextPruningDate {
-            validDatesWithTypes.append((pruningDate, .pruning))
-        }
-        
-        if let pestControlDate = nextPestControlDate {
-            validDatesWithTypes.append((pestControlDate, .pestControl))
-        }
-        
-        // 如果没有有效日期，返回浇水作为默认
-        guard !validDatesWithTypes.isEmpty else {
-            return .watering
-        }
-        
-        // 找到最早的日期
-        let closest = validDatesWithTypes.min { $0.0 < $1.0 }
-        return closest?.1 ?? .watering
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.closestCareActionType()")
+    var closestCareActionType: CareActionType { careService.closestCareActionType(self) }
     
-    /// 获取距离最近养护的天数
-    var daysUntilClosestCare: Int {
-        max(0, DateCalculator.shared.daysBetween(Date(), and: nextClosestCareDate))
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.daysUntilClosestCare()")
+    var daysUntilClosestCare: Int { careService.daysUntilClosestCare(self) }
     
-    /// 检查是否有任何养护操作需要立即进行
-    var needsAnyCare: Bool {
-        CareActionType.allCases.contains { needsCare(for: $0) }
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.needsAnyCare()")
+    var needsAnyCare: Bool { careService.needsAnyCare(self) }
     
-    /// 检查是否有任何养护操作即将需要
-    var anyCareSoon: Bool {
-        CareActionType.allCases.contains { careSoon(for: $0) }
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.anyCareSoon()")
+    var anyCareSoon: Bool { careService.anyCareSoon(self) }
     
-    /// 获取最近养护状态的颜色
-    var closestCareStatusColor: Color {
-        if needsAnyCare { return .statusUrgent }
-        if anyCareSoon { return .plantAccent }
-        return .plantGreen
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.closestCareStatusColor()")
+    var closestCareStatusColor: Color { careService.closestCareStatusColor(self) }
     
-    /// 增加截断描述的最大长度（从80增加到120）
-    var extendedTruncatedDescription: String {
-        let fullDescription = subtitleDescription
-        let maxLength = 120 // 增加最大显示字符数
-        
-        if fullDescription.count <= maxLength {
-            return fullDescription
-        }
-        
-        let index = fullDescription.index(fullDescription.startIndex, offsetBy: maxLength)
-        return String(fullDescription[..<index]) + "..."
-    }
+    /// ⚠️ 以下为过渡期临时保留的扩展属性，内部已委托给 PlantCareService
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.truncatedDescription(plant:maxLength:)（传参 maxLength:120）")
+    var extendedTruncatedDescription: String { careService.truncatedDescription(self, maxLength: 120) }
     
-    /// 判断描述是否需要截断（使用新长度）
-    var isDescriptionLongExtended: Bool {
-        subtitleDescription.count > 120
-    }
+    @available(*, deprecated, message: "请使用 PlantCareService.shared.isDescriptionLong(plant:maxLength:)（传参 maxLength:120）")
+    var isDescriptionLongExtended: Bool { careService.isDescriptionLong(self, maxLength: 120) }
 }
