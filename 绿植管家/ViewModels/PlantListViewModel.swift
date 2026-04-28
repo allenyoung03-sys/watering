@@ -28,7 +28,14 @@ class PlantListViewModel: ObservableObject {
 
     func loadPlants() {
         let allPlants = dataManager.fetchPlants()
-            .sorted { $0.nextWateringDate < $1.nextWateringDate }
+            .sorted { a, b in
+                let aNeedsCare = careService.needsAnyCare(a)
+                let bNeedsCare = careService.needsAnyCare(b)
+                if aNeedsCare != bNeedsCare {
+                    return aNeedsCare && !bNeedsCare
+                }
+                return a.nextWateringDate < b.nextWateringDate
+            }
         
         // 筛选植物
         if selectedRoom == Constants.Room.all {
@@ -37,7 +44,7 @@ class PlantListViewModel: ObservableObject {
             plants = allPlants.filter { $0.room == selectedRoom }
         }
         
-        todayPlants = plants.filter { careService.needsWatering($0) }
+        todayPlants = plants.filter { careService.needsAnyCare($0) }
     }
     
     /// 更新可用房间列表（显示所有房间，包括空房间）

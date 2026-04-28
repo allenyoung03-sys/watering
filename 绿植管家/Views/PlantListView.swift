@@ -24,7 +24,7 @@ struct PlantListView: View {
                     headerSection
                     roomFilterSection
                     if !viewModel.todayPlants.isEmpty {
-                        TodayWateringBanner(count: viewModel.todayPlants.count)
+                        TodayCareBanner(count: viewModel.todayPlants.count)
                     }
                     sectionHeader
                     plantsList
@@ -236,39 +236,32 @@ struct PlantListView: View {
     }
 }
 
-struct TodayWateringBanner: View {
+struct TodayCareBanner: View {
     let count: Int
 
     var body: some View {
-        NavigationLink {
-            Text("今日需浇水的植物列表")
-        } label: {
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.3))
-                        .frame(width: 44, height: 44)
-                    Image(systemName: "drop.fill")
-                        .font(.title2)
-                        .foregroundColor(.white)
-                }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("今日任务")
-                        .font(.plantCaption)
-                        .foregroundColor(.white.opacity(0.9))
-                    Text("\(count) 株植物需要浇水")
-                        .font(.plantHeadline)
-                        .foregroundColor(.white)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.3))
+                    .frame(width: 44, height: 44)
+                Image(systemName: "calendar.badge.clock")
+                    .font(.title2)
                     .foregroundColor(.white)
             }
-            .padding(Constants.Layout.spacingM)
-            .frame(maxWidth: .infinity)
-            .background(Color.plantGreen)
-            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+            VStack(alignment: .leading, spacing: 2) {
+                Text("今日任务")
+                    .font(.plantCaption)
+                    .foregroundColor(.white.opacity(0.9))
+                Text("\(count) 株植物需要养护")
+                    .font(.plantHeadline)
+                    .foregroundColor(.white)
+            }
+            Spacer()
         }
-        .buttonStyle(.plain)
+        .padding(Constants.Layout.spacingM)
+        .frame(maxWidth: .infinity)
+        .background(Color.plantGreen)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
     }
 }
