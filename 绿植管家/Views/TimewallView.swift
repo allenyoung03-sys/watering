@@ -39,6 +39,19 @@ struct TimewallView: View {
             }
             .background(Color.backgroundPrimary)
         }
+        .onAppear {
+            warmupUI()
+        }
+    }
+
+    /// 预加载 UIKit 文本框框架（UITextView/TextKit），
+    /// 避免首次展示添加备注 sheet 时因 framework 懒加载导致的卡顿。
+    private func warmupUI() {
+        DispatchQueue.main.async {
+            let textView = UITextView()
+            textView.text = ""
+            _ = textView
+        }
     }
     
     private var tabPicker: some View {

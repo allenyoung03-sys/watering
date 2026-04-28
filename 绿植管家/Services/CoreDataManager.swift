@@ -333,45 +333,6 @@ class CoreDataManager {
         }
     }
     
-    /// 删除养护记录（旧版本，保持兼容性）
-    func deleteCareRecordOld(_ record: CareRecordEntity) throws {
-        print("🗑️ [CoreDataManager] 开始删除养护记录: \(record.id) (\(record.actionDisplayName))")
-        
-        // 确保在主线程执行
-        guard Thread.isMainThread else {
-            let error = NSError(domain: "CoreDataManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "必须在主线程执行删除操作"])
-            print("❌ [CoreDataManager] 删除失败: 不在主线程")
-            throw error
-        }
-        
-        do {
-            // 同步清理照片文件（避免异步操作导致记录被删除后仍在清理）
-            print("🗑️ [CoreDataManager] 同步清理照片缓存...")
-            record.clearAllImages() // 直接调用同步方法
-            print("✅ [CoreDataManager] 照片缓存清理完成")
-            
-            // 删除记录
-            print("🗑️ [CoreDataManager] 从CoreData删除记录...")
-            context.delete(record)
-            
-            // 保存更改
-            print("🗑️ [CoreDataManager] 保存更改...")
-            try save()
-            
-            print("✅ [CoreDataManager] 成功删除养护记录: \(record.id)")
-        } catch {
-            print("❌ [CoreDataManager] 删除养护记录失败: \(error)")
-            print("❌ [CoreDataManager] 错误详情: \(error.localizedDescription)")
-            throw error
-        }
-    }
-    
-    /// 同步清理所有照片（避免异步操作问题）- 已弃用，使用record.clearAllImages()代替
-    private func syncClearAllImages(for record: CareRecordEntity) {
-        print("⚠️ [CoreDataManager] syncClearAllImages已弃用，使用record.clearAllImages()代替")
-        record.clearAllImages()
-    }
-    
     // MARK: - 数据迁移
     
     /// 迁移现有植物的房间数据

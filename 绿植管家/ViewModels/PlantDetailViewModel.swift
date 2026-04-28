@@ -220,15 +220,10 @@ class PlantDetailViewModel: ObservableObject {
     /// 获取照片缩略图（用于预览）
     var imageThumbnail: UIImage? {
         guard let image = selectedImage else { return nil }
-        
-        // 创建缩略图（最大尺寸100）
-        let thumbnailSize = CGSize(width: 100, height: 100)
-        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, 0.0)
-        image.draw(in: CGRect(origin: .zero, size: thumbnailSize))
-        let thumbnailImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnailImage
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
+        }
     }
     
     /// 检查是否有选择的照片
@@ -265,7 +260,7 @@ class PlantDetailViewModel: ObservableObject {
                 
                 // 删除完成后，发送通知让UI刷新
                 NotificationCenter.default.post(
-                    name: NSNotification.Name("CareRecordDeleted"),
+                    name: .careRecordDeleted,
                     object: nil,
                     userInfo: ["recordId": record.id]
                 )
@@ -284,58 +279,20 @@ class PlantDetailViewModel: ObservableObject {
     }
 
     func deletePlant() async {
-        print("🗑️ [PlantDetailViewModel] 开始删除植物: \(plant.name) (ID: \(plant.id))")
-        
-        // 1. 首先确保日历权限
-        print("🗑️ [PlantDetailViewModel] 检查日历权限...")
-        do {
-            let hasAccess = try await CalendarManager.shared.requestAccess()
-            if hasAccess {
-                print("✅ [PlantDetailViewModel] 已有日历权限")
-            } else {
-                print("⚠️ [PlantDetailViewModel] 无日历权限，但继续删除流程")
-            }
-        } catch {
-            print("⚠️ [PlantDetailViewModel] 检查日历权限失败: \(error)")
-        }
-        
-        // 2. 直接删除日历事件（在取消提醒之前）
-        print("🗑️ [PlantDetailViewModel] 直接删除日历事件...")
-        do {
-            try await CalendarManager.shared.removeAllCareEvents(plantId: plant.id)
-            print("✅ [PlantDetailViewModel] 日历事件删除完成")
-        } catch {
-            print("❌ [PlantDetailViewModel] 直接删除日历事件失败: \(error)")
-            // 继续执行，因为提醒管理器也会尝试删除
-        }
-        
-        // 3. 取消提醒（这也会尝试删除日历事件）
-        print("🗑️ [PlantDetailViewModel] 正在取消提醒...")
+        AppLogger.debug("开始删除植物: \(plant.name) (ID: \(plant.id))")
+
+        // cancelReminder 会同时取消本地通知和日历事件
         await reminderManager.cancelReminder(for: plant.id)
-        print("✅ [PlantDetailViewModel] 提醒已取消")
-        
-        // 4. 再次确认日历事件已删除（双重检查）
-        print("🗑️ [PlantDetailViewModel] 双重检查日历事件是否已删除...")
-        do {
-            try await CalendarManager.shared.removeAllCareEvents(plantId: plant.id)
-            print("✅ [PlantDetailViewModel] 日历事件双重检查完成")
-        } catch {
-            print("⚠️ [PlantDetailViewModel] 日历事件双重检查失败: \(error)")
-        }
-        
-        // 5. 从CoreData删除植物
-        print("🗑️ [PlantDetailViewModel] 正在从CoreData删除植物...")
+
+        // 从CoreData删除植物
         dataManager.delete(plant)
-        
-        // 6. 保存更改
+
         do {
             try dataManager.save()
-            print("✅ [PlantDetailViewModel] 植物删除成功: \(plant.name)")
+            AppLogger.success("植物删除成功: \(plant.name)")
         } catch {
-            print("❌ [PlantDetailViewModel] 保存删除更改失败: \(error)")
+            AppLogger.error("保存删除更改失败: \(error)")
         }
-        
-        print("✅ [PlantDetailViewModel] 删除植物流程完成")
     }
 
     func updateReminder(interval: Int, time: Date) {

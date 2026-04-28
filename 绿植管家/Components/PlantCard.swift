@@ -11,14 +11,16 @@ struct PlantCard: View {
     let onCareAction: (CareActionType) -> Void
     let onEditPlant: () -> Void
     let onUpdatePlantInfo: (String, String, String?) -> Void
-    
+
+    private var careService: PlantCareService { PlantCareService.shared }
+
     @State private var showDescriptionDetail = false
     @State private var showPlantInfoEdit = false
     @State private var showCareActionMenu = false
     @State private var showCareSuccess = false
     @State private var successActionType: CareActionType = .watering
     @State private var isLongPressing = false
-    
+
     var body: some View {
         content
             .padding(Constants.Layout.spacingM)
@@ -29,7 +31,7 @@ struct PlantCard: View {
             .sheet(isPresented: $showDescriptionDetail) {
                 DescriptionDetailView(
                     title: plant.name,
-                    description: plant.subtitleDescription
+                    description: careService.subtitleDescription(plant)
                 )
             }
             .sheet(isPresented: $showPlantInfoEdit) {
@@ -80,10 +82,10 @@ struct PlantCard: View {
                 // 显示所有养护状态图标
                 HStack(spacing: 3) {
                     ForEach(CareActionType.allCases, id: \.self) { actionType in
-                        if plant.needsCare(for: actionType) {
+                        if careService.needsCare(plant, for: actionType) {
                             Image(systemName: actionType.iconName)
                                 .font(.caption2)
-                                .foregroundColor(plant.careStatusColor(for: actionType))
+                                .foregroundColor(careService.careStatusColor(plant, for: actionType))
                         }
                     }
                 }
@@ -97,7 +99,7 @@ struct PlantCard: View {
         .sheet(isPresented: $showDescriptionDetail) {
             DescriptionDetailView(
                 title: plant.name,
-                description: plant.subtitleDescription
+                description: careService.subtitleDescription(plant)
             )
         }
         .sheet(isPresented: $showPlantInfoEdit) {
@@ -144,13 +146,13 @@ struct PlantCard: View {
 
     private var descriptionView: some View {
         HStack(alignment: .top, spacing: 4) {
-            Text(plant.extendedTruncatedDescription)
+            Text(careService.truncatedDescription(plant, maxLength: 120))
                 .font(.plantCaption)
                 .foregroundColor(.secondary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
             
-            if plant.isDescriptionLongExtended {
+            if careService.isDescriptionLong(plant, maxLength: 120) {
                 Button(action: {
                     showDescriptionDetail = true
                 }) {
@@ -190,7 +192,7 @@ struct PlantCard: View {
                 guard !isLongPressing else { return }
                 
                 // 短按：记录当前倒计时中最近时间的操作
-                let closestActionType = plant.closestCareActionType
+                let closestActionType = careService.closestCareActionType(plant)
                 
                 // 详细调试日志：打印最近操作类型和所有日期信息
                 print("🌱 PlantCard短按调试:")
@@ -201,11 +203,11 @@ struct PlantCard: View {
                 // 调试：打印所有操作的详细日期信息
                 print("  各操作详细日期信息:")
                 for actionType in CareActionType.allCases {
-                    let daysUntil = plant.daysUntilNextCare(for: actionType)
-                    let nextDate = plant.nextCareDate(for: actionType)
-                    let lastDate = plant.lastCareDate(for: actionType)
-                    let needsCare = plant.needsCare(for: actionType)
-                    let careSoon = plant.careSoon(for: actionType)
+                    let daysUntil = careService.daysUntilNextCare(plant, for: actionType)
+                    let nextDate = careService.nextCareDate(plant, for: actionType)
+                    let lastDate = careService.lastCareDate(plant, for: actionType)
+                    let needsCare = careService.needsCare(plant, for: actionType)
+                    let careSoon = careService.careSoon(plant, for: actionType)
                     print("    - \(actionType.displayName):")
                     print("      下次日期: \(nextDate)")
                     print("      上次日期: \(lastDate)")
@@ -306,7 +308,7 @@ struct PlantCard: View {
 
     @ViewBuilder
     private var statusBadge: some View {
-        if plant.needsAnyCare {
+        if careService.needsAnyCare(plant) {
             // 有紧急养护需求
             Text("今日")
                 .font(.system(size: 9, weight: .bold))
@@ -319,17 +321,17 @@ struct PlantCard: View {
             // 显示最近养护倒计时
             ZStack {
                 Circle()
-                    .stroke(plant.closestCareStatusColor, lineWidth: 2)
+                    .stroke(careService.closestCareStatusColor(plant), lineWidth: 2)
                     .frame(width: 40, height: 40)
                 
                 VStack(spacing: 0) {
-                    Text("\(plant.daysUntilClosestCare)")
+                    Text("\(careService.daysUntilClosestCare(plant))")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundColor(plant.closestCareStatusColor)
+                        .foregroundColor(careService.closestCareStatusColor(plant))
                     
-                    Text(plant.closestCareActionType.shortDisplayName)
+                    Text(careService.closestCareActionType(plant).shortDisplayName)
                         .font(.system(size: 7, weight: .medium))
-                        .foregroundColor(plant.closestCareStatusColor)
+                        .foregroundColor(careService.closestCareStatusColor(plant))
                 }
             }
         }

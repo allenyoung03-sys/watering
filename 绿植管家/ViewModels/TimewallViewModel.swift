@@ -324,7 +324,7 @@ class TimewallViewModel: ObservableObject {
         
         // 监听植物房间更新
         NotificationCenter.default.addObserver(
-            forName: NSNotification.Name("PlantRoomUpdated"),
+            forName: .plantRoomUpdated,
             object: nil,
             queue: .main
         ) { [weak self] _ in

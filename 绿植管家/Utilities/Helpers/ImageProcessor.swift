@@ -111,25 +111,21 @@ class ImageProcessor {
     func resizeImage(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
         let originalSize = image.size
         let maxSize = Swift.max(originalSize.width, originalSize.height)
-        
-        // 如果图片尺寸已经小于目标尺寸，直接返回
+
         if maxSize <= maxDimension {
             return image
         }
-        
-        // 计算新的尺寸（保持宽高比）
+
         let scale = maxDimension / maxSize
         let newSize = CGSize(
             width: originalSize.width * scale,
             height: originalSize.height * scale
         )
-        
-        UIGraphicsBeginImageContextWithOptions(newSize, false, image.scale)
-        image.draw(in: CGRect(origin: .zero, size: newSize))
-        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return resizedImage ?? image
+
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
     }
     
     /// 缓存图片

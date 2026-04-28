@@ -1,356 +1,1763 @@
-// !$*UTF8*$!
-{
-	archiveVersion = 1;
-	classes = {
-	};
-	objectVersion = 77;
-	objects = {
-
-/* Begin PBXFileReference section */
-		E3BA87C02F41FE87006A9652 /* 浇水吧.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "浇水吧.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-/* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		E3BA87C22F41FE87006A9652 /* 绿植管家 */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "绿植管家";
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		E3BA87BD2F41FE87006A9652 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXGroup section */
-		E3BA87B72F41FE87006A9652 = {
-			isa = PBXGroup;
-			children = (
-				E3BA87C22F41FE87006A9652 /* 绿植管家 */,
-				E3BA87C12F41FE87006A9652 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		E3BA87C12F41FE87006A9652 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E3BA87C02F41FE87006A9652 /* 浇水吧.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-/* End PBXGroup section */
-
-/* Begin PBXNativeTarget section */
-		E3BA87BF2F41FE87006A9652 /* 浇水吧 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E3BA87CB2F41FE89006A9652 /* Build configuration list for PBXNativeTarget "浇水吧" */;
-			buildPhases = (
-				E3BA87BC2F41FE87006A9652 /* Sources */,
-				E3BA87BD2F41FE87006A9652 /* Frameworks */,
-				E3BA87BE2F41FE87006A9652 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				E3BA87C22F41FE87006A9652 /* 绿植管家 */,
-			);
-			name = "浇水吧";
-			packageProductDependencies = (
-			);
-			productName = "浇水吧";
-			productReference = E3BA87C02F41FE87006A9652 /* 浇水吧.app */;
-			productType = "com.apple.product-type.application";
-		};
-/* End PBXNativeTarget section */
-
-/* Begin PBXProject section */
-		E3BA87B82F41FE87006A9652 /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2620;
-				LastUpgradeCheck = 2620;
-				TargetAttributes = {
-					E3BA87BF2F41FE87006A9652 = {
-						CreatedOnToolsVersion = 26.2;
-					};
-				};
-			};
-			buildConfigurationList = E3BA87BB2F41FE87006A9652 /* Build configuration list for PBXProject "绿植管家" */;
-			developmentRegion = en;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-				Base,
-			);
-			mainGroup = E3BA87B72F41FE87006A9652;
-			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
-			productRefGroup = E3BA87C12F41FE87006A9652 /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
-			targets = (
-				E3BA87BF2F41FE87006A9652 /* 浇水吧 */,
-			);
-		};
-/* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		E3BA87BE2F41FE87006A9652 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXSourcesBuildPhase section */
-		E3BA87BC2F41FE87006A9652 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section */
-
-/* Begin XCBuildConfiguration section */
-		E3BA87C92F41FE89006A9652 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		E3BA87CA2F41FE89006A9652 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-			};
-			name = Release;
-		};
-		E3BA87CC2F41FE89006A9652 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84J77J8HXF;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "浇水吧";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒";
-				INFOPLIST_KEY_NSCameraUsageDescription = "需要使用相机来拍摄植物照片进行识别";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "需要访问您的相册来选择植物照片";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yang-yang.----";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		E3BA87CD2F41FE89006A9652 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84J77J8HXF;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "浇水吧";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒";
-				INFOPLIST_KEY_NSCameraUsageDescription = "需要使用相机来拍摄植物照片进行识别";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "需要访问您的相册来选择植物照片";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yang-yang.----";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-/* End XCBuildConfiguration section */
-
-/* Begin XCConfigurationList section */
-		E3BA87BB2F41FE87006A9652 /* Build configuration list for PBXProject "绿植管家" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E3BA87C92F41FE89006A9652 /* Debug */,
-				E3BA87CA2F41FE89006A9652 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E3BA87CB2F41FE89006A9652 /* Build configuration list for PBXNativeTarget "浇水吧" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E3BA87CC2F41FE89006A9652 /* Debug */,
-				E3BA87CD2F41FE89006A9652 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-/* End XCConfigurationList section */
-	};
-	rootObject = E3BA87B82F41FE87006A9652 /* Project object */;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>archiveVersion</key>
+	<string>1</string>
+	<key>classes</key>
+	<dict/>
+	<key>objectVersion</key>
+	<string>77</string>
+	<key>objects</key>
+	<dict>
+		<key>00DDEF3B04EB4DDDB90F82B3</key>
+		<dict>
+			<key>fileRef</key>
+			<string>09C58B9E3BA34A49BBB9CACB</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>02BBC633C09E4D098375F84B</key>
+		<dict>
+			<key>fileRef</key>
+			<string>A2016217E32B4DAB91E7BAF1</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>037951244C374CE48BC8143F</key>
+		<dict>
+			<key>fileRef</key>
+			<string>50B0350F3C6E4C69A04F7002</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>04011E98736E43CAA3586E3D</key>
+		<dict>
+			<key>fileRef</key>
+			<string>BB4B86D64D694FACA266BF49</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>09C58B9E3BA34A49BBB9CACB</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/ReminderSetupView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>0AD8C81F7E0542739D728F4D</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Models/CareRecordEntity.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>0C520EDD26D24E448D3DF7F2</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/PhotoGalleryView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>0D1C9B0565E14F32828D33F3</key>
+		<dict>
+			<key>fileRef</key>
+			<string>EC2F59B4AE5944C494C722C0</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>0FF9A33D53E94C038E90134D</key>
+		<dict>
+			<key>fileRef</key>
+			<string>0C520EDD26D24E448D3DF7F2</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>14BE20CB795843DEA4EF71CE</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/StringConstants.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>18F53B5811DA4B82A1CF6B32</key>
+		<dict>
+			<key>fileRef</key>
+			<string>0AD8C81F7E0542739D728F4D</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>1ACC0A919F174D59A9FFCC98</key>
+		<dict>
+			<key>fileRef</key>
+			<string>B2AAB41829EE4914B1DE1A3B</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>1E5F64FA23554175B04F5339</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Extensions/Date+Extensions.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>1FF294533454440C8CF574C5</key>
+		<dict>
+			<key>fileRef</key>
+			<string>93184AF03AFA486EAD2833AA</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>21AB4019EF1349FC8E9FDEB2</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Helpers/AppLogger.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>22E695F5562D4F80B6316ED1</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/PhotoConfirmationView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>270F057B276A421598BAE56D</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/PlantDetailView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>272375A335F94D06906B6D33</key>
+		<dict>
+			<key>fileRef</key>
+			<string>7EBB4680530744C49050DCD0</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>29526007A0AC4412A4857536</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Models/PlantIdentificationResult.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>3102688B68C549E192331767</key>
+		<dict>
+			<key>fileRef</key>
+			<string>E8A70FA0C1EF4772856442B2</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>3168A7F03ADC4F57AF74C78D</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>ViewModels/CameraViewModel.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>382BCF4134EF42CBB2E255BE</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/CameraView/CameraView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>39B9754B46DD44B3BB671BF5</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/PlantListView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>3C822EB1DCE24DCEB0C076DC</key>
+		<dict>
+			<key>fileRef</key>
+			<string>FF2D06310F3B43FBAD9E7D01</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>3CB1C06DA1694EE7BC91E491</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/OnboardingView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>3D49DDC7562D4CAD9A791D21</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>ViewModels/PlantDetailViewModel.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>3D5E9E34779E4F5BA28153D6</key>
+		<dict>
+			<key>fileRef</key>
+			<string>AD0716A5CB21409BB38E40F9</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>3EB89D12E5114F4DB7559FAC</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/MainTabView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>41A6CBB9B9BA4513991A64ED</key>
+		<dict>
+			<key>fileRef</key>
+			<string>D31B3A57587B490D8C43B113</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>48BD2A2C9E43479BBF00A146</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Constants.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>4AF915D5F9594EDEA1D56AA2</key>
+		<dict>
+			<key>fileRef</key>
+			<string>DB46D06BA3764CAEA9D3C989</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>4B362E515FC04862ABD455E3</key>
+		<dict>
+			<key>fileRef</key>
+			<string>D404D06FF4A6455DA1FEC30A</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>50B0350F3C6E4C69A04F7002</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Helpers/PlantCareData.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>541A00B34DF54F5EAC4E22BD</key>
+		<dict>
+			<key>fileRef</key>
+			<string>EE9339A6AFA446C6B02F2272</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>58C5D908FD7649609525A006</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/CountdownTimer.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>5A5CAF0119CA4AF1B2E310B9</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3D49DDC7562D4CAD9A791D21</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>5DCA2BA93E13477FA35E1F5D</key>
+		<dict>
+			<key>fileRef</key>
+			<string>8DD038F8CB94495B8E2A1ED3</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>6401BF21E7E84F90B569A092</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Extensions/View+Extensions.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>6DA86809AE164E0DBF7E4CF6</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>App/PlantCareApp.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>6F9260BF1E63420987257899</key>
+		<dict>
+			<key>fileRef</key>
+			<string>14BE20CB795843DEA4EF71CE</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>710751B90DEC4BADA1266C9D</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>ContentView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>71543AA522694AC5B677D267</key>
+		<dict>
+			<key>fileRef</key>
+			<string>E86B136B8FE44C8D9F2DBB64</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>770305D80D7C4CC0B3012438</key>
+		<dict>
+			<key>fileRef</key>
+			<string>22E695F5562D4F80B6316ED1</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>77D27C7FCADC4024B328E79F</key>
+		<dict>
+			<key>fileRef</key>
+			<string>DF0E89352F2649D78616F3B8</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>77EB916906C2467187D72DBD</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/DefaultReminderTimeView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>7D1C2A6D78D749288FB57B69</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Helpers/ErrorHandler.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>7EBB4680530744C49050DCD0</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/TimePickerView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>807D2F2B3A5C43ED83ED8A7A</key>
+		<dict>
+			<key>fileRef</key>
+			<string>A53614DDA4FF45EAA23F3E63</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>81E7B63FB9864B6794A5A2A7</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/TimelineNodeView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>83D3262C7BE3423997A54607</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/ImagePicker.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>84EE4B7EEDB545CD88567DA2</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>ViewModels/PlantListViewModel.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>85AF185663734CFF91197BD8</key>
+		<dict>
+			<key>fileRef</key>
+			<string>21AB4019EF1349FC8E9FDEB2</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>87C9DE391CC745BFAD661239</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/MultiCareReminderSetupView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>89BB8CA3E71A4F2D9E1EB426</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3CB1C06DA1694EE7BC91E491</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>8B200724A3ED4415A69DD8DF</key>
+		<dict>
+			<key>fileRef</key>
+			<string>D0F6962221BC4B0AA8E9C063</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>8C496B6BCA044A2897CC8D6C</key>
+		<dict>
+			<key>fileRef</key>
+			<string>39B9754B46DD44B3BB671BF5</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>8DD038F8CB94495B8E2A1ED3</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/UserProfileManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>8EE0D065D7B34277AB94F114</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3168A7F03ADC4F57AF74C78D</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>8EFF3C267A4A40C6AAB39B44</key>
+		<dict>
+			<key>fileRef</key>
+			<string>D6CCF8923BE0402393121354</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>91C9FD25E05147C3BA04DE9A</key>
+		<dict>
+			<key>fileRef</key>
+			<string>E2B328760D3940CDB3840A92</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>93184AF03AFA486EAD2833AA</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/TimewallView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>9354E89FBBEC4527AB25A802</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>App/AppDelegate.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>96AF773BFFB6408C8DC326DF</key>
+		<dict>
+			<key>fileRef</key>
+			<string>F664237610F24ECFAC40E987</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>96D53C8C3BC249B58E70661D</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Helpers/ImageProcessor.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>96ECA9F5D6B34F419B22C05B</key>
+		<dict>
+			<key>fileRef</key>
+			<string>6DA86809AE164E0DBF7E4CF6</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>999CE72BB2464824B21CDB83</key>
+		<dict>
+			<key>fileRef</key>
+			<string>D25ECBED54CF44C3AF8F7AB2</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>9A5B0CAEA576447D8D7BFACA</key>
+		<dict>
+			<key>fileRef</key>
+			<string>710751B90DEC4BADA1266C9D</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>9AF4C9B3F5514CE7B90095DE</key>
+		<dict>
+			<key>fileRef</key>
+			<string>81E7B63FB9864B6794A5A2A7</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>9C09E963C4404590A21BCD60</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/PlantCard.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>9D67C3D1A4CA4A4FA83A640E</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>ViewModels/TimewallViewModel.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>9DC5ED467257414C9A001FA7</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/CoreDataManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>9F449C0B9BCA43BFB8118B89</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Helpers/DateCalculator.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>9FAAF319454C4D4C92ADDB1A</key>
+		<dict>
+			<key>fileRef</key>
+			<string>96D53C8C3BC249B58E70661D</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>A2016217E32B4DAB91E7BAF1</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/PlantCareService.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>A53614DDA4FF45EAA23F3E63</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/RoomManagementView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>AAE63977C4044449BE11DCA8</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9C09E963C4404590A21BCD60</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>AD0716A5CB21409BB38E40F9</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Helpers/RoomManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>B2AAB41829EE4914B1DE1A3B</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/Extensions/Color+Extensions.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>B2DFFD2D37AA442E80BF6835</key>
+		<dict>
+			<key>fileRef</key>
+			<string>C11F80A076AC4D60A0FFB90E</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>B87B946CEDD14E3299D5304B</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/DescriptionDetailView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>BB4B86D64D694FACA266BF49</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/EnhancedImagePicker.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>C0DFFAC0E0F449CE87AE863E</key>
+		<dict>
+			<key>fileRef</key>
+			<string>270F057B276A421598BAE56D</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>C11F80A076AC4D60A0FFB90E</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/NotificationManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>C3F70C3637974597BB0CEE9D</key>
+		<dict>
+			<key>fileRef</key>
+			<string>CE2B266166834ACBAB527FF6</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>C6B87C0AF2BC49B6AA2ED9BD</key>
+		<dict>
+			<key>fileRef</key>
+			<string>29526007A0AC4412A4857536</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>CC9761572D014064BD53521F</key>
+		<dict>
+			<key>fileRef</key>
+			<string>83D3262C7BE3423997A54607</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>CE2B266166834ACBAB527FF6</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/SettingsView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D0F6962221BC4B0AA8E9C063</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Models/Plant.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D224F31297F6474DAC725B35</key>
+		<dict>
+			<key>fileRef</key>
+			<string>7D1C2A6D78D749288FB57B69</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>D25ECBED54CF44C3AF8F7AB2</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/RoomFilterButton.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D28E06651C3C40E8A3BBF473</key>
+		<dict>
+			<key>fileRef</key>
+			<string>1E5F64FA23554175B04F5339</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>D31B3A57587B490D8C43B113</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/CameraView/CameraPreviewView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D404D06FF4A6455DA1FEC30A</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/ReminderManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D6CCF8923BE0402393121354</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/ProfileEditView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D7B2BAEAF7B342B0967D4E7E</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3EB89D12E5114F4DB7559FAC</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>DB46D06BA3764CAEA9D3C989</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>folder.assetcatalog</string>
+			<key>path</key>
+			<string>Assets.xcassets</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>DC3B4BD2EE5D4180A4926D06</key>
+		<dict>
+			<key>fileRef</key>
+			<string>382BCF4134EF42CBB2E255BE</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>DF0E89352F2649D78616F3B8</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>ViewModels/AddPlantViewModel.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E2B328760D3940CDB3840A92</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/CalendarManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E3BA87B72F41FE87006A9652</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>E963A35F92C543109F366B9F</string>
+				<string>E3BA87C12F41FE87006A9652</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E3BA87B82F41FE87006A9652</key>
+		<dict>
+			<key>attributes</key>
+			<dict>
+				<key>BuildIndependentTargetsInParallel</key>
+				<string>1</string>
+				<key>LastSwiftUpdateCheck</key>
+				<string>2620</string>
+				<key>LastUpgradeCheck</key>
+				<string>2620</string>
+				<key>TargetAttributes</key>
+				<dict>
+					<key>E3BA87BF2F41FE87006A9652</key>
+					<dict>
+						<key>CreatedOnToolsVersion</key>
+						<string>26.2</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>buildConfigurationList</key>
+			<string>E3BA87BB2F41FE87006A9652</string>
+			<key>developmentRegion</key>
+			<string>en</string>
+			<key>hasScannedForEncodings</key>
+			<string>0</string>
+			<key>isa</key>
+			<string>PBXProject</string>
+			<key>knownRegions</key>
+			<array>
+				<string>en</string>
+				<string>Base</string>
+			</array>
+			<key>mainGroup</key>
+			<string>E3BA87B72F41FE87006A9652</string>
+			<key>minimizedProjectReferenceProxies</key>
+			<string>1</string>
+			<key>preferredProjectObjectVersion</key>
+			<string>77</string>
+			<key>productRefGroup</key>
+			<string>E3BA87C12F41FE87006A9652</string>
+			<key>projectDirPath</key>
+			<string></string>
+			<key>projectRoot</key>
+			<string></string>
+			<key>targets</key>
+			<array>
+				<string>E3BA87BF2F41FE87006A9652</string>
+			</array>
+		</dict>
+		<key>E3BA87BB2F41FE87006A9652</key>
+		<dict>
+			<key>buildConfigurations</key>
+			<array>
+				<string>E3BA87C92F41FE89006A9652</string>
+				<string>E3BA87CA2F41FE89006A9652</string>
+			</array>
+			<key>defaultConfigurationIsVisible</key>
+			<string>0</string>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
+		</dict>
+		<key>E3BA87BC2F41FE87006A9652</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>00DDEF3B04EB4DDDB90F82B3</string>
+				<string>02BBC633C09E4D098375F84B</string>
+				<string>037951244C374CE48BC8143F</string>
+				<string>04011E98736E43CAA3586E3D</string>
+				<string>0D1C9B0565E14F32828D33F3</string>
+				<string>0FF9A33D53E94C038E90134D</string>
+				<string>18F53B5811DA4B82A1CF6B32</string>
+				<string>1ACC0A919F174D59A9FFCC98</string>
+				<string>1FF294533454440C8CF574C5</string>
+				<string>272375A335F94D06906B6D33</string>
+				<string>3102688B68C549E192331767</string>
+				<string>3C822EB1DCE24DCEB0C076DC</string>
+				<string>3D5E9E34779E4F5BA28153D6</string>
+				<string>41A6CBB9B9BA4513991A64ED</string>
+				<string>4B362E515FC04862ABD455E3</string>
+				<string>541A00B34DF54F5EAC4E22BD</string>
+				<string>5A5CAF0119CA4AF1B2E310B9</string>
+				<string>5DCA2BA93E13477FA35E1F5D</string>
+				<string>6F9260BF1E63420987257899</string>
+				<string>71543AA522694AC5B677D267</string>
+				<string>770305D80D7C4CC0B3012438</string>
+				<string>77D27C7FCADC4024B328E79F</string>
+				<string>807D2F2B3A5C43ED83ED8A7A</string>
+				<string>85AF185663734CFF91197BD8</string>
+				<string>89BB8CA3E71A4F2D9E1EB426</string>
+				<string>8B200724A3ED4415A69DD8DF</string>
+				<string>8C496B6BCA044A2897CC8D6C</string>
+				<string>8EE0D065D7B34277AB94F114</string>
+				<string>8EFF3C267A4A40C6AAB39B44</string>
+				<string>91C9FD25E05147C3BA04DE9A</string>
+				<string>96AF773BFFB6408C8DC326DF</string>
+				<string>96ECA9F5D6B34F419B22C05B</string>
+				<string>999CE72BB2464824B21CDB83</string>
+				<string>9A5B0CAEA576447D8D7BFACA</string>
+				<string>9AF4C9B3F5514CE7B90095DE</string>
+				<string>9FAAF319454C4D4C92ADDB1A</string>
+				<string>AAE63977C4044449BE11DCA8</string>
+				<string>B2DFFD2D37AA442E80BF6835</string>
+				<string>C0DFFAC0E0F449CE87AE863E</string>
+				<string>C3F70C3637974597BB0CEE9D</string>
+				<string>C6B87C0AF2BC49B6AA2ED9BD</string>
+				<string>CC9761572D014064BD53521F</string>
+				<string>D224F31297F6474DAC725B35</string>
+				<string>D28E06651C3C40E8A3BBF473</string>
+				<string>D7B2BAEAF7B342B0967D4E7E</string>
+				<string>DC3B4BD2EE5D4180A4926D06</string>
+				<string>EA2EEA3EEF9B465A8BB31626</string>
+				<string>EC15408B278C4F8980A72EC8</string>
+				<string>EC5954A3824043F48273A805</string>
+				<string>ECA928D6C32F45489E40D436</string>
+				<string>ED080F9CCB1C40439D3C0121</string>
+				<string>F367E8E37CC84DEE984D6097</string>
+				<string>F3E48C7EF85F429DA55BAE9B</string>
+				<string>F90786B5281146308C648F46</string>
+				<string>F9DDD0D867634E0CB8DB98A0</string>
+				<string>FDAA6A4D7C6749B8939CC5DB</string>
+				<string>FE2CC78296F14A2498949AF0</string>
+			</array>
+			<key>isa</key>
+			<string>PBXSourcesBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
+		</dict>
+		<key>E3BA87BD2F41FE87006A9652</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXFrameworksBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
+		</dict>
+		<key>E3BA87BE2F41FE87006A9652</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>4AF915D5F9594EDEA1D56AA2</string>
+			</array>
+			<key>isa</key>
+			<string>PBXResourcesBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
+		</dict>
+		<key>E3BA87BF2F41FE87006A9652</key>
+		<dict>
+			<key>buildConfigurationList</key>
+			<string>E3BA87CB2F41FE89006A9652</string>
+			<key>buildPhases</key>
+			<array>
+				<string>E3BA87BC2F41FE87006A9652</string>
+				<string>E3BA87BD2F41FE87006A9652</string>
+				<string>E3BA87BE2F41FE87006A9652</string>
+			</array>
+			<key>buildRules</key>
+			<array/>
+			<key>dependencies</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXNativeTarget</string>
+			<key>name</key>
+			<string>植觉</string>
+			<key>packageProductDependencies</key>
+			<array/>
+			<key>productName</key>
+			<string>植觉</string>
+			<key>productReference</key>
+			<string>E3BA87C02F41FE87006A9652</string>
+			<key>productType</key>
+			<string>com.apple.product-type.application</string>
+		</dict>
+		<key>E3BA87C02F41FE87006A9652</key>
+		<dict>
+			<key>explicitFileType</key>
+			<string>wrapper.application</string>
+			<key>includeInIndex</key>
+			<string>0</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>path</key>
+			<string>植觉.app</string>
+			<key>sourceTree</key>
+			<string>BUILT_PRODUCTS_DIR</string>
+		</dict>
+		<key>E3BA87C12F41FE87006A9652</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>E3BA87C02F41FE87006A9652</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Products</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E3BA87C92F41FE89006A9652</key>
+		<dict>
+			<key>buildSettings</key>
+			<dict>
+				<key>ALWAYS_SEARCH_USER_PATHS</key>
+				<string>NO</string>
+				<key>ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NONNULL</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
+				<string>gnu++20</string>
+				<key>CLANG_ENABLE_MODULES</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_ARC</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_WEAK</key>
+				<string>YES</string>
+				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
+				<string>YES</string>
+				<key>CLANG_WARN_BOOL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_COMMA</key>
+				<string>YES</string>
+				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DIRECT_OBJC_ISA_USAGE</key>
+				<string>YES_ERROR</string>
+				<key>CLANG_WARN_DOCUMENTATION_COMMENTS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_EMPTY_BODY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_ENUM_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_INFINITE_RECURSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_INT_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_ROOT_CLASS</key>
+				<string>YES_ERROR</string>
+				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
+				<string>YES</string>
+				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
+				<string>YES</string>
+				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
+				<string>YES</string>
+				<key>CLANG_WARN_UNGUARDED_AVAILABILITY</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>CLANG_WARN_UNREACHABLE_CODE</key>
+				<string>YES</string>
+				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
+				<string>YES</string>
+				<key>COPY_PHASE_STRIP</key>
+				<string>NO</string>
+				<key>DEBUG_INFORMATION_FORMAT</key>
+				<string>dwarf</string>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>ENABLE_TESTABILITY</key>
+				<string>YES</string>
+				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
+				<string>YES</string>
+				<key>GCC_C_LANGUAGE_STANDARD</key>
+				<string>gnu17</string>
+				<key>GCC_DYNAMIC_NO_PIC</key>
+				<string>NO</string>
+				<key>GCC_NO_COMMON_BLOCKS</key>
+				<string>YES</string>
+				<key>GCC_OPTIMIZATION_LEVEL</key>
+				<string>0</string>
+				<key>GCC_PREPROCESSOR_DEFINITIONS</key>
+				<array>
+					<string>DEBUG=1</string>
+					<string>$(inherited)</string>
+				</array>
+				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
+				<string>YES</string>
+				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
+				<string>YES_ERROR</string>
+				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>GCC_WARN_UNUSED_FUNCTION</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNUSED_VARIABLE</key>
+				<string>YES</string>
+				<key>LOCALIZATION_PREFERS_STRING_CATALOGS</key>
+				<string>YES</string>
+				<key>MTL_ENABLE_DEBUG_INFO</key>
+				<string>INCLUDE_SOURCE</string>
+				<key>MTL_FAST_MATH</key>
+				<string>YES</string>
+				<key>ONLY_ACTIVE_ARCH</key>
+				<string>YES</string>
+				<key>SWIFT_ACTIVE_COMPILATION_CONDITIONS</key>
+				<string>DEBUG $(inherited)</string>
+				<key>SWIFT_OPTIMIZATION_LEVEL</key>
+				<string>-Onone</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Debug</string>
+		</dict>
+		<key>E3BA87CA2F41FE89006A9652</key>
+		<dict>
+			<key>buildSettings</key>
+			<dict>
+				<key>ALWAYS_SEARCH_USER_PATHS</key>
+				<string>NO</string>
+				<key>ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NONNULL</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
+				<string>gnu++20</string>
+				<key>CLANG_ENABLE_MODULES</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_ARC</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_WEAK</key>
+				<string>YES</string>
+				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
+				<string>YES</string>
+				<key>CLANG_WARN_BOOL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_COMMA</key>
+				<string>YES</string>
+				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DIRECT_OBJC_ISA_USAGE</key>
+				<string>YES_ERROR</string>
+				<key>CLANG_WARN_DOCUMENTATION_COMMENTS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_EMPTY_BODY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_ENUM_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_INFINITE_RECURSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_INT_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_ROOT_CLASS</key>
+				<string>YES_ERROR</string>
+				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
+				<string>YES</string>
+				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
+				<string>YES</string>
+				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
+				<string>YES</string>
+				<key>CLANG_WARN_UNGUARDED_AVAILABILITY</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>CLANG_WARN_UNREACHABLE_CODE</key>
+				<string>YES</string>
+				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
+				<string>YES</string>
+				<key>COPY_PHASE_STRIP</key>
+				<string>NO</string>
+				<key>DEBUG_INFORMATION_FORMAT</key>
+				<string>dwarf-with-dsym</string>
+				<key>ENABLE_NS_ASSERTIONS</key>
+				<string>NO</string>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
+				<string>YES</string>
+				<key>GCC_C_LANGUAGE_STANDARD</key>
+				<string>gnu17</string>
+				<key>GCC_NO_COMMON_BLOCKS</key>
+				<string>YES</string>
+				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
+				<string>YES</string>
+				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
+				<string>YES_ERROR</string>
+				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>GCC_WARN_UNUSED_FUNCTION</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNUSED_VARIABLE</key>
+				<string>YES</string>
+				<key>LOCALIZATION_PREFERS_STRING_CATALOGS</key>
+				<string>YES</string>
+				<key>MTL_ENABLE_DEBUG_INFO</key>
+				<string>NO</string>
+				<key>MTL_FAST_MATH</key>
+				<string>YES</string>
+				<key>SWIFT_COMPILATION_MODE</key>
+				<string>wholemodule</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Release</string>
+		</dict>
+		<key>E3BA87CB2F41FE89006A9652</key>
+		<dict>
+			<key>buildConfigurations</key>
+			<array>
+				<string>E3BA87CC2F41FE89006A9652</string>
+				<string>E3BA87CD2F41FE89006A9652</string>
+			</array>
+			<key>defaultConfigurationIsVisible</key>
+			<string>0</string>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
+		</dict>
+		<key>E3BA87CC2F41FE89006A9652</key>
+		<dict>
+			<key>buildSettings</key>
+			<dict>
+				<key>ASSETCATALOG_COMPILER_APPICON_NAME</key>
+				<string>AppIcon</string>
+				<key>ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME</key>
+				<string>AccentColor</string>
+				<key>ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS</key>
+				<string>NO</string>
+				<key>CODE_SIGN_STYLE</key>
+				<string>Automatic</string>
+				<key>CURRENT_PROJECT_VERSION</key>
+				<string>1</string>
+				<key>DEVELOPMENT_TEAM</key>
+				<string>84J77J8HXF</string>
+				<key>ENABLE_APP_SANDBOX</key>
+				<string>YES</string>
+				<key>ENABLE_PREVIEWS</key>
+				<string>YES</string>
+				<key>ENABLE_USER_SELECTED_FILES</key>
+				<string>readonly</string>
+				<key>GENERATE_INFOPLIST_FILE</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_CFBundleDisplayName</key>
+				<string>植觉</string>
+				<key>INFOPLIST_KEY_LSApplicationCategoryType</key>
+				<string>public.app-category.utilities</string>
+				<key>INFOPLIST_KEY_NSCalendarsUsageDescription</key>
+				<string>用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒</string>
+				<key>INFOPLIST_KEY_NSCameraUsageDescription</key>
+				<string>需要使用相机来拍摄植物照片进行识别</string>
+				<key>INFOPLIST_KEY_NSPhotoLibraryUsageDescription</key>
+				<string>需要访问您的相册来选择植物照片</string>
+				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]</key>
+				<string>UIStatusBarStyleDefault</string>
+				<key>INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]</key>
+				<string>UIStatusBarStyleDefault</string>
+				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad</key>
+				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
+				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone</key>
+				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
+				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
+				<string>16.0</string>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<string>@executable_path/Frameworks</string>
+				<key>MARKETING_VERSION</key>
+				<string>1.0</string>
+				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
+				<string>yang-yang.----</string>
+				<key>PRODUCT_NAME</key>
+				<string>$(TARGET_NAME)</string>
+				<key>SDKROOT</key>
+				<string>iphoneos</string>
+				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
+				<string>YES</string>
+				<key>SUPPORTED_PLATFORMS</key>
+				<string>iphoneos iphonesimulator</string>
+				<key>SWIFT_APPROACHABLE_CONCURRENCY</key>
+				<string>YES</string>
+				<key>SWIFT_DEFAULT_ACTOR_ISOLATION</key>
+				<string>MainActor</string>
+				<key>SWIFT_EMIT_LOC_STRINGS</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY</key>
+				<string>YES</string>
+				<key>SWIFT_VERSION</key>
+				<string>5.0</string>
+				<key>TARGETED_DEVICE_FAMILY</key>
+				<string>1,2</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Debug</string>
+		</dict>
+		<key>E3BA87CD2F41FE89006A9652</key>
+		<dict>
+			<key>buildSettings</key>
+			<dict>
+				<key>ASSETCATALOG_COMPILER_APPICON_NAME</key>
+				<string>AppIcon</string>
+				<key>ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME</key>
+				<string>AccentColor</string>
+				<key>ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS</key>
+				<string>NO</string>
+				<key>CODE_SIGN_STYLE</key>
+				<string>Automatic</string>
+				<key>CURRENT_PROJECT_VERSION</key>
+				<string>1</string>
+				<key>DEVELOPMENT_TEAM</key>
+				<string>84J77J8HXF</string>
+				<key>ENABLE_APP_SANDBOX</key>
+				<string>YES</string>
+				<key>ENABLE_PREVIEWS</key>
+				<string>YES</string>
+				<key>ENABLE_USER_SELECTED_FILES</key>
+				<string>readonly</string>
+				<key>GENERATE_INFOPLIST_FILE</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_CFBundleDisplayName</key>
+				<string>植觉</string>
+				<key>INFOPLIST_KEY_LSApplicationCategoryType</key>
+				<string>public.app-category.utilities</string>
+				<key>INFOPLIST_KEY_NSCalendarsUsageDescription</key>
+				<string>用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒</string>
+				<key>INFOPLIST_KEY_NSCameraUsageDescription</key>
+				<string>需要使用相机来拍摄植物照片进行识别</string>
+				<key>INFOPLIST_KEY_NSPhotoLibraryUsageDescription</key>
+				<string>需要访问您的相册来选择植物照片</string>
+				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]</key>
+				<string>UIStatusBarStyleDefault</string>
+				<key>INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]</key>
+				<string>UIStatusBarStyleDefault</string>
+				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad</key>
+				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
+				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone</key>
+				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
+				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
+				<string>16.0</string>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<string>@executable_path/Frameworks</string>
+				<key>MARKETING_VERSION</key>
+				<string>1.0</string>
+				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
+				<string>yang-yang.----</string>
+				<key>PRODUCT_NAME</key>
+				<string>$(TARGET_NAME)</string>
+				<key>SDKROOT</key>
+				<string>iphoneos</string>
+				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
+				<string>YES</string>
+				<key>SUPPORTED_PLATFORMS</key>
+				<string>iphoneos iphonesimulator</string>
+				<key>SWIFT_APPROACHABLE_CONCURRENCY</key>
+				<string>YES</string>
+				<key>SWIFT_DEFAULT_ACTOR_ISOLATION</key>
+				<string>MainActor</string>
+				<key>SWIFT_EMIT_LOC_STRINGS</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY</key>
+				<string>YES</string>
+				<key>SWIFT_VERSION</key>
+				<string>5.0</string>
+				<key>TARGETED_DEVICE_FAMILY</key>
+				<string>1,2</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Release</string>
+		</dict>
+		<key>E86B136B8FE44C8D9F2DBB64</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/WateringFrequencyPicker.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E8A70FA0C1EF4772856442B2</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/PlantIdentificationService.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E963A35F92C543109F366B9F</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>DB46D06BA3764CAEA9D3C989</string>
+				<string>09C58B9E3BA34A49BBB9CACB</string>
+				<string>0AD8C81F7E0542739D728F4D</string>
+				<string>0C520EDD26D24E448D3DF7F2</string>
+				<string>14BE20CB795843DEA4EF71CE</string>
+				<string>1E5F64FA23554175B04F5339</string>
+				<string>21AB4019EF1349FC8E9FDEB2</string>
+				<string>22E695F5562D4F80B6316ED1</string>
+				<string>270F057B276A421598BAE56D</string>
+				<string>29526007A0AC4412A4857536</string>
+				<string>3168A7F03ADC4F57AF74C78D</string>
+				<string>382BCF4134EF42CBB2E255BE</string>
+				<string>39B9754B46DD44B3BB671BF5</string>
+				<string>3CB1C06DA1694EE7BC91E491</string>
+				<string>3D49DDC7562D4CAD9A791D21</string>
+				<string>3EB89D12E5114F4DB7559FAC</string>
+				<string>48BD2A2C9E43479BBF00A146</string>
+				<string>50B0350F3C6E4C69A04F7002</string>
+				<string>58C5D908FD7649609525A006</string>
+				<string>6401BF21E7E84F90B569A092</string>
+				<string>6DA86809AE164E0DBF7E4CF6</string>
+				<string>710751B90DEC4BADA1266C9D</string>
+				<string>77EB916906C2467187D72DBD</string>
+				<string>7D1C2A6D78D749288FB57B69</string>
+				<string>7EBB4680530744C49050DCD0</string>
+				<string>81E7B63FB9864B6794A5A2A7</string>
+				<string>83D3262C7BE3423997A54607</string>
+				<string>84EE4B7EEDB545CD88567DA2</string>
+				<string>87C9DE391CC745BFAD661239</string>
+				<string>8DD038F8CB94495B8E2A1ED3</string>
+				<string>93184AF03AFA486EAD2833AA</string>
+				<string>9354E89FBBEC4527AB25A802</string>
+				<string>96D53C8C3BC249B58E70661D</string>
+				<string>9C09E963C4404590A21BCD60</string>
+				<string>9D67C3D1A4CA4A4FA83A640E</string>
+				<string>9DC5ED467257414C9A001FA7</string>
+				<string>9F449C0B9BCA43BFB8118B89</string>
+				<string>A2016217E32B4DAB91E7BAF1</string>
+				<string>A53614DDA4FF45EAA23F3E63</string>
+				<string>AD0716A5CB21409BB38E40F9</string>
+				<string>B2AAB41829EE4914B1DE1A3B</string>
+				<string>B87B946CEDD14E3299D5304B</string>
+				<string>BB4B86D64D694FACA266BF49</string>
+				<string>C11F80A076AC4D60A0FFB90E</string>
+				<string>CE2B266166834ACBAB527FF6</string>
+				<string>D0F6962221BC4B0AA8E9C063</string>
+				<string>D25ECBED54CF44C3AF8F7AB2</string>
+				<string>D31B3A57587B490D8C43B113</string>
+				<string>D404D06FF4A6455DA1FEC30A</string>
+				<string>D6CCF8923BE0402393121354</string>
+				<string>DF0E89352F2649D78616F3B8</string>
+				<string>E2B328760D3940CDB3840A92</string>
+				<string>E86B136B8FE44C8D9F2DBB64</string>
+				<string>E8A70FA0C1EF4772856442B2</string>
+				<string>EC2F59B4AE5944C494C722C0</string>
+				<string>EE9339A6AFA446C6B02F2272</string>
+				<string>F664237610F24ECFAC40E987</string>
+				<string>FF2D06310F3B43FBAD9E7D01</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>path</key>
+			<string>绿植管家</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>EA2EEA3EEF9B465A8BB31626</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9DC5ED467257414C9A001FA7</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>EC15408B278C4F8980A72EC8</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9F449C0B9BCA43BFB8118B89</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>EC2F59B4AE5944C494C722C0</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/PlantInfoEditView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>EC5954A3824043F48273A805</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9354E89FBBEC4527AB25A802</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>ECA928D6C32F45489E40D436</key>
+		<dict>
+			<key>fileRef</key>
+			<string>B87B946CEDD14E3299D5304B</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>ED080F9CCB1C40439D3C0121</key>
+		<dict>
+			<key>fileRef</key>
+			<string>87C9DE391CC745BFAD661239</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>EE9339A6AFA446C6B02F2272</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Utilities/CareActionType.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>F367E8E37CC84DEE984D6097</key>
+		<dict>
+			<key>fileRef</key>
+			<string>6401BF21E7E84F90B569A092</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>F3E48C7EF85F429DA55BAE9B</key>
+		<dict>
+			<key>fileRef</key>
+			<string>58C5D908FD7649609525A006</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>F664237610F24ECFAC40E987</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/AddPlantView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>F90786B5281146308C648F46</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9D67C3D1A4CA4A4FA83A640E</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>F9DDD0D867634E0CB8DB98A0</key>
+		<dict>
+			<key>fileRef</key>
+			<string>84EE4B7EEDB545CD88567DA2</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>FDAA6A4D7C6749B8939CC5DB</key>
+		<dict>
+			<key>fileRef</key>
+			<string>77EB916906C2467187D72DBD</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>FE2CC78296F14A2498949AF0</key>
+		<dict>
+			<key>fileRef</key>
+			<string>48BD2A2C9E43479BBF00A146</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>FF2D06310F3B43FBAD9E7D01</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Views/IdentificationResultView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+	</dict>
+	<key>rootObject</key>
+	<string>E3BA87B82F41FE87006A9652</string>
+</dict>
+</plist>

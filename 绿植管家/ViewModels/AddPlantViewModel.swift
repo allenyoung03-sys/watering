@@ -80,15 +80,10 @@ class AddPlantViewModel: ObservableObject {
     /// 获取照片缩略图（用于预览）
     var imageThumbnail: UIImage? {
         guard let image = selectedImage else { return nil }
-        
-        // 创建缩略图（最大尺寸100）
-        let thumbnailSize = CGSize(width: 100, height: 100)
-        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, 0.0)
-        image.draw(in: CGRect(origin: .zero, size: thumbnailSize))
-        let thumbnailImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnailImage
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
+        }
     }
     
     func loadImage(from item: PhotosPickerItem?) async {

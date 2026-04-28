@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  浇水吧
+//  植觉
 //
 
 import SwiftUI

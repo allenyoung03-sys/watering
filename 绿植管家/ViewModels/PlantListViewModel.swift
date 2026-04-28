@@ -216,7 +216,7 @@ class PlantListViewModel: ObservableObject {
     /// 设置通知观察者，监听植物房间更新
     private func setupNotificationObservers() {
         NotificationCenter.default.addObserver(
-            forName: NSNotification.Name("PlantRoomUpdated"),
+            forName: .plantRoomUpdated,
             object: nil,
             queue: .main
         ) { [weak self] notification in

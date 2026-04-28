@@ -1,6 +1,6 @@
 //
 //  OnboardingView.swift
-//  浇水吧
+//  植觉
 //
 
 import SwiftUI
@@ -105,7 +105,7 @@ struct OnboardingView: View {
             }
             Button("取消", role: .cancel) {}
         } message: {
-            Text("请在设置中允许「浇水吧」发送通知，以便及时提醒您浇水")
+            Text("请在设置中允许「植觉」发送通知，以便及时提醒您浇水")
         }
     }
     
@@ -152,7 +152,7 @@ struct WelcomePageView: View {
                     .foregroundColor(.plantGreen)
                     .shadow(color: .plantGreen.opacity(0.3), radius: 10)
                 
-                Text("浇水吧")
+                Text("植觉")
                     .font(.system(size: 36, weight: .bold))
                     .foregroundColor(.plantGreen)
                 

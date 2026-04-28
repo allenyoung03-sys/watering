@@ -55,20 +55,10 @@ struct ImagePicker: UIViewControllerRepresentable {
         /// 确保图片尺寸一致性，避免尺寸不匹配问题
         private func ensureImageSizeConsistency(_ image: UIImage) -> UIImage {
             // 检查图片尺寸是否合理
-            let size = image.size
-            let maxDimension: CGFloat = 2048 // 最大尺寸
-            
-            // 如果图片尺寸过大，进行调整
-            if size.width > maxDimension || size.height > maxDimension {
-                let scale = min(maxDimension / size.width, maxDimension / size.height)
-                let newSize = CGSize(width: size.width * scale, height: size.height * scale)
-                
-                UIGraphicsBeginImageContextWithOptions(newSize, false, image.scale)
-                image.draw(in: CGRect(origin: .zero, size: newSize))
-                let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                
-                return resizedImage ?? image
+            let maxDimension: CGFloat = 2048
+
+            if image.size.width > maxDimension || image.size.height > maxDimension {
+                return ImageProcessor.shared.resizeImage(image, maxDimension: maxDimension)
             }
             
             return image

@@ -54,7 +54,10 @@ class PlantCareService {
     // MARK: - 描述相关
     
     func subtitleDescription(_ plant: Plant) -> String {
-        plant.careInstructions?.isEmpty == false ? plant.careInstructions! : (plant.scientificName ?? "绿植")
+        if let instructions = plant.careInstructions, !instructions.isEmpty {
+            return instructions
+        }
+        return plant.scientificName ?? "绿植"
     }
     
     func truncatedDescription(_ plant: Plant, maxLength: Int = 80) -> String {

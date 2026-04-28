@@ -1,6 +1,6 @@
 //
 //  CalendarManager.swift
-//  浇水吧
+//  植觉
 //
 
 import EventKit
@@ -31,7 +31,7 @@ enum CalendarError: LocalizedError {
 class CalendarManager {
     static let shared = CalendarManager()
     private let eventStore = EKEventStore()
-    private static let calendarTitle = "浇水吧"
+    private static let calendarTitle = "植觉"
 
     private init() {}
 
@@ -115,14 +115,14 @@ class CalendarManager {
         }
     }
 
-    /// 获取或创建「浇水吧」日历
+    /// 获取或创建「植觉」日历
     private func getOrCreateCalendar() -> EKCalendar? {
         let calendars = eventStore.calendars(for: .event)
         if let existing = calendars.first(where: { $0.title == Self.calendarTitle }) {
             return existing
         }
         
-        print("📅 [CalendarManager] 尝试创建'浇水吧'日历...")
+        print("📅 [CalendarManager] 尝试创建'植觉'日历...")
         
         // 首先检查是否有可用的日历源
         let sources = eventStore.sources
@@ -173,7 +173,7 @@ class CalendarManager {
         
         do {
             try eventStore.saveCalendar(calendar, commit: true)
-            print("✅ [CalendarManager] 成功创建'浇水吧'日历")
+            print("✅ [CalendarManager] 成功创建'植觉'日历")
             return calendar
         } catch {
             print("❌ [CalendarManager] 创建日历失败: \(error)")
@@ -255,7 +255,7 @@ class CalendarManager {
 
         guard let calendar = getOrCreateCalendar() else {
             print("❌ [CalendarManager] 无法获取或创建日历")
-            throw CalendarError.calendarNotFound("无法找到或创建'浇水吧'日历")
+            throw CalendarError.calendarNotFound("无法找到或创建'植觉'日历")
         }
         
         print("📅 [CalendarManager] 使用日历: \(calendar.title)")
@@ -279,7 +279,7 @@ class CalendarManager {
         }
         
         event.title = "\(icon) \(actionType.displayName)：\(plantName)"
-        event.notes = "浇水吧|\(plantId.uuidString)|\(actionType.rawValue)"
+        event.notes = "植觉|\(plantId.uuidString)|\(actionType.rawValue)"
         event.startDate = eventStart
         event.endDate = eventEnd
         event.alarms = [EKAlarm(absoluteDate: eventStart)]
@@ -306,7 +306,7 @@ class CalendarManager {
         let predicate = eventStore.predicateForEvents(withStart: start, end: end, calendars: nil)
         let events = eventStore.events(matching: predicate)
         let toDelete = events.filter { event in
-            event.notes?.contains("浇水吧|\(plantId.uuidString)|\(actionType.rawValue)") == true
+            event.notes?.contains("植觉|\(plantId.uuidString)|\(actionType.rawValue)") == true
         }
         for event in toDelete {
             try? eventStore.remove(event, span: .thisEvent)
@@ -356,8 +356,8 @@ class CalendarManager {
         // 改进的事件匹配逻辑：支持多种格式
         let plantIdString = plantId.uuidString
         let searchPatterns = [
-            "浇水吧|\(plantIdString)",           // 原始格式：浇水吧|UUID
-            "浇水吧|\(plantIdString)|",          // 包含分隔符的格式：浇水吧|UUID|
+            "植觉|\(plantIdString)",           // 原始格式：植觉|UUID
+            "植觉|\(plantIdString)|",          // 包含分隔符的格式：植觉|UUID|
             plantIdString,                       // 仅植物ID：UUID
             "|\(plantIdString)|",                // 包含在中间的格式：|UUID|
             "|\(plantIdString)",                 // 结尾格式：|UUID
@@ -454,7 +454,7 @@ class CalendarManager {
         let ourCalendar = calendars.first(where: { $0.title == Self.calendarTitle })
         
         guard let calendar = ourCalendar else {
-            print("⚠️ [CalendarManager] 未找到 '浇水吧' 日历")
+            print("⚠️ [CalendarManager] 未找到 '植觉' 日历")
             return
         }
         
@@ -492,7 +492,7 @@ class CalendarManager {
         
         // 更新所有养护操作的日历事件
         for actionType in CareActionType.allCases {
-            let nextDate = plant.nextCareDate(for: actionType)
+            let nextDate = PlantCareService.shared.nextCareDate(plant, for: actionType)
             try await saveCareEvent(
                 plantId: plant.id,
                 plantName: plant.name,

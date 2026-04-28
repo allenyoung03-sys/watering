@@ -7,15 +7,16 @@ import SwiftUI
 
 struct CountdownTimer: View {
     let plant: Plant
+    private var careService: PlantCareService { PlantCareService.shared }
 
     var body: some View {
         VStack(spacing: Constants.Layout.spacingXS) {
             Image(systemName: "drop.fill")
                 .font(.title)
-                .foregroundColor(plant.statusColor)
+                .foregroundColor(careService.statusColor(plant))
             statusView
-            ProgressView(value: plant.wateringProgress)
-                .tint(plant.statusColor)
+            ProgressView(value: careService.wateringProgress(plant))
+                .tint(careService.statusColor(plant))
                 .scaleEffect(y: 2)
                 .padding(.top, Constants.Layout.spacingXS)
         }
@@ -23,15 +24,15 @@ struct CountdownTimer: View {
 
     @ViewBuilder
     private var statusView: some View {
-        if plant.needsWatering {
+        if careService.needsWatering(plant) {
             Text("今天需要浇水")
                 .font(.plantHeadline)
                 .foregroundColor(.statusUrgent)
-        } else if plant.daysUntilWatering == 0 {
+        } else if careService.daysUntilWatering(plant) == 0 {
             Text("明天浇水")
                 .font(.plantHeadline)
                 .foregroundColor(.plantAccent)
-        } else if plant.daysUntilWatering == 1 {
+        } else if careService.daysUntilWatering(plant) == 1 {
             Text("后天浇水")
                 .font(.plantHeadline)
                 .foregroundColor(.plantAccent)
@@ -40,9 +41,9 @@ struct CountdownTimer: View {
                 Text("还有")
                     .font(.plantCaption)
                     .foregroundColor(.secondary)
-                Text("\(plant.daysUntilWatering)")
+                Text("\(careService.daysUntilWatering(plant))")
                     .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .foregroundColor(plant.statusColor)
+                    .foregroundColor(careService.statusColor(plant))
                 Text("天")
                     .font(.plantCaption)
                     .foregroundColor(.secondary)

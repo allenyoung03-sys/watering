@@ -1,15 +1,13 @@
 //
 //  ContentView.swift
-//  绿植管家
-//
-//  Created by Yang Yang on 2026/2/15.
+//  植觉
 //
 
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        TestPhotoConfirmationView()
+        MainTabView()
     }
 }
 

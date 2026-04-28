@@ -186,15 +186,10 @@ extension CareRecordEntity {
     /// 获取缩略图（用于列表显示）
     var thumbnail: UIImage? {
         guard let originalImage = image else { return nil }
-        
-        // 创建缩略图（最大尺寸100）
-        let thumbnailSize = CGSize(width: 100, height: 100)
-        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, 0.0)
-        originalImage.draw(in: CGRect(origin: .zero, size: thumbnailSize))
-        let thumbnailImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnailImage
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+        return renderer.image { _ in
+            originalImage.draw(in: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
+        }
     }
     
     /// 设置单张照片（向后兼容）

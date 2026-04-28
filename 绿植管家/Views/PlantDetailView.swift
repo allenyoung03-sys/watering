@@ -105,7 +105,7 @@ struct PlantDetailView: View {
                 noteEditSheet
             }
             .sheet(isPresented: $showDescriptionDetail) {
-                let description = plant.subtitleDescription
+                let description = PlantCareService.shared.subtitleDescription(plant)
                 if !description.isEmpty {
                     DescriptionDetailView(
                         title: "植物描述",
@@ -253,7 +253,7 @@ struct PlantDetailView: View {
             }
             
             // 植物描述 - 使用subtitleDescription来确保总是有描述显示
-            let description = plant.subtitleDescription
+            let description = PlantCareService.shared.subtitleDescription(plant)
             if !description.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Divider()
@@ -261,10 +261,10 @@ struct PlantDetailView: View {
                     Text(description)
                         .font(.plantBody)
                         .foregroundColor(.primary)
-                        .lineLimit(plant.isDescriptionLongExtended ? 3 : nil)
+                        .lineLimit(PlantCareService.shared.isDescriptionLong(plant, maxLength: 120) ? 3 : nil)
                         .lineSpacing(4)
                     
-                    if plant.isDescriptionLongExtended {
+                    if PlantCareService.shared.isDescriptionLong(plant, maxLength: 120) {
                         Button(action: {
                             showDescriptionDetail = true
                         }) {
@@ -426,7 +426,7 @@ struct PlantDetailView: View {
                 Spacer()
                 
                 // 显示所有记录的总数，而不是当前筛选类型的记录数
-                Text("共 \(plant.careRecordCount) 次")
+                Text("共 \(PlantCareService.shared.careRecordCount(plant)) 次")
                     .font(.plantCaption)
                     .foregroundColor(.secondary)
                 
@@ -774,9 +774,9 @@ struct CareStatusCard: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             
-            Text("\(plant.daysUntilNextCare(for: actionType))天后")
+            Text("\(PlantCareService.shared.daysUntilNextCare(plant, for: actionType))天后")
                 .font(.system(size: 11, weight: .bold))
-                .foregroundColor(isSelected ? .white : plant.careStatusColor(for: actionType))
+                .foregroundColor(isSelected ? .white : PlantCareService.shared.careStatusColor(plant, for: actionType))
         }
         .frame(width: 80, height: 80)
         .background(
@@ -785,7 +785,7 @@ struct CareStatusCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(plant.careStatusColor(for: actionType), lineWidth: isSelected ? 0 : 2)
+                .stroke(PlantCareService.shared.careStatusColor(plant, for: actionType), lineWidth: isSelected ? 0 : 2)
         )
     }
 }
@@ -984,7 +984,7 @@ extension PlantDetailView {
         
         // 发送房间更新通知，让PlantListViewModel知道房间已更改
         NotificationCenter.default.post(
-            name: NSNotification.Name("PlantRoomUpdated"),
+            name: .plantRoomUpdated,
             object: nil,
             userInfo: ["plantId": plant.id]
         )

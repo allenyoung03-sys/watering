@@ -167,9 +167,11 @@ struct ErrorHandlingModifier: ViewModifier {
     }
 }
 
-/// 错误通知扩展
+/// 通知名称集中定义
 extension Notification.Name {
     static let errorOccurred = Notification.Name("errorOccurred")
+    static let careRecordDeleted = Notification.Name("CareRecordDeleted")
+    static let plantRoomUpdated = Notification.Name("PlantRoomUpdated")
 }
 
 /// 简化错误处理的便捷方法

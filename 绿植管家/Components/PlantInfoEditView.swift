@@ -27,7 +27,7 @@ struct PlantInfoEditView: View {
         self._isPresented = isPresented
         self.onSave = onSave
         self._editedName = State(initialValue: plant.name)
-        self._editedDescription = State(initialValue: plant.subtitleDescription)
+        self._editedDescription = State(initialValue: PlantCareService.shared.subtitleDescription(plant))
         self._selectedRoom = State(initialValue: plant.room)
     }
     
