@@ -172,7 +172,7 @@ struct PlantCard: View {
             // 打勾图标 - 分离短按和长按功能
             ZStack {
                 // 主图标
-                Image(systemName: "checkmark.circle.fill")
+                Image(systemName: "checkmark.square.fill")
                     .font(.body)
                     .foregroundColor(.plantGreen)
                 

@@ -22,6 +22,13 @@ struct PlantListView: View {
     var body: some View {
         NavigationView {
             contentView
+                .background(Color.backgroundPrimary.opacity(0.1))
+                .background(
+                    Image("Firefly_Gemini_Flash")
+                        .resizable()
+                        .scaledToFill()
+                        .ignoresSafeArea()
+                )
         }
         .navigationViewStyle(.stack)
     }
@@ -53,7 +60,6 @@ struct PlantListView: View {
 
     private var baseView: some View {
         mainContent
-            .background(Color.backgroundPrimary)
             .navigationTitle("我的植物")
             .toolbar { toolbarContent }
             .alert("删除植物", isPresented: $showDeleteConfirmation, presenting: plantToDelete) { plant in
@@ -270,6 +276,7 @@ struct PlantListView: View {
             )
         }
     }
+
 }
 
 struct TodayCareBanner: View {

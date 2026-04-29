@@ -75,7 +75,13 @@ struct IdentifyTabView: View {
                 .padding(.top, 16)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.backgroundPrimary)
+            .background(Color.backgroundPrimary.opacity(0.1))
+            .background(
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
             .navigationTitle("识别")
         }
     }

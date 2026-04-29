@@ -15,7 +15,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("个人资料") {
+                    Section("个人资料") {
                     Button {
                         showProfileEdit = true
                     } label: {
@@ -92,6 +92,14 @@ struct SettingsView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.backgroundPrimary.opacity(0.1))
+            .background(
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
             .navigationTitle("设置")
             .onAppear {
                 Task { await notificationManager.checkAuthorizationStatus() }

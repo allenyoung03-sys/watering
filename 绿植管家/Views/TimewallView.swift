@@ -16,17 +16,24 @@ struct TimewallView: View {
             VStack(spacing: 0) {
                 // 标签选择器
                 tabPicker
-                
+
                 // 内容区域
                 tabContent
             }
+            .background(Color.backgroundPrimary.opacity(0.1))
+            .background(
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
             .navigationTitle("时光墙")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     addObservationButton
                 }
-                
+
                 ToolbarItem(placement: .topBarTrailing) {
                     filterButton
                 }
@@ -37,7 +44,6 @@ struct TimewallView: View {
             .sheet(isPresented: $showingObservationForm) {
                 ObservationFormView(viewModel: viewModel)
             }
-            .background(Color.backgroundPrimary)
         }
         .onAppear {
             warmupUI()
@@ -399,7 +405,7 @@ struct AlbumView: View {
                 .padding(.horizontal, Constants.Layout.spacingL)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.backgroundPrimary)
+        .background(Color.backgroundPrimary.opacity(0.1))
     }
 }
 
@@ -424,7 +430,7 @@ struct StatsView: View {
                 .padding(.horizontal, Constants.Layout.spacingL)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.backgroundPrimary)
+        .background(Color.backgroundPrimary.opacity(0.1))
     }
 }
 
