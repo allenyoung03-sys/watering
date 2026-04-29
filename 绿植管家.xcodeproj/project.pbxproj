@@ -208,6 +208,13 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>36C5BB0E7B5C4E0BB1BBBD65</key>
+		<dict>
+			<key>fileRef</key>
+			<string>B3764CDEF3AF455BB9CD66B0</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>382BCF4134EF42CBB2E255BE</key>
 		<dict>
 			<key>isa</key>
@@ -625,6 +632,17 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>9BE040428B5845FAAB952D15</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/WeatherManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
 		<key>9C09E963C4404590A21BCD60</key>
 		<dict>
 			<key>isa</key>
@@ -705,6 +723,13 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>AB33A17B47EA408E8002BAF3</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9BE040428B5845FAAB952D15</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>AD0716A5CB21409BB38E40F9</key>
 		<dict>
 			<key>isa</key>
@@ -733,6 +758,17 @@
 			<string>C11F80A076AC4D60A0FFB90E</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>B3764CDEF3AF455BB9CD66B0</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Services/LocationManager.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
 		</dict>
 		<key>B87B946CEDD14E3299D5304B</key>
 		<dict>
@@ -933,8 +969,10 @@
 		<dict>
 			<key>children</key>
 			<array>
+				<string>E3E1A6882FA19D360027BA12</string>
 				<string>E963A35F92C543109F366B9F</string>
 				<string>E3BA87C12F41FE87006A9652</string>
+				<string>E3E1A68A2FA1A3C30027BA12</string>
 			</array>
 			<key>isa</key>
 			<string>PBXGroup</string>
@@ -1068,6 +1106,8 @@
 				<string>FDAA6A4D7C6749B8939CC5DB</string>
 				<string>FE2CC78296F14A2498949AF0</string>
 				<string>CE7919FEE6BE4713896F3571</string>
+				<string>36C5BB0E7B5C4E0BB1BBBD65</string>
+				<string>AB33A17B47EA408E8002BAF3</string>
 			</array>
 			<key>isa</key>
 			<string>PBXSourcesBuildPhase</string>
@@ -1396,6 +1436,8 @@
 				<string>AccentColor</string>
 				<key>ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS</key>
 				<string>NO</string>
+				<key>CODE_SIGN_IDENTITY</key>
+				<string>Apple Development</string>
 				<key>CODE_SIGN_STYLE</key>
 				<string>Automatic</string>
 				<key>CURRENT_PROJECT_VERSION</key>
@@ -1418,6 +1460,8 @@
 				<string>用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒</string>
 				<key>INFOPLIST_KEY_NSCameraUsageDescription</key>
 				<string>需要使用相机来拍摄植物照片进行识别</string>
+				<key>INFOPLIST_KEY_NSLocationWhenInUseUsageDescription</key>
+				<string>用于获取您的位置以显示当地天气信息，帮助提供更精准的植物养护建议</string>
 				<key>INFOPLIST_KEY_NSPhotoLibraryUsageDescription</key>
 				<string>需要访问您的相册来选择植物照片</string>
 				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]</key>
@@ -1450,6 +1494,8 @@
 				<string>yang-yang.----</string>
 				<key>PRODUCT_NAME</key>
 				<string>$(TARGET_NAME)</string>
+				<key>PROVISIONING_PROFILE_SPECIFIER</key>
+				<string></string>
 				<key>SDKROOT</key>
 				<string>iphoneos</string>
 				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
@@ -1484,6 +1530,8 @@
 				<string>AccentColor</string>
 				<key>ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS</key>
 				<string>NO</string>
+				<key>CODE_SIGN_IDENTITY</key>
+				<string>Apple Development</string>
 				<key>CODE_SIGN_STYLE</key>
 				<string>Automatic</string>
 				<key>CURRENT_PROJECT_VERSION</key>
@@ -1506,6 +1554,8 @@
 				<string>用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒</string>
 				<key>INFOPLIST_KEY_NSCameraUsageDescription</key>
 				<string>需要使用相机来拍摄植物照片进行识别</string>
+				<key>INFOPLIST_KEY_NSLocationWhenInUseUsageDescription</key>
+				<string>用于获取您的位置以显示当地天气信息，帮助提供更精准的植物养护建议</string>
 				<key>INFOPLIST_KEY_NSPhotoLibraryUsageDescription</key>
 				<string>需要访问您的相册来选择植物照片</string>
 				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]</key>
@@ -1538,6 +1588,8 @@
 				<string>yang-yang.----</string>
 				<key>PRODUCT_NAME</key>
 				<string>$(TARGET_NAME)</string>
+				<key>PROVISIONING_PROFILE_SPECIFIER</key>
+				<string></string>
 				<key>SDKROOT</key>
 				<string>iphoneos</string>
 				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
@@ -1561,6 +1613,19 @@
 			<string>XCBuildConfiguration</string>
 			<key>name</key>
 			<string>Release</string>
+		</dict>
+		<key>E3E1A68A2FA1A3C30027BA12</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>A8B0F23FC5A94AD7A21B562C</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Recovered References</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
 		</dict>
 		<key>E86B136B8FE44C8D9F2DBB64</key>
 		<dict>
@@ -1647,6 +1712,8 @@
 				<string>F664237610F24ECFAC40E987</string>
 				<string>FF2D06310F3B43FBAD9E7D01</string>
 				<string>23AFC275C057403E859AE1DA</string>
+				<string>B3764CDEF3AF455BB9CD66B0</string>
+				<string>9BE040428B5845FAAB952D15</string>
 			</array>
 			<key>isa</key>
 			<string>PBXGroup</string>

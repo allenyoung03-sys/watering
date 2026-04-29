@@ -525,6 +525,14 @@ struct IdentificationResultView: View {
             careInstructions: result.careInstructions,
             room: selectedRoom
         )
+        // 在时光墙中创建一条"添加植物"的记录
+        CareRecordEntity.create(
+            context: context,
+            plant: plant,
+            actionType: .observation,
+            note: "🎉 恭喜迎来新伙伴「\(plant.name)」！用心呵护，它会茁壮成长，为生活增添绿意与美好 🌱",
+            imageData: try? originalImage.compressed(quality: 0.7, maxDimension: 800)
+        )
         try? CoreDataManager.shared.save()
         Task {
             // 为所有养护类型创建日历事件（包括浇水）

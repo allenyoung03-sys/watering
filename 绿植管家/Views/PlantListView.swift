@@ -9,6 +9,8 @@ import UIKit
 struct PlantListView: View {
     @StateObject private var viewModel = PlantListViewModel()
     @StateObject private var profile = UserProfileManager.shared
+    @StateObject private var locationManager = LocationManager.shared
+    @StateObject private var weatherManager = WeatherManager.shared
     @State private var showAddPlant = false
     @State private var showProfileEdit = false
     @State private var selectedPlantForDetail: Plant?
@@ -19,31 +21,22 @@ struct PlantListView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVStack(spacing: Constants.Layout.spacingM) {
-                    headerSection
-                    roomFilterSection
-                    if !viewModel.todayPlants.isEmpty {
-                        TodayCareBanner(count: viewModel.todayPlants.count)
-                    }
-                    sectionHeader
-                    plantsList
-                }
-                .padding(Constants.Layout.spacingM)
+            contentView
+        }
+        .navigationViewStyle(.stack)
+    }
+
+    private var contentView: some View {
+        sheetModifiers
+            .onAppear {
+                viewModel.loadPlants()
+                viewModel.updateAvailableRooms()
+                locationManager.refreshLocation()
             }
-            .background(Color.backgroundPrimary)
-            .navigationTitle("我的植物")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showAddPlant = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.plantGreen)
-                    }
-                }
-            }
+    }
+
+    private var sheetModifiers: some View {
+        baseView
             .sheet(isPresented: $showAddPlant) {
                 AddPlantView(onDismiss: { viewModel.loadPlants() })
             }
@@ -56,14 +49,17 @@ struct PlantListView: View {
                     viewModel.loadPlants()
                 }
             }
+    }
+
+    private var baseView: some View {
+        mainContent
+            .background(Color.backgroundPrimary)
+            .navigationTitle("我的植物")
+            .toolbar { toolbarContent }
             .alert("删除植物", isPresented: $showDeleteConfirmation, presenting: plantToDelete) { plant in
-                Button("取消", role: .cancel) {
-                    plantToDelete = nil
-                }
+                Button("取消", role: .cancel) { plantToDelete = nil }
                 Button("删除", role: .destructive) {
-                    Task {
-                        await performDelete(plant)
-                    }
+                    Task { await performDelete(plant) }
                 }
             } message: { plant in
                 Text("确定要删除「\(plant.name)」吗？此操作将同时删除相关的日历事件和提醒，且无法撤销。")
@@ -73,15 +69,8 @@ struct PlantListView: View {
             } message: {
                 Text("已成功删除「\(deletedPlantName)」")
             }
-            .onAppear {
-                viewModel.loadPlants()
-                // 确保房间列表是最新的
-                viewModel.updateAvailableRooms()
-            }
-        }
-        .navigationViewStyle(.stack)
     }
-    
+
     private var plantsList: some View {
         ForEach(viewModel.plants, id: \.id) { plant in
             plantCardView(for: plant)
@@ -170,9 +159,7 @@ struct PlantListView: View {
                     Text("你好，\(profile.displayName)！")
                         .font(.plantTitle)
                         .foregroundColor(.primary)
-                    Text("你的植物想你了。")
-                        .font(.plantCaption)
-                        .foregroundColor(.secondary)
+                    weatherSubtitle
                 }
                 Spacer()
                 avatarView
@@ -233,6 +220,68 @@ struct PlantListView: View {
             Spacer()
         }
         .padding(.horizontal, 4)
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        ScrollView {
+            LazyVStack(spacing: Constants.Layout.spacingM) {
+                headerSection
+                roomFilterSection
+                if !viewModel.todayPlants.isEmpty {
+                    TodayCareBanner(count: viewModel.todayPlants.count)
+                }
+                sectionHeader
+                plantsList
+            }
+            .padding(Constants.Layout.spacingM)
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+                showAddPlant = true
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.plantGreen)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var weatherSubtitle: some View {
+        if weatherManager.isLoading {
+            HStack(spacing: 6) {
+                ProgressView()
+                    .scaleEffect(0.7)
+                Text("获取天气中...")
+                    .font(.plantCaption)
+            }
+            .foregroundColor(.secondary)
+        } else if let temp = weatherManager.temperature,
+                  let condition = weatherManager.condition {
+            HStack(spacing: 4) {
+                if let symbol = weatherManager.symbolName {
+                    Image(systemName: symbol).font(.caption)
+                }
+                Text("\(temp) \(condition)").font(.plantCaption)
+                if let hum = weatherManager.humidity {
+                    Text(hum).font(.plantCaption)
+                }
+                if let city = locationManager.cityName {
+                    Text("·").font(.plantCaption)
+                    Text(city).font(.plantCaption)
+                }
+            }
+            .foregroundColor(.secondary)
+        } else {
+            Text("你的植物想你了。")
+                .font(.plantCaption)
+                .foregroundColor(.secondary)
+        }
     }
 }
 

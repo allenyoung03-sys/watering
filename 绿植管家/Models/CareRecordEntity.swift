@@ -37,6 +37,9 @@ extension CareRecordEntity {
         record.note = note
         record.imageData = imageData
         record.imageUrl = imageUrl
+        if let data = imageData {
+            record.imageDataArray = [data] as NSArray
+        }
         record.plant = plant
         return record
     }
