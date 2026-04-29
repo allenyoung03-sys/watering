@@ -10,6 +10,7 @@ class WeatherManager: ObservableObject {
     @Published var humidity: String?
     @Published var symbolName: String?
     @Published var isLoading = false
+    @Published var careTip: String?
 
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
@@ -49,6 +50,8 @@ class WeatherManager: ObservableObject {
             let hum = current.relative_humidity_2m
             humidity = "湿度\(hum)%"
 
+            careTip = generateCareTip(temperature: temp, humidity: hum, weatherCode: code)
+
             print("🌤 天气获取成功: \(temp)°C, \(desc), 湿度\(hum)%")
         } catch {
             print("🌤 获取天气失败: \(error.localizedDescription)")
@@ -87,11 +90,40 @@ class WeatherManager: ObservableObject {
         }
     }
 
+    private func generateCareTip(temperature: Double, humidity: Int, weatherCode: Int) -> String? {
+        if temperature > 35 {
+            return "🌡️ 高温预警：注意为植物遮阴降温，避免暴晒灼伤叶片"
+        }
+        if temperature > 30 {
+            return "☀️ 气温较高：浇水最好在清晨或傍晚，避免午间浇水"
+        }
+        if temperature < 5 {
+            return "❄️ 低温提醒：将怕冷植物移入室内，注意防冻保暖"
+        }
+        if humidity < 30 {
+            return "💧 空气干燥：可向叶片喷雾增加湿度，植物会更精神"
+        }
+        if humidity > 80 {
+            return "💦 湿度较高：注意通风，防止盆土过湿导致烂根"
+        }
+        if weatherCode == 0 && temperature > 25 {
+            return "☀️ 晴天注意：部分植物需适当遮阴，避免阳光直射"
+        }
+        if (61...65).contains(weatherCode) || (80...82).contains(weatherCode) {
+            return "🌧️ 雨天提示：雨水含养分，但注意不要让盆土积水"
+        }
+        if weatherCode == 3 {
+            return "☁️ 阴天光照不足：可将植物移到窗边补光"
+        }
+        return nil
+    }
+
     private func clear() {
         temperature = nil
         condition = nil
         humidity = nil
         symbolName = nil
+        careTip = nil
     }
 }
 

@@ -159,7 +159,11 @@ struct PlantListView: View {
                     Text("你好，\(profile.displayName)！")
                         .font(.plantTitle)
                         .foregroundColor(.primary)
-                    weatherSubtitle
+                    if weatherManager.temperature == nil && !weatherManager.isLoading {
+                        Text("你的植物想你了。")
+                            .font(.plantCaption)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 Spacer()
                 avatarView
@@ -227,6 +231,7 @@ struct PlantListView: View {
         ScrollView {
             LazyVStack(spacing: Constants.Layout.spacingM) {
                 headerSection
+                weatherCard
                 roomFilterSection
                 if !viewModel.todayPlants.isEmpty {
                     TodayCareBanner(count: viewModel.todayPlants.count)
@@ -252,35 +257,18 @@ struct PlantListView: View {
     }
 
     @ViewBuilder
-    private var weatherSubtitle: some View {
+    private var weatherCard: some View {
         if weatherManager.isLoading {
-            HStack(spacing: 6) {
-                ProgressView()
-                    .scaleEffect(0.7)
-                Text("获取天气中...")
-                    .font(.plantCaption)
-            }
-            .foregroundColor(.secondary)
-        } else if let temp = weatherManager.temperature,
-                  let condition = weatherManager.condition {
-            HStack(spacing: 4) {
-                if let symbol = weatherManager.symbolName {
-                    Image(systemName: symbol).font(.caption)
-                }
-                Text("\(temp) \(condition)").font(.plantCaption)
-                if let hum = weatherManager.humidity {
-                    Text(hum).font(.plantCaption)
-                }
-                if let city = locationManager.cityName {
-                    Text("·").font(.plantCaption)
-                    Text(city).font(.plantCaption)
-                }
-            }
-            .foregroundColor(.secondary)
-        } else {
-            Text("你的植物想你了。")
-                .font(.plantCaption)
-                .foregroundColor(.secondary)
+            WeatherLoadingView()
+        } else if let temp = weatherManager.temperature {
+            WeatherCardContent(
+                temperature: temp,
+                condition: weatherManager.condition,
+                humidity: weatherManager.humidity,
+                symbolName: weatherManager.symbolName,
+                cityName: locationManager.cityName,
+                careTip: weatherManager.careTip
+            )
         }
     }
 }
@@ -312,5 +300,87 @@ struct TodayCareBanner: View {
         .frame(maxWidth: .infinity)
         .background(Color.plantGreen)
         .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+    }
+}
+
+// MARK: - Weather Card Views
+
+private struct WeatherLoadingView: View {
+    var body: some View {
+        HStack {
+            Spacer()
+            HStack(spacing: 8) {
+                ProgressView()
+                    .scaleEffect(0.8)
+                Text("正在获取天气信息...")
+                    .font(.plantCaption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 24)
+        .frame(maxWidth: .infinity)
+        .background(Color.backgroundSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+    }
+}
+
+private struct WeatherCardContent: View {
+    let temperature: String
+    let condition: String?
+    let humidity: String?
+    let symbolName: String?
+    let cityName: String?
+    let careTip: String?
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 16) {
+                if let symbol = symbolName {
+                    Image(systemName: symbol)
+                        .font(.system(size: 40))
+                        .foregroundColor(.plantGreen)
+                }
+                Text(temperature)
+                    .font(.plantTitle)
+                    .foregroundColor(.primary)
+                Spacer()
+            }
+
+            HStack(spacing: 8) {
+                if let condition = condition {
+                    Text(condition)
+                }
+                Text("·")
+                if let humidity = humidity {
+                    Text(humidity)
+                }
+                if let city = cityName {
+                    Text("· \(city)")
+                }
+                Spacer()
+            }
+            .font(.plantBody)
+            .foregroundColor(.secondary)
+
+            if let tip = careTip {
+                Divider()
+                HStack(spacing: 8) {
+                    Image(systemName: "leaf.fill")
+                        .font(.caption)
+                        .foregroundColor(.plantGreen)
+                    Text(tip)
+                        .font(.plantCaption)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+            }
+        }
+        .padding(Constants.Layout.spacingM)
+        .background(Color.backgroundSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
     }
 }
