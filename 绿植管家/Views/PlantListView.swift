@@ -85,7 +85,6 @@ struct PlantListView: View {
                     await viewModel.markAsCared(plant, actionType: actionType)
                 }
             },
-            onEditPlant: { viewModel.selectedPlant = plant },
             onUpdatePlantInfo: { newName, newDescription, newRoom in
                 Task {
                     await viewModel.updatePlantInfo(plant, newName: newName, newDescription: newDescription, newRoom: newRoom)

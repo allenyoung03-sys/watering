@@ -9,7 +9,6 @@ import UIKit
 struct PlantCard: View {
     let plant: Plant
     let onCareAction: (CareActionType) -> Void
-    let onEditPlant: () -> Void
     let onUpdatePlantInfo: (String, String, String?) -> Void
 
     private var careService: PlantCareService { PlantCareService.shared }
@@ -23,7 +22,7 @@ struct PlantCard: View {
 
     var body: some View {
         content
-            .padding(Constants.Layout.spacingM)
+            .padding(Constants.Layout.spacingS)
             .background(Color.backgroundSecondary)
             .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
             .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
@@ -56,9 +55,9 @@ struct PlantCard: View {
     }
     
     private var content: some View {
-        HStack(spacing: Constants.Layout.spacingS) {
+        HStack(spacing: Constants.Layout.spacingXS) {
             plantImage
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 3) {
                 HStack {
                     Text(plant.name)
                         .font(.plantHeadline)
@@ -91,11 +90,11 @@ struct PlantCard: View {
                 }
                 .padding(.top, 1)
             }
-            Spacer(minLength: 4)
+            Spacer(minLength: 2)
             actionButtons
             statusBadge
         }
-        .padding(Constants.Layout.spacingS)
+        .padding(Constants.Layout.spacingXS)
         .sheet(isPresented: $showDescriptionDetail) {
             DescriptionDetailView(
                 title: plant.name,
@@ -130,12 +129,12 @@ struct PlantCard: View {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 70, height: 70)
+                .frame(width: 55, height: 55)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.imageCornerRadius))
         } else {
             RoundedRectangle(cornerRadius: Constants.Layout.imageCornerRadius)
                 .fill(Color.plantLightGreen.opacity(0.3))
-                .frame(width: 70, height: 70)
+                .frame(width: 55, height: 55)
                 .overlay(
                     Image(systemName: "leaf.fill")
                         .font(.title2)
@@ -149,10 +148,9 @@ struct PlantCard: View {
             Text(careService.truncatedDescription(plant, maxLength: 120))
                 .font(.plantCaption)
                 .foregroundColor(.secondary)
-                .lineLimit(3)
-                .fixedSize(horizontal: false, vertical: true)
-            
-            if careService.isDescriptionLong(plant, maxLength: 120) {
+                .lineLimit(2)
+
+            if careService.isDescriptionLong(plant, maxLength: 100) {
                 Button(action: {
                     showDescriptionDetail = true
                 }) {
@@ -170,12 +168,12 @@ struct PlantCard: View {
     }
 
     private var actionButtons: some View {
-        VStack(spacing: Constants.Layout.spacingXS) {
+        VStack(spacing: 4) {
             // 打勾图标 - 分离短按和长按功能
             ZStack {
                 // 主图标
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.title2)
+                    .font(.body)
                     .foregroundColor(.plantGreen)
                 
                 // 长按提示 - 更简洁的设计
@@ -295,14 +293,6 @@ struct PlantCard: View {
                     }
                 }
             }
-            
-            // 编辑植物按钮
-            Button(action: onEditPlant) {
-                Image(systemName: "gearshape")
-                    .font(.title2)
-                    .foregroundColor(.plantGreen)
-            }
-            .buttonStyle(.plain)
         }
     }
 
@@ -322,11 +312,11 @@ struct PlantCard: View {
             ZStack {
                 Circle()
                     .stroke(careService.closestCareStatusColor(plant), lineWidth: 2)
-                    .frame(width: 40, height: 40)
-                
+                    .frame(width: 32, height: 32)
+
                 VStack(spacing: 0) {
                     Text("\(careService.daysUntilClosestCare(plant))")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundColor(careService.closestCareStatusColor(plant))
                     
                     Text(careService.closestCareActionType(plant).shortDisplayName)
