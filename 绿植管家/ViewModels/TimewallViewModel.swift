@@ -304,31 +304,43 @@ class TimewallViewModel: ObservableObject {
     
     // MARK: - 观察者设置
     private var isPerformingDeletion = false
-    
+    private var lastReloadTime: Date = .distantPast
+    private let reloadThrottleInterval: TimeInterval = 0.5
+
     private func setupObservers() {
-        // 监听CoreData变化
+        // 监听CoreData变化（带节流，避免频繁全量重载）
         NotificationCenter.default.addObserver(
             forName: .NSManagedObjectContextDidSave,
             object: dataManager.context,
             queue: .main
         ) { [weak self] notification in
+            guard let self = self else { return }
+            // 节流：距离上次重载不足0.5秒则跳过
+            let now = Date()
+            guard now.timeIntervalSince(self.lastReloadTime) > self.reloadThrottleInterval else { return }
+            self.lastReloadTime = now
+
             Task { @MainActor in
-                // 检查是否正在进行删除操作
-                // 如果是，延迟一小段时间再刷新，避免在删除过程中刷新UI
-                if let self = self, self.isPerformingDeletion {
+                if self.isPerformingDeletion {
                     try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
                 }
-                self?.loadData()
+                // 只刷新植物列表，不重新加载全部记录
+                self.allPlants = self.dataManager.fetchPlants()
+                    .sorted { $0.name < $1.name }
+                self.applyFilters()
             }
         }
-        
-        // 监听植物房间更新
+
+        // 监听植物房间更新（带节流）
         NotificationCenter.default.addObserver(
             forName: .plantRoomUpdated,
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.loadData()
+            let now = Date()
+            guard let self = self, now.timeIntervalSince(self.lastReloadTime) > self.reloadThrottleInterval else { return }
+            self.lastReloadTime = now
+            self.loadData()
         }
     }
     

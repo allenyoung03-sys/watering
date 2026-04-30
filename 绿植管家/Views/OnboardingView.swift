@@ -255,9 +255,7 @@ struct FeatureCard: View {
             Spacer()
         }
         .padding(20)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .frostedGlassCard(blurStyle: .systemThinMaterial)
     }
 }
 
@@ -344,8 +342,7 @@ struct WorkflowStep: View {
             Spacer()
         }
         .padding(16)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard(blurStyle: .systemThinMaterial)
     }
 }
 
@@ -440,8 +437,7 @@ struct PermissionCard: View {
             Spacer()
         }
         .padding(16)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard(blurStyle: .systemThinMaterial)
     }
 }
 
@@ -465,8 +461,7 @@ struct PersonalizationPageView: View {
                         
                         TextField("例如：植物爱好者", text: $userName)
                             .padding()
-                            .background(Color.backgroundSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
+                            .frostedGlassCard(cornerRadius: Constants.Layout.buttonCornerRadius, blurStyle: .systemThinMaterial)
                             .overlay(
                                 RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius)
                                     .stroke(Color.gray.opacity(0.2), lineWidth: 1)
@@ -483,8 +478,7 @@ struct PersonalizationPageView: View {
                             .labelsHidden()
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.backgroundSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+                            .frostedGlassCard(blurStyle: .systemThinMaterial)
                     }
                     
                     // 提示信息

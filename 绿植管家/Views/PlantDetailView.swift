@@ -55,7 +55,13 @@ struct PlantDetailView: View {
                 }
                 .padding(Constants.Layout.spacingM)
             }
-            .background(Color.backgroundPrimary)
+            .background(Color.backgroundPrimary.opacity(0.15))
+            .background(
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
             .navigationTitle(plant.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -192,8 +198,7 @@ struct PlantDetailView: View {
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 6)
-                                .background(Color.backgroundSecondary)
-                                .clipShape(Capsule())
+                                .frostedGlassCard(cornerRadius: 12)
                         }
                         
                         Button(action: {
@@ -297,17 +302,16 @@ struct PlantDetailView: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
-    
+
     private var nameEditSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("房间")
                     .font(.plantHeadline)
                 Spacer()
-                
+
                 Button(action: {
                     showRoomSelection = true
                 }) {
@@ -317,23 +321,22 @@ struct PlantDetailView: View {
                 }
                 .buttonStyle(.plain)
             }
-            
+
             HStack(spacing: 12) {
                 Image(systemName: "house.fill")
                     .foregroundColor(.plantGreen)
-                
+
                 Text(plant.room ?? "未设置")
                     .font(.plantBody)
                     .foregroundColor(.primary)
-                
+
                 Spacer()
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
-    
+
     private var careActionButtons: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("养护操作")
@@ -383,8 +386,7 @@ struct PlantDetailView: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
         .overlay(
             Group {
                 if showCareSuccess {
@@ -393,7 +395,7 @@ struct PlantDetailView: View {
             }
         )
     }
-    
+
     private var careActionTypes: [CareActionType] {
         CareActionType.allCases.filter { $0 != .observation }
     }
@@ -412,11 +414,10 @@ struct PlantDetailView: View {
                     }
                 }
             }
-            .background(Color.backgroundSecondary)
-            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+            .frostedGlassCard()
         }
     }
-    
+
     private var careRecordsList: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -466,10 +467,9 @@ struct PlantDetailView: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
-    
+
     private var emptyRecordsView: some View {
         VStack(spacing: 12) {
             Image(systemName: selectedTab.iconName)
@@ -780,7 +780,13 @@ struct CareStatusCard: View {
         }
         .frame(width: 80, height: 80)
         .background(
-            isSelected ? Color.plantGreen : Color.backgroundSecondary
+            Group {
+                if isSelected {
+                    Color.plantGreen
+                } else {
+                    VisualEffectView(blurStyle: .systemThinMaterial)
+                }
+            }
         )
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
@@ -971,7 +977,15 @@ extension PlantDetailView {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(plant.room == room ? Color.plantGreen : Color.backgroundSecondary)
+            .background {
+                Group {
+                    if plant.room == room {
+                        Color.plantGreen
+                    } else {
+                        VisualEffectView(blurStyle: .systemThinMaterial)
+                    }
+                }
+            }
             .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
         }
         .buttonStyle(.plain)

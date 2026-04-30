@@ -63,7 +63,13 @@ struct IdentificationResultView: View {
                 }
                 .padding(Constants.Layout.spacingM)
             }
-            .background(Color.backgroundPrimary)
+            .background(Color.backgroundPrimary.opacity(0.15))
+            .background(
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
             .navigationTitle("识别结果")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -118,8 +124,7 @@ struct IdentificationResultView: View {
                                     .foregroundColor(.secondary)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
-                                    .background(Color.backgroundSecondary)
-                                    .clipShape(Capsule())
+                                    .frostedGlassCard(cornerRadius: 12)
                             }
                         }
                     } else {
@@ -178,8 +183,7 @@ struct IdentificationResultView: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
 
     private var healthSection: some View {
@@ -211,8 +215,7 @@ struct IdentificationResultView: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
 
     private var aiSuggestionsSection: some View {
@@ -265,8 +268,7 @@ struct IdentificationResultView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
 
     private var shouldShowReadMore: Bool {
@@ -471,8 +473,7 @@ struct IdentificationResultView: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+        .frostedGlassCard()
     }
 
     private var addButton: some View {

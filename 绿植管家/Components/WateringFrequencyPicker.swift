@@ -64,7 +64,15 @@ struct FrequencyButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, Constants.Layout.spacingS)
-            .background(isSelected ? Color.plantGreen : Color(.systemGray6))
+            .background {
+                Group {
+                    if isSelected {
+                        Color.plantGreen
+                    } else {
+                        VisualEffectView(blurStyle: .systemThinMaterial)
+                    }
+                }
+            }
             .foregroundColor(isSelected ? .white : .primary)
             .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
         }

@@ -67,12 +67,7 @@ struct TimelineNodeView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(Color(.systemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(.systemGray5), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .frostedGlassCard(cornerRadius: 12, hasStroke: true)
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
         .alert("删除记录", isPresented: $showingDeleteConfirmation) {

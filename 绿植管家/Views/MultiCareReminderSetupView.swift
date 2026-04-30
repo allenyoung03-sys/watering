@@ -174,7 +174,13 @@ struct IntervalButton: View {
             }
             .frame(width: 60, height: 60)
             .background(
-                isSelected ? Color.plantGreen : Color.backgroundSecondary
+                Group {
+                    if isSelected {
+                        Color.plantGreen
+                    } else {
+                        VisualEffectView(blurStyle: .systemThinMaterial)
+                    }
+                }
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(

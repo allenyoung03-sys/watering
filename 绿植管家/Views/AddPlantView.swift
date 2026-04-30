@@ -16,7 +16,11 @@ struct AddPlantView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.backgroundPrimary.ignoresSafeArea()
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                Color.backgroundPrimary.opacity(0.15).ignoresSafeArea()
                 VStack(spacing: 24) {
                     Text("识别植物")
                         .font(.plantTitle)
@@ -184,8 +188,7 @@ struct AddPlantView: View {
             }
         }
         .padding(Constants.Layout.spacingS)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.buttonCornerRadius))
+        .frostedGlassCard(cornerRadius: Constants.Layout.buttonCornerRadius)
         .padding(.horizontal)
     }
 
@@ -198,9 +201,7 @@ struct AddPlantView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
-        .shadow(color: .black.opacity(0.05), radius: 4)
+        .frostedGlassCard()
     }
 }
 

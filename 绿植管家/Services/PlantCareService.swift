@@ -13,8 +13,18 @@ class PlantCareService {
     
     static let shared = PlantCareService()
     private let dateCalculator = DateCalculator.shared
-    
-    private init() {}
+    private let careCache = NSCache<NSString, AnyObject>()
+
+    private init() {
+        careCache.countLimit = 500
+    }
+
+    /// 使缓存失效（在写操作后调用）
+    func invalidateCache(for plant: Plant) {
+        let pattern = plant.id.uuidString
+        // NSCache 没有批量删除, 通过重新创建来清空
+        careCache.removeAllObjects()
+    }
     
     // MARK: - 浇水相关（旧版，保留向后兼容）
     
@@ -121,7 +131,10 @@ class PlantCareService {
         case .observation:
             break
         }
-        
+
+        // 缓存失效
+        invalidateCache(for: plant)
+
         return record
     }
     
@@ -185,37 +198,56 @@ class PlantCareService {
         case .observation:
             break
         }
+        invalidateCache(for: plant)
     }
     
     func needsCare(_ plant: Plant, for actionType: CareActionType) -> Bool {
         if actionType == .observation { return false }
+        let key = "needsCare|\(plant.id.uuidString)|\(actionType.rawValue)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSNumber {
+            return cached.boolValue
+        }
         let nextDate = nextCareDate(plant, for: actionType)
-        return dateCalculator.needsWatering(nextWateringDate: nextDate)
+        let result = dateCalculator.needsWatering(nextWateringDate: nextDate)
+        careCache.setObject(NSNumber(value: result), forKey: key)
+        return result
     }
-    
+
     func careSoon(_ plant: Plant, for actionType: CareActionType) -> Bool {
         if actionType == .observation { return false }
+        let key = "careSoon|\(plant.id.uuidString)|\(actionType.rawValue)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSNumber {
+            return cached.boolValue
+        }
         let nextDate = nextCareDate(plant, for: actionType)
-        return dateCalculator.wateringSoon(nextWateringDate: nextDate)
+        let result = dateCalculator.wateringSoon(nextWateringDate: nextDate)
+        careCache.setObject(NSNumber(value: result), forKey: key)
+        return result
     }
-    
+
     func careProgress(_ plant: Plant, for actionType: CareActionType) -> Double {
         if actionType == .observation { return 0 }
         let lastDate = lastCareDate(plant, for: actionType)
         let nextDate = nextCareDate(plant, for: actionType)
         return dateCalculator.wateringProgress(lastWateredDate: lastDate, nextWateringDate: nextDate)
     }
-    
+
     func careStatusColor(_ plant: Plant, for actionType: CareActionType) -> Color {
         if needsCare(plant, for: actionType) { return .statusUrgent }
         if careSoon(plant, for: actionType) { return .plantAccent }
         return .plantGreen
     }
-    
+
     func daysUntilNextCare(_ plant: Plant, for actionType: CareActionType) -> Int {
         if actionType == .observation { return 0 }
+        let key = "daysUntilNextCare|\(plant.id.uuidString)|\(actionType.rawValue)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSNumber {
+            return cached.intValue
+        }
         let nextDate = nextCareDate(plant, for: actionType)
-        return max(0, dateCalculator.daysBetween(Date(), and: nextDate))
+        let result = max(0, dateCalculator.daysBetween(Date(), and: nextDate))
+        careCache.setObject(NSNumber(value: result), forKey: key)
+        return result
     }
     
     // MARK: - 最近养护方法
@@ -229,25 +261,49 @@ class PlantCareService {
     }
     
     func closestCareActionType(_ plant: Plant) -> CareActionType {
+        let key = "closestActionType|\(plant.id.uuidString)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSString {
+            return CareActionType(rawValue: cached as String) ?? .watering
+        }
         var validDatesWithTypes: [(Date, CareActionType)] = [(plant.nextWateringDate, .watering)]
         if let fertilizingDate = plant.nextFertilizingDate { validDatesWithTypes.append((fertilizingDate, .fertilizing)) }
         if let pruningDate = plant.nextPruningDate { validDatesWithTypes.append((pruningDate, .pruning)) }
         if let pestControlDate = plant.nextPestControlDate { validDatesWithTypes.append((pestControlDate, .pestControl)) }
-        return validDatesWithTypes.min { $0.0 < $1.0 }?.1 ?? .watering
+        let result = validDatesWithTypes.min { $0.0 < $1.0 }?.1 ?? .watering
+        careCache.setObject(result.rawValue as NSString, forKey: key)
+        return result
     }
-    
+
     func daysUntilClosestCare(_ plant: Plant) -> Int {
-        max(0, dateCalculator.daysBetween(Date(), and: nextClosestCareDate(plant)))
+        let key = "daysUntilClosestCare|\(plant.id.uuidString)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSNumber {
+            return cached.intValue
+        }
+        let result = max(0, dateCalculator.daysBetween(Date(), and: nextClosestCareDate(plant)))
+        careCache.setObject(NSNumber(value: result), forKey: key)
+        return result
     }
-    
+
     func needsAnyCare(_ plant: Plant) -> Bool {
-        CareActionType.allCases.contains { needsCare(plant, for: $0) }
+        let key = "needsAnyCare|\(plant.id.uuidString)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSNumber {
+            return cached.boolValue
+        }
+        let result = CareActionType.allCases.contains { needsCare(plant, for: $0) }
+        careCache.setObject(NSNumber(value: result), forKey: key)
+        return result
     }
-    
+
     func anyCareSoon(_ plant: Plant) -> Bool {
-        CareActionType.allCases.contains { careSoon(plant, for: $0) }
+        let key = "anyCareSoon|\(plant.id.uuidString)" as NSString
+        if let cached = careCache.object(forKey: key) as? NSNumber {
+            return cached.boolValue
+        }
+        let result = CareActionType.allCases.contains { careSoon(plant, for: $0) }
+        careCache.setObject(NSNumber(value: result), forKey: key)
+        return result
     }
-    
+
     func closestCareStatusColor(_ plant: Plant) -> Color {
         if needsAnyCare(plant) { return .statusUrgent }
         if anyCareSoon(plant) { return .plantAccent }

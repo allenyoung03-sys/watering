@@ -174,14 +174,19 @@ struct PlantInfoEditView: View {
                         }
                     }
                     .padding(Constants.Layout.spacingM)
-                    .background(Color.backgroundSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+                    .frostedGlassCard()
                     
                     Spacer()
                 }
                 .padding(Constants.Layout.spacingM)
             }
-            .background(Color.backgroundPrimary)
+            .background(Color.backgroundPrimary.opacity(0.15))
+            .background(
+                Image("Firefly_Gemini_Flash")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

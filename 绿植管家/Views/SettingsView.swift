@@ -39,6 +39,7 @@ struct SettingsView: View {
                 .sheet(isPresented: $showProfileEdit) {
                     ProfileEditView()
                 }
+                .listRowBackground(VisualEffectView(blurStyle: .systemThinMaterial))
                 Section("偏好") {
                     NavigationLink {
                         DefaultReminderTimeView()
@@ -63,6 +64,7 @@ struct SettingsView: View {
                         }
                     }
                 }
+                .listRowBackground(VisualEffectView(blurStyle: .systemThinMaterial))
                 Section("通知") {
                     HStack {
                         Text("通知权限")
@@ -77,6 +79,7 @@ struct SettingsView: View {
                         .foregroundColor(.plantGreen)
                     }
                 }
+                .listRowBackground(VisualEffectView(blurStyle: .systemThinMaterial))
                 Section("关于") {
                     HStack {
                         Text("版本")
@@ -91,6 +94,7 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     }
                 }
+                .listRowBackground(VisualEffectView(blurStyle: .systemThinMaterial))
             }
             .scrollContentBackground(.hidden)
             .background(Color.backgroundPrimary.opacity(0.1))

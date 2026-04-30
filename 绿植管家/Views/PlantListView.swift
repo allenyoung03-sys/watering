@@ -326,9 +326,7 @@ private struct WeatherLoadingView: View {
         }
         .padding(.vertical, 24)
         .frame(maxWidth: .infinity)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .frostedGlassCard()
     }
 }
 
@@ -385,8 +383,6 @@ private struct WeatherCardContent: View {
             }
         }
         .padding(Constants.Layout.spacingM)
-        .background(Color.backgroundSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .frostedGlassCard()
     }
 }

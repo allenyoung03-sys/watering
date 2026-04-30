@@ -70,7 +70,7 @@ struct TimewallView: View {
         .pickerStyle(.segmented)
         .padding(.horizontal, Constants.Layout.spacingM)
         .padding(.vertical, Constants.Layout.spacingS)
-        .background(Color.backgroundSecondary)
+        .frostedGlassCard(cornerRadius: 12)
     }
     
     @ViewBuilder
@@ -241,36 +241,31 @@ struct TimelineView: View {
     @State private var needsReloadPagination = false
     
     private var timelineContentView: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                // 当前筛选状态
-                if viewModel.hasActiveFilters {
-                    filterStatusView
-                }
-                
-                // 时间线
-                ForEach(Array(viewModel.groupedRecords.keys.sorted(by: >)), id: \.self) { date in
-                    if let records = viewModel.groupedRecords[date] {
-                        TimelineDaySection(date: date, records: records)
-                            .environmentObject(viewModel)
-                    }
-                }
-                
-                // 加载中的占位符
-                if viewModel.isLoadingMore {
-                    loadingMoreView
-                }
-                
-                // 没有更多记录的提示
-                if !viewModel.isLoadingMore && !viewModel.hasMoreRecords && !viewModel.filteredRecords.isEmpty {
-                    noMoreRecordsView
+        LazyVStack(alignment: .leading, spacing: 0) {
+            // 当前筛选状态
+            if viewModel.hasActiveFilters {
+                filterStatusView
+            }
+
+            // 时间线
+            ForEach(Array(viewModel.groupedRecords.keys.sorted(by: >)), id: \.self) { date in
+                if let records = viewModel.groupedRecords[date] {
+                    TimelineDaySection(date: date, records: records)
+                        .environmentObject(viewModel)
                 }
             }
-            .padding(.vertical, Constants.Layout.spacingM)
+
+            // 加载中的占位符
+            if viewModel.isLoadingMore {
+                loadingMoreView
+            }
+
+            // 没有更多记录的提示
+            if !viewModel.isLoadingMore && !viewModel.hasMoreRecords && !viewModel.filteredRecords.isEmpty {
+                noMoreRecordsView
+            }
         }
-        .refreshable {
-            viewModel.refreshData()
-        }
+        .padding(.vertical, Constants.Layout.spacingM)
         .onChange(of: viewModel.filteredRecords.count) { newCount in
             // 防止在加载中重复触发
             guard newCount != prevRecordCount else { return }
@@ -373,8 +368,8 @@ struct TimelineDaySection: View {
             }
             .padding(.horizontal, Constants.Layout.spacingM)
             .padding(.vertical, Constants.Layout.spacingS)
-            .background(Color.backgroundSecondary)
-            
+            .frostedGlassCard(cornerRadius: 12)
+
             // 时间线记录 - 使用值类型数据，避免访问已删除的CoreData对象
             ForEach(records) { record in
                 TimelineNodeView(recordData: record, viewModel: viewModel)
@@ -709,8 +704,7 @@ struct ObservationFormView: View {
                     if isSaving {
                         ProgressView("保存中...")
                             .padding()
-                            .background(Color.backgroundSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
+                            .frostedGlassCard(cornerRadius: Constants.Layout.cardCornerRadius)
                     }
                 }
             )

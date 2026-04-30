@@ -186,13 +186,24 @@ extension CareRecordEntity {
         return UIImage(data: imageDataArrayData[index])
     }
     
-    /// 获取缩略图（用于列表显示）
+    // 缩略图缓存
+    private static var thumbnailCache: [UUID: UIImage] = [:]
+
+    /// 清除指定记录的缩略图缓存
+    static func clearThumbnailCache(for recordId: UUID) {
+        thumbnailCache.removeValue(forKey: recordId)
+    }
+
+    /// 获取缩略图（用于列表显示）— 带缓存
     var thumbnail: UIImage? {
+        if let cached = Self.thumbnailCache[id] { return cached }
         guard let originalImage = image else { return nil }
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
-        return renderer.image { _ in
+        let thumb = renderer.image { _ in
             originalImage.draw(in: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
         }
+        Self.thumbnailCache[id] = thumb
+        return thumb
     }
     
     /// 设置单张照片（向后兼容）
@@ -221,6 +232,7 @@ extension CareRecordEntity {
         self.imageData = compressedData
         self.imageUrl = fileName
         self.imageDataArray = [compressedData] as NSArray
+        Self.clearThumbnailCache(for: id)
     }
     
     /// 设置多张照片
@@ -259,6 +271,7 @@ extension CareRecordEntity {
         
         // 存储所有照片数据
         self.imageDataArray = compressedDataArray as NSArray
+        Self.clearThumbnailCache(for: id)
     }
     
     /// 添加照片
@@ -277,14 +290,15 @@ extension CareRecordEntity {
         // 如果这是第一张照片，也更新imageData（向后兼容）
         if currentArray.count == 1 {
             self.imageData = compressedData
-            
+
             // 生成唯一的文件名
             let fileName = "care_record_\(id.uuidString).jpg"
             self.imageUrl = fileName
-            
+
             // 保存到缓存
             try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
         }
+        Self.clearThumbnailCache(for: id)
     }
     
     /// 移除指定索引的照片
@@ -305,6 +319,7 @@ extension CareRecordEntity {
             // 如果移除了第一张照片，更新imageData为新的第一张
             self.imageData = currentArray.first
         }
+        Self.clearThumbnailCache(for: id)
     }
     
     /// 清除所有照片（同步版本）- 优化版本（减少日志，提高性能）
@@ -324,6 +339,7 @@ extension CareRecordEntity {
         imageDataArray = nil
         
         print("✅ 照片清理完成")
+        Self.clearThumbnailCache(for: id)
     }
     
     /// 清除照片（向后兼容）

@@ -85,6 +85,13 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>11F3C42AEC824A9994A9A050</key>
+		<dict>
+			<key>fileRef</key>
+			<string>7C772B3256EF4119B235059A</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>14BE20CB795843DEA4EF71CE</key>
 		<dict>
 			<key>isa</key>
@@ -428,6 +435,17 @@
 			<string>sourcecode.swift</string>
 			<key>path</key>
 			<string>Views/DefaultReminderTimeView.swift</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>7C772B3256EF4119B235059A</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>path</key>
+			<string>Components/CareActionPickerView.swift</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -1108,6 +1126,7 @@
 				<string>CE7919FEE6BE4713896F3571</string>
 				<string>36C5BB0E7B5C4E0BB1BBBD65</string>
 				<string>AB33A17B47EA408E8002BAF3</string>
+				<string>11F3C42AEC824A9994A9A050</string>
 			</array>
 			<key>isa</key>
 			<string>PBXSourcesBuildPhase</string>
@@ -1714,6 +1733,7 @@
 				<string>23AFC275C057403E859AE1DA</string>
 				<string>B3764CDEF3AF455BB9CD66B0</string>
 				<string>9BE040428B5845FAAB952D15</string>
+				<string>7C772B3256EF4119B235059A</string>
 			</array>
 			<key>isa</key>
 			<string>PBXGroup</string>
