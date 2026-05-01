@@ -70,6 +70,7 @@ class PlantListViewModel: ObservableObject {
             
             // 保存所有更改
             try dataManager.save()
+            PlantCareService.shared.refreshWidgetData()
             loadPlants()
         } catch {
             handleError(error, context: "标记浇水")
@@ -102,6 +103,7 @@ class PlantListViewModel: ObservableObject {
         do {
             try dataManager.save()
             print("✅ [PlantListViewModel] 植物删除成功: \(plant.name)")
+            PlantCareService.shared.refreshWidgetData()
         } catch {
             print("❌ [PlantListViewModel] 保存删除更改失败: \(error)")
         }
@@ -161,6 +163,7 @@ class PlantListViewModel: ObservableObject {
             
             // 保存所有更改
             try dataManager.save()
+            PlantCareService.shared.refreshWidgetData()
             loadPlants()
         } catch {
             handleError(error, context: "标记\(actionType.displayName)")

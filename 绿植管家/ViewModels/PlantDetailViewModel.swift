@@ -104,6 +104,7 @@ class PlantDetailViewModel: ObservableObject {
                 
                 // 保存所有更改
                 try dataManager.save()
+                PlantCareService.shared.refreshWidgetData()
                 print("✅ [PlantDetailViewModel] \(actionType.displayName) 标记完成")
                 
                 // 重置状态

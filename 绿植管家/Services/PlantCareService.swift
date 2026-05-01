@@ -5,6 +5,7 @@
 
 import SwiftUI
 import CoreData
+import WidgetKit
 
 /// 植物养护业务逻辑服务
 /// 职责：集中管理Plant模型的所有业务逻辑方法，包括养护状态计算、记录管理等
@@ -135,7 +136,22 @@ class PlantCareService {
         // 缓存失效
         invalidateCache(for: plant)
 
+        // 刷新Widget数据
+        refreshWidgetData()
+
         return record
+    }
+
+    // MARK: - Widget数据刷新
+
+    func refreshWidgetData() {
+        let plants = CoreDataManager.shared.fetchPlants()
+        let count = plants.filter { needsAnyCare($0) }.count
+        let data = WidgetPlantData(needingCareCount: count, lastUpdated: Date())
+        if let encoded = try? JSONEncoder().encode(data) {
+            UserDefaults(suiteName: "group.yang-yang.----")?.set(encoded, forKey: "widgetPlantData")
+        }
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     // MARK: - 通用养护方法

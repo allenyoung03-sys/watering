@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 @main
 struct PlantCareApp: App {
@@ -31,6 +32,8 @@ struct PlantCareApp: App {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         showSplash = false
                     }
+                    // App启动时刷新Widget数据
+                    PlantCareService.shared.refreshWidgetData()
                 }
             }
         }

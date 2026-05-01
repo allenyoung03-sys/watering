@@ -5,6 +5,7 @@
 
 import SwiftUI
 import UIKit
+import WidgetKit
 
 struct SettingsView: View {
     @StateObject private var notificationManager = NotificationManager.shared
@@ -62,6 +63,92 @@ struct SettingsView: View {
                                 .font(.plantCaption)
                                 .foregroundColor(.secondary)
                         }
+                    }
+                }
+                .listRowBackground(VisualEffectView(blurStyle: .systemThinMaterial))
+                Section {
+                    VStack(spacing: 12) {
+                        // 小组件预览 — 对齐 App 设计系统
+                        HStack(spacing: 12) {
+                            // Widget 预览 — 对齐新毛玻璃卡片设计
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(.thinMaterial)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .stroke(Color.white.opacity(0.3), lineWidth: 0.5)
+                                    )
+                                VStack(spacing: 3) {
+                                    HStack(spacing: 2) {
+                                        Image(systemName: "leaf.fill")
+                                            .font(.system(size: 7))
+                                            .foregroundColor(.plantGreen)
+                                        Text("今日养护")
+                                            .font(.system(size: 7, weight: .semibold, design: .rounded))
+                                            .foregroundColor(.plantGreen)
+                                    }
+                                    let emoji: String = needingCareCount == 0 ? "😊" : (needingCareCount <= 3 ? "🌿" : "🌵")
+                                    Text(emoji)
+                                        .font(.system(size: 18))
+                                    let color: Color = needingCareCount == 0 ? .plantGreen : (needingCareCount <= 3 ? .plantAccent : .statusUrgent)
+                                    Text(needingCareCount == 0 ? "全部好啦" : "需要你～")
+                                        .font(.system(size: 7, weight: .medium, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(color.opacity(0.85))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                            .frame(width: 80, height: 80)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("今日养护")
+                                    .font(.plantHeadline)
+                                Text("将小组件添加到桌面，随时查看今天需要养护的植物数量")
+                                    .font(.plantCaption)
+                                    .foregroundColor(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+
+                        Divider()
+
+                        // 添加步骤
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "1.circle.fill")
+                                    .foregroundColor(.plantGreen)
+                                Text("长按桌面空白处进入编辑模式")
+                                    .font(.plantCaption)
+                            }
+                            HStack(spacing: 6) {
+                                Image(systemName: "2.circle.fill")
+                                    .foregroundColor(.plantGreen)
+                                Text("点击左上角 + 按钮")
+                                    .font(.plantCaption)
+                            }
+                            HStack(spacing: 6) {
+                                Image(systemName: "3.circle.fill")
+                                    .foregroundColor(.plantGreen)
+                                Text("搜索「今日养护」选择 2x2 尺寸")
+                                    .font(.plantCaption)
+                            }
+                            HStack(spacing: 6) {
+                                Image(systemName: "4.circle.fill")
+                                    .foregroundColor(.plantGreen)
+                                Text("点击「添加小组件」即可")
+                                    .font(.plantCaption)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.grid.2x2")
+                            .font(.caption)
+                        Text("桌面小组件")
                     }
                 }
                 .listRowBackground(VisualEffectView(blurStyle: .systemThinMaterial))
@@ -134,6 +221,11 @@ struct SettingsView: View {
         let hour = Int(defaultReminderTimeMinutes / 60)
         let minute = Int(defaultReminderTimeMinutes.truncatingRemainder(dividingBy: 60))
         return String(format: "%02d:%02d", hour, minute)
+    }
+
+    private var needingCareCount: Int {
+        let plants = CoreDataManager.shared.fetchPlants()
+        return plants.filter { PlantCareService.shared.needsAnyCare($0) }.count
     }
 
     private var notificationStatusText: String {
