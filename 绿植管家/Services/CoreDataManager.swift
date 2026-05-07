@@ -18,6 +18,18 @@ class CoreDataManager {
     init() {
         let model = CoreDataManager.createManagedObjectModel()
         container = NSPersistentContainer(name: "PlantCareModel", managedObjectModel: model)
+
+        // 启用自动轻量迁移，确保未来版本添加字段时不破坏现有用户数据
+        guard let storeDescription = container.persistentStoreDescriptions.first else {
+            fatalError("无法获取持久化存储描述")
+        }
+        storeDescription.setOption(true as NSNumber,
+            forKey: NSPersistentHistoryTrackingKey)
+        storeDescription.setOption(true as NSNumber,
+            forKey: NSMigratePersistentStoresAutomaticallyOption)
+        storeDescription.setOption(true as NSNumber,
+            forKey: NSInferMappingModelAutomaticallyOption)
+
         container.loadPersistentStores { _, error in
             if let error = error {
                 fatalError("Core Data 加载失败: \(error)")
@@ -139,13 +151,36 @@ class CoreDataManager {
         pestControlReminderAttr.attributeType = .booleanAttributeType
         pestControlReminderAttr.defaultValue = NSNumber(value: true)
 
+        // MARK: - 同步预留字段（当前版本不使用，为未来账号体系做准备）
+
+        let lastModifiedAtAttr = NSAttributeDescription()
+        lastModifiedAtAttr.name = "lastModifiedAt"
+        lastModifiedAtAttr.attributeType = .dateAttributeType
+        lastModifiedAtAttr.isOptional = true
+
+        let markedForDeletionAttr = NSAttributeDescription()
+        markedForDeletionAttr.name = "markedForDeletion"
+        markedForDeletionAttr.attributeType = .booleanAttributeType
+        markedForDeletionAttr.defaultValue = NSNumber(value: false)
+
+        let serverIdAttr = NSAttributeDescription()
+        serverIdAttr.name = "serverId"
+        serverIdAttr.attributeType = .stringAttributeType
+        serverIdAttr.isOptional = true
+
+        let isSyncedAttr = NSAttributeDescription()
+        isSyncedAttr.name = "isSynced"
+        isSyncedAttr.attributeType = .booleanAttributeType
+        isSyncedAttr.defaultValue = NSNumber(value: false)
+
         plantEntity.properties = [
             idAttr, nameAttr, scientificNameAttr, imageDataAttr,
             wateringIntervalAttr, fertilizingIntervalAttr, pruningIntervalAttr, pestControlIntervalAttr,
             reminderTimeAttr, lastWateredDateAttr, lastFertilizedDateAttr, lastPrunedDateAttr, lastPestControlDateAttr,
             nextWateringDateAttr, nextFertilizingDateAttr, nextPruningDateAttr, nextPestControlDateAttr,
             careInstructionsAttr, dateAddedAttr, notesAttr, roomAttr,
-            fertilizingReminderAttr, pruningReminderAttr, pestControlReminderAttr
+            fertilizingReminderAttr, pruningReminderAttr, pestControlReminderAttr,
+            lastModifiedAtAttr, markedForDeletionAttr, serverIdAttr, isSyncedAttr
         ]
 
         // 创建CareRecordEntity实体
@@ -190,9 +225,31 @@ class CoreDataManager {
         imageDataArrayAttr.isOptional = true
         imageDataArrayAttr.valueTransformerName = NSValueTransformerName.secureUnarchiveFromDataTransformerName.rawValue
 
+        // CareRecordEntity 同步预留字段
+        let recordLastModifiedAtAttr = NSAttributeDescription()
+        recordLastModifiedAtAttr.name = "lastModifiedAt"
+        recordLastModifiedAtAttr.attributeType = .dateAttributeType
+        recordLastModifiedAtAttr.isOptional = true
+
+        let recordMarkedForDeletionAttr = NSAttributeDescription()
+        recordMarkedForDeletionAttr.name = "markedForDeletion"
+        recordMarkedForDeletionAttr.attributeType = .booleanAttributeType
+        recordMarkedForDeletionAttr.defaultValue = NSNumber(value: false)
+
+        let recordServerIdAttr = NSAttributeDescription()
+        recordServerIdAttr.name = "serverId"
+        recordServerIdAttr.attributeType = .stringAttributeType
+        recordServerIdAttr.isOptional = true
+
+        let recordIsSyncedAttr = NSAttributeDescription()
+        recordIsSyncedAttr.name = "isSynced"
+        recordIsSyncedAttr.attributeType = .booleanAttributeType
+        recordIsSyncedAttr.defaultValue = NSNumber(value: false)
+
         careRecordEntity.properties = [
             recordIdAttr, plantIdAttr, actionTypeAttr, dateAttr, noteAttr,
-            careRecordImageDataAttr, imageUrlAttr, imageDataArrayAttr
+            careRecordImageDataAttr, imageUrlAttr, imageDataArrayAttr,
+            recordLastModifiedAtAttr, recordMarkedForDeletionAttr, recordServerIdAttr, recordIsSyncedAttr
         ]
 
         // 创建Plant和CareRecordEntity之间的关系

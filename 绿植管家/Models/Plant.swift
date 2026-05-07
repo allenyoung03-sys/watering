@@ -34,6 +34,12 @@ public class Plant: NSManagedObject, Identifiable {
     @NSManaged public var pruningReminderEnabled: Bool
     @NSManaged public var pestControlReminderEnabled: Bool
     @NSManaged public var careRecords: NSSet?
+
+    // MARK: - 同步预留字段（当前版本不使用）
+    @NSManaged public var lastModifiedAt: Date?
+    @NSManaged public var markedForDeletion: Bool
+    @NSManaged public var serverId: String?
+    @NSManaged public var isSynced: Bool
 }
 
 extension Plant {

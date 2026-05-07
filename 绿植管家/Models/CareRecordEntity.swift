@@ -18,6 +18,12 @@ public class CareRecordEntity: NSManagedObject, Identifiable {
     @NSManaged public var imageDataArray: NSArray? // Transformable类型，存储[Data]数组
     
     @NSManaged public var plant: Plant?
+
+    // MARK: - 同步预留字段（当前版本不使用）
+    @NSManaged public var lastModifiedAt: Date?
+    @NSManaged public var markedForDeletion: Bool
+    @NSManaged public var serverId: String?
+    @NSManaged public var isSynced: Bool
 }
 
 extension CareRecordEntity {
