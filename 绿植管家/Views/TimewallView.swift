@@ -373,6 +373,8 @@ struct TimelineDaySection: View {
             // 时间线记录 - 使用值类型数据，避免访问已删除的CoreData对象
             ForEach(records) { record in
                 TimelineNodeView(recordData: record, viewModel: viewModel)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 4)
             }
         }
         .padding(.bottom, Constants.Layout.spacingL)

@@ -58,18 +58,21 @@ struct TimelineNodeView: View {
         HStack(alignment: .top, spacing: Constants.Layout.spacingM) {
             // 时间线节点
             timelineNode
-            
+
             // 记录内容
             recordContent
-            
-            // 删除按钮
-            deleteButton
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .frostedGlassCard(cornerRadius: 12, hasStroke: true)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 4)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 30)
+                .onEnded { value in
+                    if value.translation.width < -60 {
+                        showingDeleteConfirmation = true
+                    }
+                }
+        )
         .alert("删除记录", isPresented: $showingDeleteConfirmation) {
             Button("取消", role: .cancel) {
                 showingDeleteConfirmation = false
@@ -328,29 +331,6 @@ struct TimelineNodeView: View {
         case .observation:
             return .observationPurple
         }
-    }
-    
-    // MARK: - Delete button
-    
-    private var deleteButton: some View {
-        Button(action: {
-            showingDeleteConfirmation = true
-        }) {
-            if isDeleting {
-                ProgressView()
-                    .scaleEffect(0.8)
-                    .frame(width: 24, height: 24)
-            } else {
-                Image(systemName: "trash")
-                    .font(.system(size: 14))
-                    .foregroundColor(.red)
-                    .padding(6)
-                    .background(Color.red.opacity(0.1))
-                    .clipShape(Circle())
-            }
-        }
-        .buttonStyle(PlainButtonStyle())
-        .disabled(isDeleting)
     }
     
     // MARK: - Delete record
