@@ -23,11 +23,15 @@ struct TimelineNodeView: View {
     private let viewModel: TimewallViewModel
     private let recordData: RecordData
     
-    @State private var showingDeleteConfirmation = false
     @State private var isDeleting = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    
+
+    // 左滑删除状态
+    @State private var dragOffset: CGFloat = 0
+    @State private var isShowingDelete = false
+    private let deleteButtonWidth: CGFloat = 80
+
     // 照片异步加载状态
     @State private var images: [UIImage] = []
     @State private var imagesLoaded = false
@@ -55,36 +59,24 @@ struct TimelineNodeView: View {
     }
     
     var body: some View {
-        HStack(alignment: .top, spacing: Constants.Layout.spacingM) {
-            // 时间线节点
-            timelineNode
+        ZStack(alignment: .trailing) {
+            // 删除按钮（卡片左滑时露出）
+            deleteButton
 
-            // 记录内容
-            recordContent
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .frostedGlassCard(cornerRadius: 12, hasStroke: true)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 30)
-                .onEnded { value in
-                    if value.translation.width < -60 {
-                        showingDeleteConfirmation = true
+            // 卡片内容
+            cardBody
+                .offset(x: dragOffset)
+                .simultaneousGesture(swipeGesture)
+                .onTapGesture {
+                    if isShowingDelete {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            dragOffset = 0
+                            isShowingDelete = false
+                        }
                     }
                 }
-        )
-        .alert("删除记录", isPresented: $showingDeleteConfirmation) {
-            Button("取消", role: .cancel) {
-                showingDeleteConfirmation = false
-            }
-            Button("删除", role: .destructive) {
-                Task {
-                    await deleteRecord()
-                }
-            }
-        } message: {
-            Text("确定要删除这条记录吗？此操作无法撤销。")
         }
+        .clipped()
         .alert("删除失败", isPresented: $showErrorAlert) {
             Button("确定", role: .cancel) {
                 showErrorAlert = false
@@ -208,9 +200,70 @@ struct TimelineNodeView: View {
         }
         .padding(.vertical, 8)
     }
-    
+
+    // MARK: - Card body (frosted glass card content)
+
+    private var cardBody: some View {
+        HStack(alignment: .top, spacing: Constants.Layout.spacingM) {
+            timelineNode
+            recordContent
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frostedGlassCard(cornerRadius: 12, hasStroke: true)
+    }
+
+    // MARK: - Delete button (revealed on swipe)
+
+    private var deleteButton: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                Task { await deleteRecord() }
+            }) {
+                VStack(spacing: 4) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 16, weight: .medium))
+                    Text("删除")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .foregroundColor(.white)
+                .frame(width: deleteButtonWidth)
+                .frame(maxHeight: .infinity)
+            }
+        }
+        .frame(width: deleteButtonWidth)
+        .frame(maxHeight: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.red)
+        )
+        .padding(.vertical, 10)
+        .opacity(dragOffset < 0 ? 1 : 0)
+    }
+
+    // MARK: - Swipe gesture
+
+    private var swipeGesture: some Gesture {
+        DragGesture(minimumDistance: 20)
+            .onChanged { value in
+                dragOffset = min(0, max(-deleteButtonWidth, value.translation.width))
+            }
+            .onEnded { value in
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    if dragOffset < -deleteButtonWidth * 0.4 {
+                        dragOffset = -deleteButtonWidth
+                        isShowingDelete = true
+                    } else {
+                        dragOffset = 0
+                        isShowingDelete = false
+                    }
+                }
+            }
+    }
+
     // MARK: - Photo section with async loading
-    
+
     @ViewBuilder
     private var photoSection: some View {
         if hasImages {
@@ -337,12 +390,7 @@ struct TimelineNodeView: View {
     
     private func deleteRecord() async {
         guard !isDeleting else { return }
-        
-        // 关闭确认弹窗并等待动画完成
-        showingDeleteConfirmation = false
-        
-        try? await Task.sleep(nanoseconds: 150_000_000) // 0.15秒
-        
+
         // 显示加载状态
         isDeleting = true
         
@@ -392,11 +440,11 @@ extension CareRecordEntity {
 
 // MARK: - 颜色扩展
 extension Color {
-    static let waterBlue = Color(red: 0.2, green: 0.5, blue: 0.9)
-    static let fertilizerBrown = Color(red: 0.6, green: 0.4, blue: 0.2)
-    static let pruningOrange = Color(red: 0.9, green: 0.5, blue: 0.2)
-    static let pestControlPurple = Color(red: 0.6, green: 0.2, blue: 0.8)
-    static let observationPurple = Color(red: 0.7, green: 0.3, blue: 0.9)
+    static let waterBlue = Color(red: 0.15, green: 0.42, blue: 0.82)
+    static let fertilizerBrown = Color(red: 0.55, green: 0.38, blue: 0.18)
+    static let pruningOrange = Color(red: 0.82, green: 0.45, blue: 0.15)
+    static let pestControlPurple = Color(red: 0.5, green: 0.18, blue: 0.72)
+    static let observationPurple = Color(red: 0.62, green: 0.25, blue: 0.82)
 }
 
 // MARK: - Preview（使用空ViewModel的简化预览）

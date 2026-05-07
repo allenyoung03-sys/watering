@@ -57,7 +57,7 @@ struct IdentifyTabView: View {
                     .font(.plantTitle)
                 Text("拍照或从相册选择，AI 识别并设置浇水提醒")
                     .font(.plantBody)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 Button {

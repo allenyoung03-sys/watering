@@ -7,16 +7,16 @@ import SwiftUI
 
 extension Color {
     // 主色调
-    static let plantGreen = Color(hex: "4CAF50")
-    static let plantLightGreen = Color(hex: "81C784")
-    static let plantAccent = Color(hex: "FF9800")
+    static let plantGreen = Color(hex: "388E3C")
+    static let plantLightGreen = Color(hex: "66BB6A")
+    static let plantAccent = Color(hex: "F57C00")
     static let plantSecondary = Color(hex: "2196F3")
     static let plantTertiary = Color(hex: "9C27B0")
 
     // 状态颜色
-    static let statusGood = Color(hex: "4CAF50")
-    static let statusWarning = Color(hex: "FFC107")
-    static let statusUrgent = Color(hex: "FF5722")
+    static let statusGood = Color(hex: "388E3C")
+    static let statusWarning = Color(hex: "F9A825")
+    static let statusUrgent = Color(hex: "D32F2F")
 
     // 背景
     static let backgroundPrimary = Color(hex: "FAFAFA")
