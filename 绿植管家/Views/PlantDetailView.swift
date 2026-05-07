@@ -85,13 +85,16 @@ struct PlantDetailView: View {
             .sheet(isPresented: $showMultiCareReminderSetup) {
                 MultiCareReminderSetupView(
                     plant: plant,
-                    onSave: { wateringInterval, fertilizingInterval, pruningInterval, pestControlInterval, reminderTime in
+                    onSave: { wateringInterval, fertilizingInterval, pruningInterval, pestControlInterval, reminderTime, enableFertilizingReminder, enablePruningReminder, enablePestControlReminder in
                         viewModel.updateAllCareIntervals(
                             wateringInterval: wateringInterval,
                             fertilizingInterval: fertilizingInterval,
                             pruningInterval: pruningInterval,
                             pestControlInterval: pestControlInterval,
-                            reminderTime: reminderTime
+                            reminderTime: reminderTime,
+                            enableFertilizingReminder: enableFertilizingReminder,
+                            enablePruningReminder: enablePruningReminder,
+                            enablePestControlReminder: enablePestControlReminder
                         )
                         showMultiCareReminderSetup = false
                     },
@@ -228,7 +231,10 @@ struct PlantDetailView: View {
             
             if isEditingName {
                 VStack(alignment: .leading, spacing: 8) {
-                    TextField("输入植物名称", text: $editedPlantName)
+                    Text("昵称")
+                        .font(.plantCaption)
+                        .foregroundColor(.secondary)
+                    TextField("输入昵称", text: $editedPlantName)
                         .font(.plantHeadline)
                         .foregroundColor(.plantGreen)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -245,14 +251,21 @@ struct PlantDetailView: View {
                 }
             } else {
                 VStack(alignment: .leading, spacing: 4) {
+                    Text("昵称")
+                        .font(.plantCaption)
+                        .foregroundColor(.secondary)
                     Text(plant.name)
                         .font(.plantHeadline)
                         .foregroundColor(.plantGreen)
-                    
+
                     if let scientificName = plant.scientificName, !scientificName.isEmpty {
-                        Text(scientificName)
+                        Text("学名")
                             .font(.plantCaption)
                             .foregroundColor(.secondary)
+                            .padding(.top, 2)
+                        Text(scientificName)
+                            .font(.plantBody)
+                            .foregroundColor(.primary)
                     }
                 }
             }

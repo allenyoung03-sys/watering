@@ -124,12 +124,28 @@ class CoreDataManager {
         roomAttr.attributeType = .stringAttributeType
         roomAttr.isOptional = true
 
+        let fertilizingReminderAttr = NSAttributeDescription()
+        fertilizingReminderAttr.name = "fertilizingReminderEnabled"
+        fertilizingReminderAttr.attributeType = .booleanAttributeType
+        fertilizingReminderAttr.defaultValue = NSNumber(value: true)
+
+        let pruningReminderAttr = NSAttributeDescription()
+        pruningReminderAttr.name = "pruningReminderEnabled"
+        pruningReminderAttr.attributeType = .booleanAttributeType
+        pruningReminderAttr.defaultValue = NSNumber(value: true)
+
+        let pestControlReminderAttr = NSAttributeDescription()
+        pestControlReminderAttr.name = "pestControlReminderEnabled"
+        pestControlReminderAttr.attributeType = .booleanAttributeType
+        pestControlReminderAttr.defaultValue = NSNumber(value: true)
+
         plantEntity.properties = [
             idAttr, nameAttr, scientificNameAttr, imageDataAttr,
             wateringIntervalAttr, fertilizingIntervalAttr, pruningIntervalAttr, pestControlIntervalAttr,
             reminderTimeAttr, lastWateredDateAttr, lastFertilizedDateAttr, lastPrunedDateAttr, lastPestControlDateAttr,
             nextWateringDateAttr, nextFertilizingDateAttr, nextPruningDateAttr, nextPestControlDateAttr,
-            careInstructionsAttr, dateAddedAttr, notesAttr, roomAttr
+            careInstructionsAttr, dateAddedAttr, notesAttr, roomAttr,
+            fertilizingReminderAttr, pruningReminderAttr, pestControlReminderAttr
         ]
 
         // 创建CareRecordEntity实体

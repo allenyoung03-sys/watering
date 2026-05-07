@@ -490,8 +490,8 @@ class CalendarManager {
         let minute = calendar.component(.minute, from: reminderTime)
         let reminderTimeOfDay = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: Date()) ?? Date()
         
-        // 更新所有养护操作的日历事件
-        for actionType in CareActionType.allCases {
+        // 更新所有养护操作的日历事件（观察记录不需要日历事件）
+        for actionType in CareActionType.allCases where actionType != .observation {
             let nextDate = PlantCareService.shared.nextCareDate(plant, for: actionType)
             try await saveCareEvent(
                 plantId: plant.id,

@@ -7,7 +7,7 @@ import SwiftUI
 
 struct MultiCareReminderSetupView: View {
     let plant: Plant
-    let onSave: (Int, Int, Int, Int, Date) -> Void
+    let onSave: (Int, Int, Int, Int, Date, Bool, Bool, Bool) -> Void
     let onCancel: () -> Void
 
     @State private var wateringInterval: Int
@@ -15,8 +15,11 @@ struct MultiCareReminderSetupView: View {
     @State private var pruningInterval: Int
     @State private var pestControlInterval: Int
     @State private var reminderTime: Date
+    @State private var enableFertilizingReminder: Bool
+    @State private var enablePruningReminder: Bool
+    @State private var enablePestControlReminder: Bool
 
-    init(plant: Plant, onSave: @escaping (Int, Int, Int, Int, Date) -> Void, onCancel: @escaping () -> Void) {
+    init(plant: Plant, onSave: @escaping (Int, Int, Int, Int, Date, Bool, Bool, Bool) -> Void, onCancel: @escaping () -> Void) {
         self.plant = plant
         self.onSave = onSave
         self.onCancel = onCancel
@@ -25,6 +28,9 @@ struct MultiCareReminderSetupView: View {
         _pruningInterval = State(initialValue: Int(plant.pruningInterval))
         _pestControlInterval = State(initialValue: Int(plant.pestControlInterval))
         _reminderTime = State(initialValue: plant.reminderTime)
+        _enableFertilizingReminder = State(initialValue: plant.fertilizingReminderEnabled)
+        _enablePruningReminder = State(initialValue: plant.pruningReminderEnabled)
+        _enablePestControlReminder = State(initialValue: plant.pestControlReminderEnabled)
     }
 
     var body: some View {
@@ -76,30 +82,48 @@ struct MultiCareReminderSetupView: View {
                 }
                 
                 Section("施肥间隔") {
-                    CareIntervalPicker(
-                        title: "施肥",
-                        iconName: "leaf.fill",
-                        iconColor: .green,
-                        selectedDays: $fertilizingInterval
-                    )
+                    HStack {
+                        CareIntervalPicker(
+                            title: "施肥",
+                            iconName: "leaf.fill",
+                            iconColor: .green,
+                            selectedDays: $fertilizingInterval
+                        )
+
+                        Toggle("日历提醒", isOn: $enableFertilizingReminder)
+                            .labelsHidden()
+                            .tint(.plantGreen)
+                    }
                 }
-                
+
                 Section("修剪间隔") {
-                    CareIntervalPicker(
-                        title: "修剪",
-                        iconName: "scissors",
-                        iconColor: .orange,
-                        selectedDays: $pruningInterval
-                    )
+                    HStack {
+                        CareIntervalPicker(
+                            title: "修剪",
+                            iconName: "scissors",
+                            iconColor: .orange,
+                            selectedDays: $pruningInterval
+                        )
+
+                        Toggle("日历提醒", isOn: $enablePruningReminder)
+                            .labelsHidden()
+                            .tint(.plantGreen)
+                    }
                 }
-                
+
                 Section("除虫间隔") {
-                    CareIntervalPicker(
-                        title: "除虫",
-                        iconName: "ant.fill",
-                        iconColor: .red,
-                        selectedDays: $pestControlInterval
-                    )
+                    HStack {
+                        CareIntervalPicker(
+                            title: "除虫",
+                            iconName: "ant.fill",
+                            iconColor: .red,
+                            selectedDays: $pestControlInterval
+                        )
+
+                        Toggle("日历提醒", isOn: $enablePestControlReminder)
+                            .labelsHidden()
+                            .tint(.plantGreen)
+                    }
                 }
                 
                 Section("提醒时间") {
@@ -113,7 +137,7 @@ struct MultiCareReminderSetupView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
-                        onSave(wateringInterval, fertilizingInterval, pruningInterval, pestControlInterval, reminderTime)
+                        onSave(wateringInterval, fertilizingInterval, pruningInterval, pestControlInterval, reminderTime, enableFertilizingReminder, enablePruningReminder, enablePestControlReminder)
                     }
                     .foregroundColor(.plantGreen)
                 }

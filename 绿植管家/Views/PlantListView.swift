@@ -62,6 +62,11 @@ struct PlantListView: View {
         mainContent
             .navigationTitle("我的植物")
             .toolbar { toolbarContent }
+            .searchable(
+                text: $viewModel.searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "搜索植物名称..."
+            )
             .alert("删除植物", isPresented: $showDeleteConfirmation, presenting: plantToDelete) { plant in
                 Button("取消", role: .cancel) { plantToDelete = nil }
                 Button("删除", role: .destructive) {

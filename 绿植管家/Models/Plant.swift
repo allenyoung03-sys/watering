@@ -30,6 +30,9 @@ public class Plant: NSManagedObject, Identifiable {
     @NSManaged public var dateAdded: Date
     @NSManaged public var notes: String?
     @NSManaged public var room: String?
+    @NSManaged public var fertilizingReminderEnabled: Bool
+    @NSManaged public var pruningReminderEnabled: Bool
+    @NSManaged public var pestControlReminderEnabled: Bool
     @NSManaged public var careRecords: NSSet?
 }
 

@@ -342,6 +342,15 @@ class TimewallViewModel: ObservableObject {
             self.lastReloadTime = now
             self.loadData()
         }
+
+        // 监听外部页面删除记录（如从植物详情页删除后同步更新）
+        NotificationCenter.default.addObserver(
+            forName: .careRecordDeleted,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.refreshData()
+        }
     }
     
     // MARK: - 清理观察者
@@ -374,6 +383,10 @@ class TimewallViewModel: ObservableObject {
         let record = CareRecordEntity(context: context)
         record.id = UUID()
         record.plantId = plantId ?? UUID() // 如果没有指定植物ID，创建一个临时的
+        // 建立 Core Data 关系，使植物详情页能看到此记录
+        if let plantId = plantId, let plant = allPlants.first(where: { $0.id == plantId }) {
+            record.plant = plant
+        }
         record.actionType = CareActionType.observation.rawValue
         record.date = date
         record.note = note

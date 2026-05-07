@@ -11,6 +11,7 @@ class PlantListViewModel: ObservableObject {
     @Published var plants: [Plant] = []
     @Published var todayPlants: [Plant] = []
     @Published var selectedPlant: Plant?
+    @Published var searchText: String = ""
     @Published var selectedRoom: String = Constants.Room.all
     @Published var availableRooms: [String] = [Constants.Room.all]
 
@@ -22,6 +23,7 @@ class PlantListViewModel: ObservableObject {
     init() {
         loadPlants()
         updateAvailableRooms()
+        setupSearchObserver()
         setupRoomManagerObserver()
         setupNotificationObservers()
     }
@@ -38,11 +40,14 @@ class PlantListViewModel: ObservableObject {
             }
         
         // 筛选植物
-        if selectedRoom == Constants.Room.all {
-            plants = allPlants
-        } else {
-            plants = allPlants.filter { $0.room == selectedRoom }
+        var filtered = allPlants
+        if selectedRoom != Constants.Room.all {
+            filtered = filtered.filter { $0.room == selectedRoom }
         }
+        if !searchText.isEmpty {
+            filtered = filtered.filter { $0.name.localizedStandardContains(searchText) }
+        }
+        plants = filtered
         
         todayPlants = plants.filter { careService.needsAnyCare($0) }
     }
@@ -210,6 +215,16 @@ class PlantListViewModel: ObservableObject {
         // 这里可以添加更复杂的错误处理逻辑，比如显示错误提示
     }
     
+    /// 设置搜索文本监听，自动触发植物列表过滤
+    private func setupSearchObserver() {
+        $searchText
+            .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.loadPlants()
+            }
+            .store(in: &cancellables)
+    }
+
     /// 设置RoomManager观察者，监听房间变化
     private func setupRoomManagerObserver() {
         // 监听RoomManager的objectWillChange发布者

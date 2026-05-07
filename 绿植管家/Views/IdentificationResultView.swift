@@ -17,6 +17,9 @@ struct IdentificationResultView: View {
     @State private var fertilizingInterval: Int
     @State private var pruningInterval: Int
     @State private var pestControlInterval: Int
+    @State private var enableFertilizingReminder = false
+    @State private var enablePruningReminder = false
+    @State private var enablePestControlReminder = false
     @State private var selectedTime: Date
     @State private var showingFullDescription = false
     @State private var isEditingName = false
@@ -332,7 +335,7 @@ struct IdentificationResultView: View {
                         .foregroundColor(.orange)
                 }
                 
-                Text("设置提醒后会在日历中创建提醒事件。您也可以稍后在植物详情页调整设置。")
+                Text("浇水提醒必选，其余养护可自由选择是否设置日历提醒。您也可以稍后在植物详情页调整。")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
                     .lineLimit(2)
@@ -352,30 +355,48 @@ struct IdentificationResultView: View {
             .padding(.vertical, 8)
             
             // 施肥间隔
-            CareIntervalPicker(
-                title: "施肥",
-                iconName: "leaf.fill",
-                iconColor: .green,
-                selectedDays: $fertilizingInterval
-            )
+            HStack {
+                CareIntervalPicker(
+                    title: "施肥",
+                    iconName: "leaf.fill",
+                    iconColor: .green,
+                    selectedDays: $fertilizingInterval
+                )
+
+                Toggle("日历提醒", isOn: $enableFertilizingReminder)
+                    .labelsHidden()
+                    .tint(.plantGreen)
+            }
             .padding(.vertical, 8)
-            
+
             // 修剪间隔
-            CareIntervalPicker(
-                title: "修剪",
-                iconName: "scissors",
-                iconColor: .orange,
-                selectedDays: $pruningInterval
-            )
+            HStack {
+                CareIntervalPicker(
+                    title: "修剪",
+                    iconName: "scissors",
+                    iconColor: .orange,
+                    selectedDays: $pruningInterval
+                )
+
+                Toggle("日历提醒", isOn: $enablePruningReminder)
+                    .labelsHidden()
+                    .tint(.plantGreen)
+            }
             .padding(.vertical, 8)
-            
+
             // 除虫间隔
-            CareIntervalPicker(
-                title: "除虫",
-                iconName: "ant.fill",
-                iconColor: .red,
-                selectedDays: $pestControlInterval
-            )
+            HStack {
+                CareIntervalPicker(
+                    title: "除虫",
+                    iconName: "ant.fill",
+                    iconColor: .red,
+                    selectedDays: $pestControlInterval
+                )
+
+                Toggle("日历提醒", isOn: $enablePestControlReminder)
+                    .labelsHidden()
+                    .tint(.plantGreen)
+            }
             .padding(.vertical, 8)
             
             // 提醒时间
@@ -536,10 +557,44 @@ struct IdentificationResultView: View {
         )
         try? CoreDataManager.shared.save()
         Task {
-            // 为所有养护类型创建日历事件（包括浇水）
-            // CalendarManager.shared.updateAllCareEvents 会为所有养护类型创建事件
-            // 避免重复调用 ReminderManager.shared.scheduleWateringReminder，防止重复创建浇水日历事件
-            try? await CalendarManager.shared.updateAllCareEvents(for: plant)
+            // 浇水始终创建日历提醒
+            try? await CalendarManager.shared.saveWateringEvent(
+                plantId: plant.id,
+                plantName: plant.name,
+                nextWateringDate: plant.nextWateringDate,
+                reminderTime: plant.reminderTime
+            )
+
+            // 施肥、修剪、除虫按用户选择创建日历提醒
+            if enableFertilizingReminder, let nextDate = plant.nextFertilizingDate {
+                try? await CalendarManager.shared.saveCareEvent(
+                    plantId: plant.id,
+                    plantName: plant.name,
+                    actionType: .fertilizing,
+                    nextDate: nextDate,
+                    reminderTime: plant.reminderTime
+                )
+            }
+
+            if enablePruningReminder, let nextDate = plant.nextPruningDate {
+                try? await CalendarManager.shared.saveCareEvent(
+                    plantId: plant.id,
+                    plantName: plant.name,
+                    actionType: .pruning,
+                    nextDate: nextDate,
+                    reminderTime: plant.reminderTime
+                )
+            }
+
+            if enablePestControlReminder, let nextDate = plant.nextPestControlDate {
+                try? await CalendarManager.shared.saveCareEvent(
+                    plantId: plant.id,
+                    plantName: plant.name,
+                    actionType: .pestControl,
+                    nextDate: nextDate,
+                    reminderTime: plant.reminderTime
+                )
+            }
         }
         onAdded()
         dismiss()
@@ -576,71 +631,28 @@ struct IdentificationResultView: View {
         isUpdatingPlantInfo = true
         showUpdateError = false
         updateError = nil
-        
-        do {
-            // 使用新的植物名称搜索植物信息
-            let searchResults = try await PlantIdentificationService.shared.searchPlant(name: editedPlantName)
-            
-            if let newResult = searchResults.first {
-                // 创建新的识别结果，保留原始的健康信息
-                let updatedResult = PlantIdentificationResult(
-                    name: editedPlantName,
-                    scientificName: newResult.scientificName,
-                    confidence: newResult.confidence,
-                    wateringFrequency: newResult.wateringFrequency,
-                    fertilizingFrequency: newResult.fertilizingFrequency,
-                    pruningFrequency: newResult.pruningFrequency,
-                    cleaningFrequency: newResult.cleaningFrequency,
-                    careInstructions: newResult.careInstructions,
-                    shortDescription: newResult.shortDescription,
-                    imageURL: newResult.imageURL,
-                    lightRequirement: newResult.lightRequirement,
-                    healthStatus: result.healthStatus, // 保留原始健康状态
-                    healthAdvice: result.healthAdvice, // 保留原始健康建议
-                    drynessScore: result.drynessScore // 保留原始干燥度评分
-                )
-                
-                // 更新UI
-                await MainActor.run {
-                    self.result = updatedResult
-                    self.wateringInterval = updatedResult.wateringFrequency
-                    self.fertilizingInterval = updatedResult.fertilizingFrequency
-                    self.pruningInterval = updatedResult.pruningFrequency
-                    self.pestControlInterval = updatedResult.cleaningFrequency
-                    self.isEditingName = false
-                    self.isUpdatingPlantInfo = false
-                }
-            } else {
-                // 如果没有搜索结果，使用原始结果但更新名称
-                let updatedResult = PlantIdentificationResult(
-                    name: editedPlantName,
-                    scientificName: result.scientificName,
-                    confidence: result.confidence,
-                    wateringFrequency: result.wateringFrequency,
-                    fertilizingFrequency: result.fertilizingFrequency,
-                    pruningFrequency: result.pruningFrequency,
-                    cleaningFrequency: result.cleaningFrequency,
-                    careInstructions: result.careInstructions,
-                    shortDescription: result.shortDescription,
-                    imageURL: result.imageURL,
-                    lightRequirement: result.lightRequirement,
-                    healthStatus: result.healthStatus,
-                    healthAdvice: result.healthAdvice,
-                    drynessScore: result.drynessScore
-                )
-                
-                await MainActor.run {
-                    self.result = updatedResult
-                    self.isEditingName = false
-                    self.isUpdatingPlantInfo = false
-                }
-            }
-        } catch {
-            await MainActor.run {
-                self.isUpdatingPlantInfo = false
-                self.showUpdateError = true
-                self.updateError = "更新植物信息失败: \(error.localizedDescription)"
-            }
+
+        let updatedResult = PlantIdentificationResult(
+            name: editedPlantName,
+            scientificName: result.scientificName,
+            confidence: result.confidence,
+            wateringFrequency: result.wateringFrequency,
+            fertilizingFrequency: result.fertilizingFrequency,
+            pruningFrequency: result.pruningFrequency,
+            cleaningFrequency: result.cleaningFrequency,
+            careInstructions: result.careInstructions,
+            shortDescription: result.shortDescription,
+            imageURL: result.imageURL,
+            lightRequirement: result.lightRequirement,
+            healthStatus: result.healthStatus,
+            healthAdvice: result.healthAdvice,
+            drynessScore: result.drynessScore
+        )
+
+        await MainActor.run {
+            self.result = updatedResult
+            self.isEditingName = false
+            self.isUpdatingPlantInfo = false
         }
     }
     

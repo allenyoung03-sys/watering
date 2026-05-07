@@ -70,10 +70,18 @@ struct PlantCard: View {
             plantImage
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
-                    Text(plant.name)
-                        .font(.plantHeadline)
-                        .foregroundColor(.primary)
-                    
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(plant.name)
+                            .font(.plantHeadline)
+                            .foregroundColor(.primary)
+
+                        if let scientificName = plant.scientificName, !scientificName.isEmpty {
+                            Text(scientificName)
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
                     Spacer()
                     
                     // 编辑植物信息按钮

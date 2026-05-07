@@ -34,8 +34,25 @@ class PlantDetailViewModel: ObservableObject {
 
     init(plant: Plant) {
         self.plant = plant
+        setupContextObserver()
     }
-    
+
+    private func setupContextObserver() {
+        NotificationCenter.default.addObserver(
+            forName: .NSManagedObjectContextDidSave,
+            object: dataManager.context,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            // 刷新植物对象的关系集，确保外部新增/删除的养护记录同步显示
+            self.dataManager.context.refresh(self.plant, mergeChanges: true)
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     /// 获取所有养护记录（按日期倒序）
     var allCareRecords: [CareRecordEntity] {
         careService.careRecordsArray(plant)
@@ -234,47 +251,46 @@ class PlantDetailViewModel: ObservableObject {
     
     /// 删除养护记录
     func deleteCareRecord(_ record: CareRecordEntity) {
-        print("🗑️ [PlantDetailViewModel] 开始删除养护记录: \(record.id) (\(record.actionDisplayName))")
-        
-        // 重置错误状态
-        deleteError = nil
-        
+        let recordId = record.id
+
         Task { @MainActor in
-            do {
-                // 设置删除状态
-                isDeletingRecord = true
-                print("🗑️ [PlantDetailViewModel] 正在删除记录...")
-                
-                // 如果是观察记录，需要特殊处理照片缓存
-                if record.careActionType == .observation {
-                    print("🗑️ [PlantDetailViewModel] 这是观察记录，清理照片缓存...")
-                    await record.clearAllImages()
+            // 1. 先标记删除状态，让 SwiftUI 显示 loading 并移除记录列表视图
+            isDeletingRecord = true
+
+            // 2. 等待 SwiftUI 完成重渲染（让出主线程），确保 CareRecordRow 不再持有引用
+            await withUnsafeContinuation { continuation in
+                DispatchQueue.main.async {
+                    continuation.resume()
                 }
-                
-                // 从CoreData删除记录
-                dataManager.context.delete(record)
-                
-                // 保存更改
-                try dataManager.save()
-                
-                print("✅ [PlantDetailViewModel] 养护记录删除成功: \(record.id)")
-                
-                // 删除完成后，发送通知让UI刷新
+            }
+
+            do {
+                // 3. 通过 CoreDataManager 的安全删除方法执行（包含 isFault/isDeleted 检查）
+                guard let recordToDelete = dataManager.fetchCareRecord(by: recordId) else {
+                    print("⚠️ [PlantDetailViewModel] 记录已被删除或不存在: \(recordId)")
+                    isDeletingRecord = false
+                    return
+                }
+
+                try dataManager.deleteCareRecord(recordToDelete)
+
+                // 4. 刷新植物对象的关系集
+                dataManager.context.refresh(plant, mergeChanges: false)
+
+                print("✅ [PlantDetailViewModel] 养护记录删除成功: \(recordId)")
+
+                // 5. 通知其他页面刷新
                 NotificationCenter.default.post(
                     name: .careRecordDeleted,
                     object: nil,
-                    userInfo: ["recordId": record.id]
+                    userInfo: ["recordId": recordId]
                 )
-                
+
             } catch {
                 print("❌ [PlantDetailViewModel] 删除养护记录失败: \(error)")
-                print("❌ [PlantDetailViewModel] 错误详情: \(error.localizedDescription)")
-                
-                // 设置错误信息
                 deleteError = "删除失败: \(error.localizedDescription)"
             }
-            
-            // 无论成功还是失败，都要结束删除状态
+
             isDeletingRecord = false
         }
     }
@@ -314,56 +330,77 @@ class PlantDetailViewModel: ObservableObject {
         try? dataManager.save()
     }
     
-    /// 更新植物名称并获取新的植物信息
+    /// 更新植物昵称（不影响学名和养护描述）
     func updatePlantName(_ newName: String) async throws {
         guard !newName.isEmpty, newName != plant.name else { return }
-        
-        // 使用新的植物名称搜索植物信息
-        let searchResults = try await plantIdentificationService.searchPlant(name: newName)
-        
-        if let newResult = searchResults.first {
-            // 更新植物信息
-            plant.name = newName
-            plant.scientificName = newResult.scientificName
-            plant.careInstructions = newResult.careInstructions
-            
-            // 保存到CoreData
-            try dataManager.save()
-        } else {
-            // 如果没有搜索结果，只更新名称
-            plant.name = newName
-            try dataManager.save()
-        }
+
+        plant.name = newName
+        try dataManager.save()
     }
     
-    /// 更新所有养护间隔和提醒时间
+    /// 更新所有养护间隔、提醒开关和提醒时间
     func updateAllCareIntervals(
         wateringInterval: Int,
         fertilizingInterval: Int,
         pruningInterval: Int,
         pestControlInterval: Int,
-        reminderTime: Date
+        reminderTime: Date,
+        enableFertilizingReminder: Bool,
+        enablePruningReminder: Bool,
+        enablePestControlReminder: Bool
     ) {
         print("🔄 [PlantDetailViewModel] 开始更新所有养护间隔")
         print("   - 浇水间隔: \(wateringInterval)天")
-        print("   - 施肥间隔: \(fertilizingInterval)天")
-        print("   - 修剪间隔: \(pruningInterval)天")
-        print("   - 除虫间隔: \(pestControlInterval)天")
+        print("   - 施肥间隔: \(fertilizingInterval)天 (提醒: \(enableFertilizingReminder))")
+        print("   - 修剪间隔: \(pruningInterval)天 (提醒: \(enablePruningReminder))")
+        print("   - 除虫间隔: \(pestControlInterval)天 (提醒: \(enablePestControlReminder))")
         print("   - 提醒时间: \(reminderTime)")
-        
-        // 保存新的间隔设置
+
+        // 保存新的间隔设置和提醒开关
         plant.wateringInterval = Int16(wateringInterval)
         plant.fertilizingInterval = Int16(fertilizingInterval)
         plant.pruningInterval = Int16(pruningInterval)
         plant.pestControlInterval = Int16(pestControlInterval)
         plant.reminderTime = reminderTime
-        
+        plant.fertilizingReminderEnabled = enableFertilizingReminder
+        plant.pruningReminderEnabled = enablePruningReminder
+        plant.pestControlReminderEnabled = enablePestControlReminder
+
         try? dataManager.save()
         print("✅ [PlantDetailViewModel] 间隔设置已保存到数据库")
-        
-        // 注意：不再自动更新日历事件，避免重复创建
-        // 日历事件会在用户标记养护完成时自动更新
-        print("ℹ️ [PlantDetailViewModel] 日历事件未更新，避免重复创建")
-        print("ℹ️ [PlantDetailViewModel] 日历事件将在下次标记养护完成时自动更新")
+
+        // 根据提醒开关更新日历事件
+        Task {
+            // 浇水始终创建
+            try? await CalendarManager.shared.saveWateringEvent(
+                plantId: plant.id,
+                plantName: plant.name,
+                nextWateringDate: plant.nextWateringDate,
+                reminderTime: plant.reminderTime
+            )
+
+            await updateSingleCareReminder(actionType: .fertilizing, enabled: enableFertilizingReminder)
+            await updateSingleCareReminder(actionType: .pruning, enabled: enablePruningReminder)
+            await updateSingleCareReminder(actionType: .pestControl, enabled: enablePestControlReminder)
+        }
+    }
+
+    /// 更新单个养护类型的日历提醒（开启或移除）
+    private func updateSingleCareReminder(actionType: CareActionType, enabled: Bool) async {
+        if enabled {
+            let nextDate = careService.nextCareDate(plant, for: actionType)
+            try? await CalendarManager.shared.saveCareEvent(
+                plantId: plant.id,
+                plantName: plant.name,
+                actionType: actionType,
+                nextDate: nextDate,
+                reminderTime: plant.reminderTime
+            )
+        } else {
+            try? await CalendarManager.shared.removeCareEvent(
+                plantId: plant.id,
+                actionType: actionType
+            )
+        }
     }
 }

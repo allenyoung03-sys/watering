@@ -57,17 +57,35 @@ struct PlantInfoEditView: View {
                     
                     // 编辑表单
                     VStack(spacing: Constants.Layout.spacingM) {
-                        // 植物名称
+                        // 植物昵称
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("植物名称")
+                            Text("昵称")
                                 .font(.plantBody)
                                 .foregroundColor(.primary)
-                            
-                            TextField("输入植物名称", text: $editedName)
+
+                            TextField("输入植物昵称", text: $editedName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .font(.plantBody)
                         }
-                        
+
+                        // 学名（只读）
+                        if let scientificName = plant.scientificName, !scientificName.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("学名")
+                                    .font(.plantBody)
+                                    .foregroundColor(.primary)
+
+                                Text(scientificName)
+                                    .font(.plantBody)
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(Color.secondary.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+
                         // 植物描述
                         VStack(alignment: .leading, spacing: 8) {
                             Text("植物描述")
