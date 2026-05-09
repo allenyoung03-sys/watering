@@ -1,6 +1,6 @@
 //
 //  CalendarManager.swift
-//  植觉
+//  植觉日记
 //
 
 import EventKit
@@ -115,7 +115,7 @@ class CalendarManager {
         }
     }
 
-    /// 获取或创建「植觉」日历
+    /// 获取或创建「植觉日记」日历
     private func getOrCreateCalendar() -> EKCalendar? {
         let calendars = eventStore.calendars(for: .event)
         if let existing = calendars.first(where: { $0.title == Self.calendarTitle }) {
@@ -454,7 +454,7 @@ class CalendarManager {
         let ourCalendar = calendars.first(where: { $0.title == Self.calendarTitle })
         
         guard let calendar = ourCalendar else {
-            print("⚠️ [CalendarManager] 未找到 '植觉' 日历")
+            print("⚠️ [CalendarManager] 未找到 '植觉日记' 日历")
             return
         }
         

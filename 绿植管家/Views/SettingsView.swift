@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  植觉
+//  植觉日记
 //
 
 import SwiftUI
