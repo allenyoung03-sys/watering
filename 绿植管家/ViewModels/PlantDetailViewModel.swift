@@ -27,6 +27,9 @@ class PlantDetailViewModel: ObservableObject {
     @Published var isDeletingRecord = false
     @Published var deleteError: String?
 
+    /// 养护操作完成后的回调信号（View 监听此信号来显示成功动画）
+    @Published var didCompleteCare: CareActionType?
+
     private let dataManager = CoreDataManager.shared
     private let reminderManager = ReminderManager.shared
     private let plantIdentificationService = PlantIdentificationService.shared
@@ -123,6 +126,9 @@ class PlantDetailViewModel: ObservableObject {
                 try dataManager.save()
                 PlantCareService.shared.refreshWidgetData()
                 print("✅ [PlantDetailViewModel] \(actionType.displayName) 标记完成")
+                // 发送成功信号给 View，触发成功动画
+                didCompleteCare = actionType
+
                 
                 // 重置状态
                 noteText = ""

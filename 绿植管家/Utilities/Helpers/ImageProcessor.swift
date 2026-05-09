@@ -29,23 +29,36 @@ class ImageProcessor {
     static let shared = ImageProcessor()
     
     private let fileManager = FileManager.default
+    /// 永久存储目录（Documents），iOS 不会自动清理，用于长期保存用户图片
+    private let persistentDirectory: URL
+    /// 快速访问缓存目录（Caches），iOS 可能自动清理，用于加速读取
     private let cacheDirectory: URL
     private let maxCacheSize: Int = 100 * 1024 * 1024 // 100MB
     private let maxImageDimension: CGFloat = 1024 // 最大图片尺寸
     private let compressionQuality: CGFloat = 0.7 // JPEG压缩质量
-    
+
     private init() {
-        // 创建缓存目录
+        // 永久存储目录：Documents/PlantImages/
+        let docsDir = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        persistentDirectory = docsDir.appendingPathComponent("PlantImages", isDirectory: true)
+
+        // 缓存加速目录：Caches/PlantImages/
         let cacheDir = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
         cacheDirectory = cacheDir.appendingPathComponent("PlantImages", isDirectory: true)
-        
-        do {
-            try fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
-        } catch {
-            print("创建图片缓存目录失败: \(error)")
+
+        // 创建两个目录
+        for dir in [persistentDirectory, cacheDirectory] {
+            do {
+                try fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
+            } catch {
+                print("创建图片目录失败: \(error)")
+            }
         }
-        
-        // 定期清理过期缓存
+
+        // 从旧版 Caches-only 迁移到双目录
+        migrateFromLegacyCache()
+
+        // 后台清理过期缓存
         cleanupOldCache()
     }
     
@@ -128,62 +141,62 @@ class ImageProcessor {
         }
     }
     
-    /// 缓存图片
-    /// - Parameters:
-    ///   - data: 图片数据
-    ///   - key: 缓存键
+    /// 缓存图片（同时写入永久存储和缓存加速目录）
     func cacheImage(_ data: Data, for key: String) throws {
-        let fileURL = cacheDirectory.appendingPathComponent("\(key).jpg")
-        
+        let fileName = "\(key).jpg"
+        let persistentURL = persistentDirectory.appendingPathComponent(fileName)
+        let cacheURL = cacheDirectory.appendingPathComponent(fileName)
+
         do {
-            try data.write(to: fileURL)
+            // 同时写入两个位置
+            try data.write(to: persistentURL)
+            try? data.write(to: cacheURL) // 缓存写入失败不影响永久存储
         } catch {
             throw ImageProcessingError.cacheWriteFailed
         }
     }
-    
-    /// 从缓存获取图片
-    /// - Parameter key: 缓存键
-    /// - Returns: 图片数据（如果存在）
+
+    /// 从缓存获取图片（优先从加速缓存读取，回退到永久存储）
     func getCachedImage(for key: String) -> Data? {
-        let fileURL = cacheDirectory.appendingPathComponent("\(key).jpg")
-        return try? Data(contentsOf: fileURL)
+        let fileName = "\(key).jpg"
+        let cacheURL = cacheDirectory.appendingPathComponent(fileName)
+        let persistentURL = persistentDirectory.appendingPathComponent(fileName)
+
+        // 优先从加速缓存读取
+        if let data = try? Data(contentsOf: cacheURL) {
+            return data
+        }
+
+        // 回退到永久存储，并重建加速缓存
+        if let data = try? Data(contentsOf: persistentURL) {
+            try? data.write(to: cacheURL) // 重建缓存副本
+            return data
+        }
+
+        return nil
     }
-    
+
     /// 检查缓存中是否有图片
     func hasCachedImage(for key: String) -> Bool {
-        let fileURL = cacheDirectory.appendingPathComponent("\(key).jpg")
-        return fileManager.fileExists(atPath: fileURL.path)
+        let fileName = "\(key).jpg"
+        let persistentURL = persistentDirectory.appendingPathComponent(fileName)
+        return fileManager.fileExists(atPath: persistentURL.path)
     }
     
-    /// 删除缓存图片
+    /// 删除图片（从永久存储和缓存目录同时删除）
     func removeCachedImage(for key: String) {
-        let fileURL = cacheDirectory.appendingPathComponent("\(key).jpg")
-        try? fileManager.removeItem(at: fileURL)
+        let fileName = "\(key).jpg"
+        try? fileManager.removeItem(at: persistentDirectory.appendingPathComponent(fileName))
+        try? fileManager.removeItem(at: cacheDirectory.appendingPathComponent(fileName))
     }
-    
-    /// 安全地删除缓存图片（带错误处理，不会抛出异常）- 优化版本（减少日志）
+
+    /// 安全地删除图片（带错误处理，不会抛出异常）
     func safeRemoveCachedImage(for key: String) {
-        let fileURL = cacheDirectory.appendingPathComponent("\(key).jpg")
-        
-        // 检查文件是否存在
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return // 文件不存在，不需要删除
-        }
-        
-        do {
-            // 删除文件
-            try fileManager.removeItem(at: fileURL)
-        } catch {
-            // 如果是权限错误，尝试修复权限
-            if (error as NSError).domain == NSCocoaErrorDomain &&
-               (error as NSError).code == NSFileWriteNoPermissionError {
-                try? fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: fileURL.path)
-                
-                // 再次尝试删除
-                try? fileManager.removeItem(at: fileURL)
-            }
-            // 对于其他错误，静默失败，避免应用崩溃
+        let fileName = "\(key).jpg"
+        for dir in [persistentDirectory, cacheDirectory] {
+            let url = dir.appendingPathComponent(fileName)
+            guard fileManager.fileExists(atPath: url.path) else { continue }
+            try? fileManager.removeItem(at: url)
         }
     }
     
@@ -242,7 +255,7 @@ class ImageProcessor {
         }
     }
     
-    /// 获取缓存大小（字节）
+    /// 获取缓存大小（字节，仅计算加速缓存目录）
     func getCacheSize() -> Int64 {
         do {
             let files = try fileManager.contentsOfDirectory(at: cacheDirectory, includingPropertiesForKeys: [.fileSizeKey])
@@ -256,8 +269,8 @@ class ImageProcessor {
             return 0
         }
     }
-    
-    /// 清空所有缓存
+
+    /// 清空加速缓存目录（不影响永久存储）
     func clearAllCache() {
         do {
             let files = try fileManager.contentsOfDirectory(at: cacheDirectory, includingPropertiesForKeys: nil)
@@ -266,6 +279,32 @@ class ImageProcessor {
             }
         } catch {
             print("清空缓存失败: \(error)")
+        }
+    }
+
+    /// 从旧版 Caches-only 迁移到 Documents 持久目录
+    /// 将 Caches/PlantImages/ 中尚未在 Documents 中的文件复制过去
+    private func migrateFromLegacyCache() {
+        let oldDir = cacheDirectory
+        let newDir = persistentDirectory
+
+        guard let oldFiles = try? fileManager.contentsOfDirectory(at: oldDir, includingPropertiesForKeys: nil) else {
+            return
+        }
+
+        var copiedCount = 0
+        for oldFile in oldFiles {
+            let fileName = oldFile.lastPathComponent
+            let newURL = newDir.appendingPathComponent(fileName)
+            // 新目录中不存在时才复制
+            if !fileManager.fileExists(atPath: newURL.path) {
+                try? fileManager.copyItem(at: oldFile, to: newURL)
+                copiedCount += 1
+            }
+        }
+
+        if copiedCount > 0 {
+            print("📸 已将 \(copiedCount) 个旧版缓存图片迁移到 Documents 永久存储")
         }
     }
 }

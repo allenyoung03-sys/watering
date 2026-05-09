@@ -20,7 +20,7 @@ struct Provider: TimelineProvider {
     }
 
     private func readEntry() -> SimpleEntry? {
-        guard let data = UserDefaults(suiteName: "group.yang-yang.----")?.data(forKey: "widgetPlantData"),
+        guard let data = UserDefaults(suiteName: "group.com.yangyang.plants")?.data(forKey: "widgetPlantData"),
               let plantData = try? JSONDecoder().decode(WidgetPlantData.self, from: data) else {
             return nil
         }

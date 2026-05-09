@@ -13,6 +13,7 @@ public class Plant: NSManagedObject, Identifiable {
     @NSManaged public var name: String
     @NSManaged public var scientificName: String?
     @NSManaged public var imageData: Data?
+    @NSManaged public var imageUrl: String?
     @NSManaged public var wateringInterval: Int16
     @NSManaged public var fertilizingInterval: Int16
     @NSManaged public var pruningInterval: Int16
@@ -36,6 +37,7 @@ public class Plant: NSManagedObject, Identifiable {
     @NSManaged public var careRecords: NSSet?
 
     // MARK: - 同步预留字段（当前版本不使用）
+    @NSManaged public var ownerUserId: String?
     @NSManaged public var lastModifiedAt: Date?
     @NSManaged public var markedForDeletion: Bool
     @NSManaged public var serverId: String?
@@ -43,6 +45,20 @@ public class Plant: NSManagedObject, Identifiable {
 }
 
 extension Plant {
+    /// 获取植物图片（优先从文件缓存读取，其次回退到 imageData 二进制向后兼容）
+    var image: UIImage? {
+        if let urlString = imageUrl, !urlString.isEmpty {
+            if let cachedData = ImageProcessor.shared.getCachedImage(for: urlString) {
+                return UIImage(data: cachedData)
+            }
+        }
+        // 向后兼容：从旧的二进制 blob 读取
+        if let data = imageData {
+            return UIImage(data: data)
+        }
+        return nil
+    }
+
     static func create(
         context: NSManagedObjectContext,
         name: String,
@@ -64,10 +80,14 @@ extension Plant {
         // 使用图片处理器优化图片存储
         if let image = image {
             do {
-                plant.imageData = try image.compressed(quality: 0.7, maxDimension: 800)
+                let compressedData = try image.compressed(quality: 0.7, maxDimension: 800)
+                let fileName = "plant_\(plant.id.uuidString).jpg"
+                try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
+                plant.imageUrl = fileName
+                // 不再存入 imageData（避免数据库膨胀）
             } catch {
                 print("图片压缩失败: \(error)")
-                // 如果压缩失败，使用原始数据但质量较低
+                // 如果压缩失败，使用原始数据但质量较低（向后兼容回退）
                 plant.imageData = image.jpegData(compressionQuality: 0.5)
             }
         }

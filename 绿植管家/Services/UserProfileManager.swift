@@ -34,21 +34,29 @@ class UserProfileManager: ObservableObject {
     }
 
     private init() {
+        // 在 didSet 中访问 self 前必须完成所有存储属性的初始化
+        // 因此先给所有属性赋初始值，再在后续步骤写 UserDefaults
+        self.userName = ""
+        self.avatarImageData = nil
+        self.localUserId = ""
+        self.firstLaunchDate = Date()
+
+        // 读取并设置用户信息
         self.userName = UserDefaults.standard.string(forKey: Constants.UserDefaultsKeys.userName) ?? ""
         self.avatarImageData = UserDefaults.standard.data(forKey: Constants.UserDefaultsKeys.userAvatarData)
-
-        // 生成或读取本地用户 ID
-        let savedId = UserDefaults.standard.string(forKey: Constants.UserDefaultsKeys.localUserId)
-        self.localUserId = savedId ?? UUID().uuidString
-        if savedId == nil {
-            UserDefaults.standard.set(self.localUserId, forKey: Constants.UserDefaultsKeys.localUserId)
-        }
 
         // 读取或记录首次启动时间
         let savedDate = UserDefaults.standard.object(forKey: Constants.UserDefaultsKeys.firstLaunchDate) as? Date
         self.firstLaunchDate = savedDate ?? Date()
         if savedDate == nil {
-            UserDefaults.standard.set(self.firstLaunchDate, forKey: Constants.UserDefaultsKeys.firstLaunchDate)
+            UserDefaults.standard.set(firstLaunchDate, forKey: Constants.UserDefaultsKeys.firstLaunchDate)
+        }
+
+        // 生成或读取本地用户 ID
+        let savedId = UserDefaults.standard.string(forKey: Constants.UserDefaultsKeys.localUserId)
+        self.localUserId = savedId ?? UUID().uuidString
+        if savedId == nil {
+            UserDefaults.standard.set(localUserId, forKey: Constants.UserDefaultsKeys.localUserId)
         }
     }
 

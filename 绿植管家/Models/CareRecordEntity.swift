@@ -20,6 +20,7 @@ public class CareRecordEntity: NSManagedObject, Identifiable {
     @NSManaged public var plant: Plant?
 
     // MARK: - 同步预留字段（当前版本不使用）
+    @NSManaged public var ownerUserId: String?
     @NSManaged public var lastModifiedAt: Date?
     @NSManaged public var markedForDeletion: Bool
     @NSManaged public var serverId: String?
@@ -41,9 +42,13 @@ extension CareRecordEntity {
         record.actionType = actionType.rawValue
         record.date = Date()
         record.note = note
-        record.imageData = imageData
-        record.imageUrl = imageUrl
-        if let data = imageData {
+        // 优先使用 imageUrl，其次尝试将 imageData 写入文件缓存
+        if let url = imageUrl, !url.isEmpty {
+            record.imageUrl = url
+        } else if let data = imageData {
+            let fileName = "care_record_\(record.id.uuidString).jpg"
+            try? ImageProcessor.shared.cacheImage(data, for: fileName)
+            record.imageUrl = fileName
             record.imageDataArray = [data] as NSArray
         }
         record.plant = plant
@@ -220,22 +225,19 @@ extension CareRecordEntity {
             self.imageDataArray = nil
             return
         }
-        
+
         // 压缩图片
         let compressedData = try ImageProcessor.shared.compressImage(
             image,
             maxDimension: maxDimension,
             quality: quality
         )
-        
+
         // 生成唯一的文件名
         let fileName = "care_record_\(id.uuidString).jpg"
-        
-        // 保存到缓存
+
+        // 保存到文件缓存（不再存入 imageData，避免数据库膨胀）
         try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
-        
-        // 存储数据
-        self.imageData = compressedData
         self.imageUrl = fileName
         self.imageDataArray = [compressedData] as NSArray
         Self.clearThumbnailCache(for: id)
@@ -249,9 +251,9 @@ extension CareRecordEntity {
             self.imageDataArray = nil
             return
         }
-        
+
         var compressedDataArray: [Data] = []
-        
+
         for (index, image) in images.enumerated() {
             // 压缩图片
             let compressedData = try ImageProcessor.shared.compressImage(
@@ -259,22 +261,17 @@ extension CareRecordEntity {
                 maxDimension: maxDimension,
                 quality: quality
             )
-            
+
             compressedDataArray.append(compressedData)
-            
-            // 如果是第一张照片，也存储到imageData（向后兼容）
+
+            // 如果是第一张照片，写入文件缓存并设置 imageUrl（不再写入 imageData）
             if index == 0 {
-                self.imageData = compressedData
-                
-                // 生成唯一的文件名
                 let fileName = "care_record_\(id.uuidString).jpg"
                 self.imageUrl = fileName
-                
-                // 保存到缓存
                 try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
             }
         }
-        
+
         // 存储所有照片数据
         self.imageDataArray = compressedDataArray as NSArray
         Self.clearThumbnailCache(for: id)
@@ -288,20 +285,15 @@ extension CareRecordEntity {
             maxDimension: maxDimension,
             quality: quality
         )
-        
+
         var currentArray = imageDataArrayData
         currentArray.append(compressedData)
         self.imageDataArray = currentArray as NSArray
-        
-        // 如果这是第一张照片，也更新imageData（向后兼容）
-        if currentArray.count == 1 {
-            self.imageData = compressedData
 
-            // 生成唯一的文件名
+        // 如果这是第一张照片，写入文件缓存（不再写入 imageData）
+        if currentArray.count == 1 {
             let fileName = "care_record_\(id.uuidString).jpg"
             self.imageUrl = fileName
-
-            // 保存到缓存
             try ImageProcessor.shared.cacheImage(compressedData, for: fileName)
         }
         Self.clearThumbnailCache(for: id)

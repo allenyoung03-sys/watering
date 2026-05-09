@@ -116,8 +116,8 @@ struct PlantCard: View {
         }
         .padding(Constants.Layout.spacingXS)
         .onAppear {
-            if cachedImage == nil, let imageData = plant.imageData {
-                cachedImage = UIImage(data: imageData)
+            if cachedImage == nil, let image = plant.image {
+                cachedImage = image
             }
         }
         .sheet(isPresented: $showDescriptionDetail) {

@@ -88,7 +88,7 @@ class PlantCareService {
     
     func careRecordsArray(_ plant: Plant) -> [CareRecordEntity] {
         let set = plant.careRecords as? Set<CareRecordEntity> ?? []
-        return set.sorted { $0.date > $1.date }
+        return set.filter { !$0.markedForDeletion }.sorted { $0.date > $1.date }
     }
     
     func latestCareRecord(_ plant: Plant) -> CareRecordEntity? {
@@ -149,7 +149,7 @@ class PlantCareService {
         let count = plants.filter { needsAnyCare($0) }.count
         let data = WidgetPlantData(needingCareCount: count, lastUpdated: Date())
         if let encoded = try? JSONEncoder().encode(data) {
-            UserDefaults(suiteName: "group.yang-yang.----")?.set(encoded, forKey: "widgetPlantData")
+            UserDefaults(suiteName: "group.com.yangyang.plants")?.set(encoded, forKey: "widgetPlantData")
         }
         WidgetCenter.shared.reloadAllTimelines()
     }
