@@ -121,7 +121,7 @@ struct StringConstants {
     
     // MARK: - 引导页
     struct Onboarding {
-        static let appName = "植觉"
+        static let appName = "植觉日记"
         static let neverForget = "永远不会忘记给植物浇水"
         static let cameraIdentify = "拍照识别"
         static let cameraIdentifyDesc = "对准植物拍张照，AI 识别品种"
@@ -134,7 +134,7 @@ struct StringConstants {
         static let allowNotifications = "允许通知"
         static let setupLater = "稍后设置"
         static let needNotificationPermission = "需要通知权限"
-        static let needNotificationPermissionDesc = "请在设置中允许「植觉」发送通知，以便及时提醒您浇水"
+        static let needNotificationPermissionDesc = "请在设置中允许「植觉日记」发送通知，以便及时提醒您浇水"
         static let goToSettings = "去设置"
     }
     

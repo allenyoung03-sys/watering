@@ -12,7 +12,7 @@ struct SplashScreen: View {
                     .font(.system(size: 72))
                     .foregroundColor(.plantGreen)
 
-                Text("植觉")
+                Text("植觉日记")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.plantGreen)
 
