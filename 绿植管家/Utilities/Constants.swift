@@ -38,6 +38,11 @@ enum Constants {
         static let userAvatarData = "userAvatarData"
         static let defaultReminderTime = "defaultReminderTime" // 新植物默认提醒时间
         static let customRooms = "customRooms" // 自定义房间列表
+
+        // MARK: - 账号体系预留字段（当前版本不使用）
+        static let localUserId = "localUserId"          // 本地用户唯一标识
+        static let firstLaunchDate = "firstLaunchDate"  // 首次启动时间
+        static let serverUrl = "serverUrl"               // 未来后端地址
     }
 
     enum Layout {

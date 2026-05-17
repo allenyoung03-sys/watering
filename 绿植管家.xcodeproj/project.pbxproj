@@ -54,6 +54,7 @@
 		9FAAF319454C4D4C92ADDB1A /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D53C8C3BC249B58E70661D /* ImageProcessor.swift */; };
 		AAE63977C4044449BE11DCA8 /* PlantCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C09E963C4404590A21BCD60 /* PlantCard.swift */; };
 		AB33A17B47EA408E8002BAF3 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE040428B5845FAAB952D15 /* WeatherManager.swift */; };
+		B0EFAB35AECD1EE7D451E23E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B2468CCD893F1CDA05D4B396 /* PrivacyInfo.xcprivacy */; };
 		B2DFFD2D37AA442E80BF6835 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11F80A076AC4D60A0FFB90E /* NotificationManager.swift */; };
 		C0DFFAC0E0F449CE87AE863E /* PlantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F057B276A421598BAE56D /* PlantDetailView.swift */; };
 		C389D1955E4157EEF59525CB /* WidgetPlantData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AAA3D8FA12C647E304872B5 /* WidgetPlantData.swift */; };
@@ -152,6 +153,7 @@
 		A2016217E32B4DAB91E7BAF1 /* PlantCareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PlantCareService.swift; sourceTree = "<group>"; };
 		A53614DDA4FF45EAA23F3E63 /* RoomManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/RoomManagementView.swift; sourceTree = "<group>"; };
 		AD0716A5CB21409BB38E40F9 /* RoomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/Helpers/RoomManager.swift; sourceTree = "<group>"; };
+		B2468CCD893F1CDA05D4B396 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = "绿植管家/PrivacyInfo.xcprivacy"; sourceTree = "<group>"; };
 		B2AAB41829EE4914B1DE1A3B /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utilities/Extensions/Color+Extensions.swift"; sourceTree = "<group>"; };
 		B3764CDEF3AF455BB9CD66B0 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/LocationManager.swift; sourceTree = "<group>"; };
 		B87B946CEDD14E3299D5304B /* DescriptionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/DescriptionDetailView.swift; sourceTree = "<group>"; };
@@ -167,7 +169,7 @@
 		DB46D06BA3764CAEA9D3C989 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DF0E89352F2649D78616F3B8 /* AddPlantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels/AddPlantViewModel.swift; sourceTree = "<group>"; };
 		E2B328760D3940CDB3840A92 /* CalendarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/CalendarManager.swift; sourceTree = "<group>"; };
-		E3BA87C02F41FE87006A9652 /* 植觉.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "植觉.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3BA87C02F41FE87006A9652 /* 植觉日记.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "植觉日记.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E86B136B8FE44C8D9F2DBB64 /* WateringFrequencyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/WateringFrequencyPicker.swift; sourceTree = "<group>"; };
 		E8A70FA0C1EF4772856442B2 /* PlantIdentificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PlantIdentificationService.swift; sourceTree = "<group>"; };
 		EC2F59B4AE5944C494C722C0 /* PlantInfoEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/PlantInfoEditView.swift; sourceTree = "<group>"; };
@@ -222,13 +224,14 @@
 				E3BA87C12F41FE87006A9652 /* Products */,
 				E3E1A68A2FA1A3C30027BA12 /* Recovered References */,
 				AFE1D67B9FFF373A3E45E1EE /* Frameworks */,
+				B2468CCD893F1CDA05D4B396 /* PrivacyInfo.xcprivacy */,
 			);
 			sourceTree = "<group>";
 		};
 		E3BA87C12F41FE87006A9652 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E3BA87C02F41FE87006A9652 /* 植觉.app */,
+				E3BA87C02F41FE87006A9652 /* 植觉日记.app */,
 				0676E42BDF92E2B848437910 /* TodayCareWidget.appex */,
 			);
 			name = Products;
@@ -315,9 +318,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E3BA87BF2F41FE87006A9652 /* 植觉 */ = {
+		E3BA87BF2F41FE87006A9652 /* 植觉日记 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E3BA87CB2F41FE89006A9652 /* Build configuration list for PBXNativeTarget "植觉" */;
+			buildConfigurationList = E3BA87CB2F41FE89006A9652 /* Build configuration list for PBXNativeTarget "植觉日记" */;
 			buildPhases = (
 				E3BA87BC2F41FE87006A9652 /* Sources */,
 				E3BA87BD2F41FE87006A9652 /* Frameworks */,
@@ -329,9 +332,9 @@
 			dependencies = (
 				A3B4CF90633A6ABC07BC4F6A /* PBXTargetDependency */,
 			);
-			name = "植觉";
-			productName = "植觉";
-			productReference = E3BA87C02F41FE87006A9652 /* 植觉.app */;
+			name = "植觉日记";
+			productName = "植觉日记";
+			productReference = E3BA87C02F41FE87006A9652 /* 植觉日记.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F18B8955D9CBDF00C236D7BD /* TodayCareWidget */ = {
@@ -380,7 +383,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E3BA87BF2F41FE87006A9652 /* 植觉 */,
+				E3BA87BF2F41FE87006A9652 /* 植觉日记 */,
 				F18B8955D9CBDF00C236D7BD /* TodayCareWidget */,
 			);
 		};
@@ -400,6 +403,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AF915D5F9594EDEA1D56AA2 /* Assets.xcassets in Resources */,
+				B0EFAB35AECD1EE7D451E23E /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,13 +507,13 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = "绿植管家/TodayCareWidget/Entitlements.plist";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 84J77J8HXF;
 				INFOPLIST_FILE = "绿植管家/TodayCareWidget/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "今日养护";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yang-yang.----.TodayCareWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yangyang.plants.TodayCareWidget;
 				PRODUCT_NAME = TodayCareWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -643,14 +647,14 @@
 				CODE_SIGN_ENTITLEMENTS = "绿植管家/Entitlements.plist";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 84J77J8HXF;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "植觉";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_CFBundleDisplayName = "植觉日记";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒";
 				INFOPLIST_KEY_NSCameraUsageDescription = "需要使用相机来拍摄植物照片进行识别";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "用于获取您的位置以显示当地天气信息，帮助提供更精准的植物养护建议";
@@ -668,7 +672,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yang-yang.----";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yangyang.plants;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -692,14 +696,14 @@
 				CODE_SIGN_ENTITLEMENTS = "绿植管家/Entitlements.plist";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 84J77J8HXF;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "植觉";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_CFBundleDisplayName = "植觉日记";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "用于在日历中创建浇水提醒，到点可在系统日历中查看并收到提醒";
 				INFOPLIST_KEY_NSCameraUsageDescription = "需要使用相机来拍摄植物照片进行识别";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "用于获取您的位置以显示当地天气信息，帮助提供更精准的植物养护建议";
@@ -717,7 +721,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yang-yang.----";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yangyang.plants;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -738,13 +742,13 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = "绿植管家/TodayCareWidget/Entitlements.plist";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 84J77J8HXF;
 				INFOPLIST_FILE = "绿植管家/TodayCareWidget/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "今日养护";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yang-yang.----.TodayCareWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yangyang.plants.TodayCareWidget;
 				PRODUCT_NAME = TodayCareWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -775,7 +779,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E3BA87CB2F41FE89006A9652 /* Build configuration list for PBXNativeTarget "植觉" */ = {
+		E3BA87CB2F41FE89006A9652 /* Build configuration list for PBXNativeTarget "植觉日记" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E3BA87CC2F41FE89006A9652 /* Debug */,

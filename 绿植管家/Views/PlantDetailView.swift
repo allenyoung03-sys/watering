@@ -134,12 +134,22 @@ struct PlantDetailView: View {
             } message: {
                 Text("确定要删除「\(plant.name)」吗？")
             }
+            .onChange(of: viewModel.didCompleteCare) { actionType in
+                guard let actionType else { return }
+                successActionType = actionType
+                showCareSuccess = true
+                // 1.5 秒后自动关闭
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    showCareSuccess = false
+                    viewModel.didCompleteCare = nil
+                }
+            }
         }
     }
 
     @ViewBuilder
     private var headerImage: some View {
-        if let data = plant.imageData, let image = UIImage(data: data) {
+        if let image = plant.image {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
@@ -1228,12 +1238,8 @@ struct SuccessOverlay: View {
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .padding(40)
         }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                // 这里需要更新showCareSuccess状态，但我们需要通过ViewModel来处理
-                // 暂时留空，稍后通过ViewModel回调处理
-            }
-        }
+        // 自动关闭由父视图的 onChange(of:didCompleteCare) 处理
+        // SuccessOverlay 本身只负责展示
     }
     
     private var buttonColor: Color {
