@@ -1,5 +1,6 @@
 import Combine
 import CoreLocation
+import SwiftUI
 
 @MainActor
 class WeatherManager: ObservableObject {
@@ -11,6 +12,7 @@ class WeatherManager: ObservableObject {
     @Published var symbolName: String?
     @Published var isLoading = false
     @Published var careTip: String?
+    @Published var tintColor: Color?
 
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
@@ -46,6 +48,7 @@ class WeatherManager: ObservableObject {
             let (desc, symbol) = weatherInfo(from: code)
             condition = desc
             symbolName = symbol
+            tintColor = weatherColor(from: code)
 
             let hum = current.relative_humidity_2m
             humidity = "湿度\(hum)%"
@@ -90,6 +93,29 @@ class WeatherManager: ObservableObject {
         }
     }
 
+    private func weatherColor(from code: Int) -> Color {
+        switch code {
+        case 0:
+            return .orange
+        case 1, 2:
+            return .secondary
+        case 3, 45, 48:
+            return .gray
+        case 51, 53, 55, 61, 63, 65:
+            return .blue
+        case 56, 57, 66, 67:
+            return .teal
+        case 71, 73, 75, 77, 85, 86:
+            return .cyan
+        case 80, 81, 82:
+            return .indigo
+        case 95, 96, 99:
+            return .yellow
+        default:
+            return .plantGreen
+        }
+    }
+
     private func generateCareTip(temperature: Double, humidity: Int, weatherCode: Int) -> String? {
         if temperature > 35 {
             return "🌡️ 高温预警：注意为植物遮阴降温，避免暴晒灼伤叶片"
@@ -124,6 +150,7 @@ class WeatherManager: ObservableObject {
         humidity = nil
         symbolName = nil
         careTip = nil
+        tintColor = nil
     }
 }
 

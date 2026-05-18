@@ -426,6 +426,7 @@ struct EnhancedImageSelectButton: View {
                     .font(.headline)
                 Text(hasImage ? "更换照片" : "拍照或选择照片")
                     .font(.plantBody)
+                    .foregroundColor(.primary)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.caption)
