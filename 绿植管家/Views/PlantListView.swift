@@ -276,6 +276,7 @@ struct PlantListView: View {
                 condition: weatherManager.condition,
                 humidity: weatherManager.humidity,
                 symbolName: weatherManager.symbolName,
+                tintColor: weatherManager.tintColor,
                 cityName: locationManager.cityName,
                 careTip: weatherManager.careTip
             )
@@ -340,6 +341,7 @@ private struct WeatherCardContent: View {
     let condition: String?
     let humidity: String?
     let symbolName: String?
+    let tintColor: Color?
     let cityName: String?
     let careTip: String?
 
@@ -349,7 +351,7 @@ private struct WeatherCardContent: View {
                 if let symbol = symbolName {
                     Image(systemName: symbol)
                         .font(.system(size: 40))
-                        .foregroundColor(.plantGreen)
+                        .foregroundColor(tintColor ?? .plantGreen)
                 }
                 Text(temperature)
                     .font(.plantTitle)
